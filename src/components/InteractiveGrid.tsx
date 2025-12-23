@@ -1,0 +1,114 @@
+"use client";
+
+import { useEffect, useRef } from "react";
+import gsap from "gsap";
+import { ScrollTrigger } from "@/lib/gsap/ScrollTrigger";
+import siteData from "@/data/content.json";
+import SplitText from "./SplitText";
+
+export default function InteractiveGrid() {
+  const sectionRef = useRef(null);
+
+  useEffect(() => {
+    gsap.registerPlugin(ScrollTrigger);
+
+    const ctx = gsap.context(() => {
+      // Reveal animation using Intersection Observer via ScrollTrigger
+      const items = document.querySelectorAll('.grid-item');
+      
+      items.forEach((item) => {
+        ScrollTrigger.create({
+          trigger: item,
+          start: "top 90%",
+          onEnter: () => item.classList.add("in-view"),
+          once: true
+        });
+
+        // 3D Tilt on Hover
+        const img = item.querySelector('img');
+        const overlay = item.querySelector('.grid-item-overlay');
+
+        item.addEventListener('mousemove', (e: any) => {
+          const { left, top, width, height } = item.getBoundingClientRect();
+          const x = (e.clientX - left) / width - 0.5;
+          const y = (e.clientY - top) / height - 0.5;
+
+          gsap.to(img, {
+            x: x * 40,
+            y: y * 40,
+            scale: 1.25,
+            rotateX: -y * 15,
+            rotateY: x * 15,
+            duration: 0.8,
+            ease: "power2.out"
+          });
+
+          gsap.to(overlay, {
+            x: x * 20,
+            y: y * 20,
+            duration: 0.8,
+            ease: "power2.out"
+          });
+        });
+
+        item.addEventListener('mouseleave', () => {
+          gsap.to(img, {
+            x: 0,
+            y: 0,
+            scale: 1.15,
+            rotateX: 0,
+            rotateY: 0,
+            duration: 1.2,
+            ease: "power3.out"
+          });
+          gsap.to(overlay, {
+            x: 0,
+            y: 0,
+            duration: 1.2,
+            ease: "power3.out"
+          });
+        });
+      });
+
+    }, sectionRef);
+
+    return () => ctx.revert();
+  }, []);
+
+  return (
+    <section ref={sectionRef} className="interactive-grid-section">
+      <div style={{ marginBottom: "4rem" }}>
+        <span className="sub-label">[ VISUAL ARCHIVE ]</span>
+      </div>
+      <div className="interactive-grid">
+        {siteData.visualArchive.map((item) => (
+          <div 
+            key={item.id} 
+            className={`grid-item grid-item-${item.id}`}
+            data-speed={item.settings.speed}
+          >
+            <div className="grid-item-inner" style={{ overflow: "hidden", height: "100%", width: "100%" }}>
+              <img 
+                src={item.img} 
+                alt={item.title} 
+                style={{ 
+                  width: "120%", 
+                  height: "120%", 
+                  objectFit: "cover", 
+                  margin: "-10%",
+                  objectPosition: item.settings.position
+                }} 
+              />
+            </div>
+            <div className="grid-item-overlay">
+              <span className="sub-label" style={{ color: "white", opacity: 0.7 }}>{item.cat}</span>
+              <h4 style={{ fontSize: "1.5rem", marginTop: "0.5rem" }}>
+                <SplitText text={item.title} trigger />
+              </h4>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}

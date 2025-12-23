@@ -1,0 +1,138 @@
+{
+  "hero": {
+    "sublabel": "PESSOAS CUIDANDO DE PESSOAS",
+    "title": "DR. PAULO\nGUIMARÃES JR",
+    "description": "Tratamento integrado e exclusivo focado em otimizar sua saúde física e mental para alcançar sua melhor versão.",
+    "edition": "INSTITUTO MÉDICO 2025",
+    "settings": {
+      "parallaxSpeed": 1.2,
+      "textAnimation": "split"
+    }
+  },
+  "navigation": {
+    "leftLabel": "DR. PAULO GUIMARÃES JR.",
+    "links": [
+      { "label": "Sobre", "url": "#about" },
+      { "label": "Serviços", "url": "#projects" },
+      { "label": "Instituto", "url": "#archive" },
+      { "label": "Marque uma consulta", "url": "https://wa.me/5547992547770", "highlight": true }
+    ]
+  },
+  "about": {
+    "label": "NOSSA FILOSOFIA",
+    "phrase": [
+      "SAÚDE INTEGRADA",
+      "EXCLUSIVIDADE EM",
+      "CADA DETALHE."
+    ],
+    "description": "Bons hábitos de vida, como a prática de atividade física, alimentação saudável e cuidados médicos são cruciais. Nosso papel é otimizar sua saúde por meio de acompanhamento multiprofissional rotineiro.",
+    "location": "Rua Blumenau, 797 – Joinville/SC. Unindo a medicina integrada aos avanços da endocrinolgia.",
+    "settings": {
+      "lag": 0.1
+    }
+  },
+  "projects": [
+    {
+      "id": "01",
+      "title": "Endocrinologia Avançada",
+      "category": "Medicina Integrada",
+      "image": "/images/clinic/0Y7A0287.jpg",
+      "settings": {
+        "parallaxSpeed": 1.1,
+        "objectPosition": "center",
+        "animation": "slide"
+      }
+    },
+    {
+      "id": "02",
+      "title": "Protocolos Injetáveis",
+      "category": "Performance e Saúde",
+      "image": "/images/clinic/0Y7A0358.jpg",
+      "settings": {
+        "parallaxSpeed": 1.0,
+        "objectPosition": "center",
+        "animation": "slide"
+      }
+    },
+    {
+      "id": "03",
+      "title": "TRI Método Kraisch",
+      "category": "Saúde Mental",
+      "image": "/images/clinic/0Y7A0397.jpg",
+      "settings": {
+        "parallaxSpeed": 1.2,
+        "objectPosition": "center",
+        "animation": "slide"
+      }
+    }
+  ],
+  "visualArchive": [
+    { 
+      "id": 1, 
+      "title": "InBody 770", 
+      "cat": "Análise Corporal", 
+      "img": "/images/clinic/0Y7A0250.jpg",
+      "settings": { "speed": 1.2, "position": "center" }
+    },
+    { 
+      "id": 2, 
+      "title": "Ambiente Exclusivo", 
+      "cat": "Instituto", 
+      "img": "/images/clinic/0Y7A0271.jpg",
+      "settings": { "speed": 1.1, "position": "center" }
+    },
+    { 
+      "id": 3, 
+      "title": "Health Optimization", 
+      "cat": "Propósito", 
+      "img": "/images/clinic/0Y7A0298.jpg",
+      "settings": { "speed": 1.3, "position": "center" }
+    }
+  ],
+  "socialReels": [
+    {
+      "url": "https://www.instagram.com/reel/DCUnv2SRoIq/",
+      "thumbnail": "/images/clinic/0Y7A0247.jpg",
+      "caption": "A importância da medicina integrativa no dia a dia."
+    },
+    {
+      "url": "https://www.instagram.com/reel/DCreR-WPeO2/",
+      "thumbnail": "/images/clinic/0Y7A0358.jpg",
+      "caption": "Protocolos de otimização metabólica."
+    },
+    {
+      "url": "https://www.instagram.com/reel/DBu9V08xzUa/",
+      "thumbnail": "/images/clinic/0Y7A0421.jpg",
+      "caption": "Bastidores do Instituto Médico."
+    }
+  ],
+  "playground": [
+    { 
+      "title": "Bioimpedância", 
+      "desc": "Análise profunda de composição corporal para diagnósticos precisos.", 
+      "img": "/images/clinic/0Y7A0250.jpg",
+      "settings": { "skew": true }
+    },
+    { 
+      "title": "Performance Lab", 
+      "desc": "Equipamentos de ponta para avaliação metabólica e física.", 
+      "img": "/images/clinic/0Y7A0421.jpg",
+      "settings": { "skew": true }
+    }
+  ],
+  "contact": {
+    "label": "AGENDE SUA CONSULTA",
+    "title": "CUIDE DE\nVOCÊ.",
+    "button": "MARCAR AGENDAMENTO",
+    "socials": [
+      { "name": "Instagram", "url": "https://www.instagram.com/drpauloguimaraesjr/" },
+      { "name": "YouTube", "url": "https://www.youtube.com/@PauloGuimaraesJr" }
+    ],
+    "address": {
+      "city": "Joinville, Brasil",
+      "street": "Rua Blumenau, 797"
+    },
+    "email": "contato@drpauloguimaraesjr.com.br",
+    "phone": "(47) 99254 7770"
+  }
+}
