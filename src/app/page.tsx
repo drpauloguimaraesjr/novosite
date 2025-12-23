@@ -13,10 +13,10 @@ import ContactSection from "@/components/ContactSection";
 import SplitText from "@/components/SplitText";
 import SocialReel from "@/components/SocialReel";
 
-// Data
-import siteData from "@/data/content.json";
+import { useContent } from "@/hooks/useContent";
 
 export default function Home() {
+  const siteData = useContent();
   const containerRef = useRef<HTMLDivElement>(null);
   const [mounted, setMounted] = useState(false);
 

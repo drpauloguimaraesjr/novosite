@@ -9,11 +9,12 @@ import Preloader from "@/components/Preloader";
 import LiveClock from "@/components/LiveClock";
 import PageTransition from "@/components/PageTransition";
 import GSAPConfig from "@/components/GSAPConfig";
-import siteData from "@/data/content.json";
+import { useContent } from "@/hooks/useContent";
 
 export default function ClientLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const isAdmin = pathname?.startsWith("/admin");
+  const siteData = useContent();
 
   return (
     <>
@@ -34,11 +35,11 @@ export default function ClientLayout({ children }: { children: ReactNode }) {
           <header className="nav-container">
             <Magnetic>
               <div className="sub-label" style={{ cursor: "pointer", display: "flex", alignItems: "center", gap: "10px" }}>
-                {siteData.navigation.leftLabel} <LiveClock />
+                {siteData.navigation?.leftLabel} <LiveClock />
               </div>
             </Magnetic>
             <nav className="nav-links">
-              {siteData.navigation.links.map((link, i) => (
+              {siteData.navigation?.links.map((link: any, i: number) => (
                 <Magnetic key={i}>
                   <a 
                     href={link.url} 

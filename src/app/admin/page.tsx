@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import siteData from "@/data/content.json";
 import styles from "./admin.module.css";
+import { getSiteContent } from "@/lib/siteService";
 
 interface ContentData {
   hero: any;
@@ -23,6 +24,14 @@ export default function AdminPage() {
   const [activeTab, setActiveTab] = useState("hero");
   const [saving, setSaving] = useState(false);
   const [showToast, setShowToast] = useState(false);
+
+  useEffect(() => {
+    async function load() {
+      const fresh = await getSiteContent();
+      if (fresh) setData(fresh as any);
+    }
+    load();
+  }, []);
 
   const handleChange = (section: string, field: string, value: any, index?: number, subfield?: string) => {
     const newData = { ...data };
