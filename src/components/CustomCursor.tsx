@@ -55,7 +55,7 @@ export default function CustomCursor() {
 
   return (
     <div ref={cursorRef} className="custom-cursor">
-      {cursorText && <span className="cursor-label">{cursorText}</span>}
+      <div className="custom-cursor-text">{cursorText || "VIEW"}</div>
     </div>
   );
 }

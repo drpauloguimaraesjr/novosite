@@ -154,31 +154,27 @@ export default function Home() {
       </section>
 
       {/* Project Index Section */}
-      <section className="project-list" style={{ padding: "80px 40px 160px" }}>
-        <div style={{ marginBottom: "4rem" }}>
-          <span className="sub-label">[ SELECTED WORK ]</span>
+      <section className="project-list">
+        <div style={{ marginBottom: "6rem" }}>
+          <span className="sub-label">[ SELECTED SERVICES ]</span>
         </div>
         
-        {siteData.projects.map((project) => (
-          <Link href={`/project/${project.title.toLowerCase().replace(/ /g, "-")}`} key={project.id} style={{ textDecoration: "none", color: "inherit" }}>
-            <div className="project-item">
-              <span className="sub-label" style={{ minWidth: "60px" }}>{project.id}</span>
-              <div className="title">
-                <SplitText text={project.title} trigger delay={0.1} />
-              </div>
-              <div className="category">{project.category}</div>
-              <div 
-                className="project-preview" 
-                style={{ 
-                  backgroundImage: `url(${project.image})`, 
-                  position: "absolute", 
-                  left: 0, 
-                  top: 0,
-                  backgroundPosition: project.settings.objectPosition
-                }} 
-              />
+        {siteData.projects.map((project: any, idx: number) => (
+          <div key={project.id} className="project-item">
+            <span className="id">[{String(idx + 1).padStart(3, '0')}]</span>
+            <div className="title">
+              {project.title}
             </div>
-          </Link>
+            <div className="category">{project.category}</div>
+            
+            <div 
+              className="project-preview" 
+              style={{ 
+                backgroundImage: `url(${project.image})`,
+                backgroundPosition: project.settings.objectPosition || "center"
+              }} 
+            />
+          </div>
         ))}
       </section>
 
