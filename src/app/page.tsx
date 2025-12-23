@@ -81,9 +81,10 @@ export default function Home() {
         });
       }
 
-      // Project Preview Follow Mouse
+      // Project Preview Follow Mouse with Stacking Lag
       projectItems.forEach((item) => {
-        const preview = item.querySelector(".project-preview");
+        const container = item.querySelector(".project-preview-container");
+        const layers = item.querySelectorAll(".project-preview");
         
         item.addEventListener("mousemove", (e: any) => {
           const { clientX, clientY } = e;
@@ -92,12 +93,24 @@ export default function Home() {
           const x = clientX - left;
           const y = clientY - top;
 
-          gsap.to(preview, {
+          gsap.to(container, {
             x: x - 200, 
             y: y - 125,
             duration: 0.8,
             ease: "power3.out",
             overwrite: "auto"
+          });
+
+          // Offset individual layers for the ghosting effect
+          layers.forEach((layer, idx) => {
+            if (idx === 0) return;
+            gsap.to(layer, {
+              x: (clientX - (window.innerWidth / 2)) * 0.05 * idx,
+              y: (clientY - (window.innerHeight / 2)) * 0.05 * idx,
+              duration: 1.2,
+              ease: "power2.out",
+              overwrite: "auto"
+            });
           });
         });
       });
@@ -155,8 +168,12 @@ export default function Home() {
 
       {/* Project Index Section */}
       <section className="project-list">
-        <div style={{ marginBottom: "6rem" }}>
+        <div style={{ marginBottom: "6rem", display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
           <span className="sub-label">[ SELECTED SERVICES ]</span>
+          <button className="bar-button" data-cursor-text="EXPLORE">
+            <div className="bar-line" />
+            <span className="bar-label">SEE ALL SERVICES</span>
+          </button>
         </div>
         
         {siteData.projects.map((project: any, idx: number) => (
@@ -172,13 +189,20 @@ export default function Home() {
             </div>
             <div className="category">{project.category}</div>
             
-            <div 
-              className="project-preview" 
-              style={{ 
-                backgroundImage: `url(${project.image})`,
-                backgroundPosition: project.settings.objectPosition || "center"
-              }} 
-            />
+            {/* Sanchez Stacking Preview */}
+            <div className="project-preview-container">
+              {[...Array(3)].map((_, i) => (
+                <div 
+                  key={i}
+                  className={`project-preview ${i > 0 ? 'stack-layer' : ''}`}
+                  style={{ 
+                    backgroundImage: `url(${project.image})`,
+                    backgroundPosition: project.settings.objectPosition || "center",
+                    transform: `scale(${1 - i * 0.05}) translateY(${i * 10}px)`
+                  }} 
+                />
+              ))}
+            </div>
           </Link>
         ))}
       </section>

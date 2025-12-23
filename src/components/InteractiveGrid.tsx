@@ -85,8 +85,44 @@ export default function InteractiveGrid({ data }: { data: any[] }) {
             key={item.id} 
             className={`grid-item grid-item-${item.id} ${item.settings.size ? `span-${item.settings.size === 'small' ? '4' : item.settings.size === 'large' ? '8' : item.settings.size === 'full' ? '12' : '6'}` : 'span-6'}`}
             data-speed={item.settings.speed}
+            onMouseMove={(e) => {
+              const item = e.currentTarget;
+              const layers = item.querySelectorAll('.stack-layer');
+              const { left, top, width, height } = item.getBoundingClientRect();
+              const x = (e.clientX - left) / width - 0.5;
+              const y = (e.clientY - top) / height - 0.5;
+
+              layers.forEach((layer, idx) => {
+                gsap.to(layer, {
+                  x: x * (30 + idx * 20),
+                  y: y * (30 + idx * 20),
+                  duration: 0.8,
+                  ease: "power2.out"
+                });
+              });
+            }}
+            onMouseLeave={(e) => {
+              const layers = e.currentTarget.querySelectorAll('.stack-layer');
+              layers.forEach((layer) => {
+                gsap.to(layer, { x: 0, y: 0, duration: 1.2, ease: "power3.out" });
+              });
+            }}
           >
-            <div className="grid-item-inner" style={{ overflow: "hidden", height: "100%", width: "100%" }}>
+            <div className="grid-item-inner" style={{ overflow: "hidden", height: "100%", width: "100%", position: "relative" }}>
+              {/* Stack Layers for the Ghosting effect */}
+              {[...Array(3)].map((_, i) => (
+                <div 
+                  key={i} 
+                  className="stack-layer" 
+                  style={{ 
+                    backgroundImage: `url(${item.img})`,
+                    backgroundSize: "cover",
+                    backgroundPosition: item.settings.position || "center",
+                    scale: 1.1 + (i * 0.05)
+                  }} 
+                />
+              ))}
+              
               <img 
                 src={item.img} 
                 alt={item.title} 

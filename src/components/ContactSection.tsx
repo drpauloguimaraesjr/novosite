@@ -18,11 +18,14 @@ export default function ContactSection() {
         {contact.title}
       </h2>
 
-      <Magnetic>
-        <button className="contact-button-large">
-          {contact.button}
-        </button>
-      </Magnetic>
+      <div className="contact-button-wrapper">
+        <Magnetic>
+          <button className="contact-button-bar">
+            <div className="bar-line" />
+            <span className="bar-label">{contact.button}</span>
+          </button>
+        </Magnetic>
+      </div>
 
       <div className="footer-info-grid">
         <div className="footer-column">
