@@ -3,9 +3,10 @@
 import { useState, useEffect } from "react";
 import siteData from "@/data/content.json";
 import styles from "./admin.module.css";
-import { getSiteContent } from "@/lib/siteService";
-import { auth } from "@/lib/firebase";
+import { auth, storage } from "@/lib/firebase";
 import { onAuthStateChanged, signInWithEmailAndPassword, signOut, User } from "firebase/auth";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { getSiteContent } from "@/lib/siteService";
 
 interface ContentData {
   hero: any;
@@ -32,6 +33,7 @@ export default function AdminPage() {
   const [activeTab, setActiveTab] = useState("hero");
   const [saving, setSaving] = useState(false);
   const [showToast, setShowToast] = useState(false);
+  const [uploading, setUploading] = useState<string | null>(null);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -65,23 +67,48 @@ export default function AdminPage() {
 
   const handleLogout = () => signOut(auth);
 
+  const handleUpload = async (section: string, index: number, field: string, file: File) => {
+    const uploadKey = `${section}-${index}-${field}`;
+    setUploading(uploadKey);
+    try {
+      const storageRef = ref(storage, `site-images/${Date.now()}-${file.name}`);
+      await uploadBytes(storageRef, file);
+      const url = await getDownloadURL(storageRef);
+      handleChange(section, field, url, index);
+    } catch (err) {
+      console.error("Upload failed", err);
+      alert("Falha no upload da imagem.");
+    }
+    setUploading(null);
+  };
+
+  const moveItem = (section: string, index: number, direction: 'up' | 'down') => {
+    const newData = { ...data };
+    const items = [...(newData[section as keyof ContentData] as any[])];
+    const newIndex = direction === 'up' ? index - 1 : index + 1;
+    
+    if (newIndex >= 0 && newIndex < items.length) {
+      [items[index], items[newIndex]] = [items[newIndex], items[index]];
+      (newData[section as keyof ContentData] as any[]) = items;
+      setData(newData);
+    }
+  };
+
   const handleChange = (section: string, field: string, value: any, index?: number, subfield?: string) => {
     const newData = { ...data };
     if (index !== undefined) {
+      const sectionData = [...(newData[section as keyof ContentData] as any[])];
       if (subfield) {
-        // @ts-ignore
-        newData[section][index][field][subfield] = value;
+        sectionData[index][field][subfield] = value;
       } else {
-        // @ts-ignore
-        newData[section][index][field] = value;
+        sectionData[index][field] = value;
       }
+      (newData[section as keyof ContentData] as any[]) = sectionData;
     } else {
       if (subfield) {
-        // @ts-ignore
-        newData[section][field][subfield] = value;
+        (newData[section as keyof ContentData] as any)[field][subfield] = value;
       } else {
-        // @ts-ignore
-        newData[section][field] = value;
+        (newData[section as keyof ContentData] as any)[field] = value;
       }
     }
     setData(newData);
@@ -98,7 +125,7 @@ export default function AdminPage() {
         title: "Novo Item",
         cat: "Geral",
         img: "/images/clinic/0Y7A0247.jpg",
-        settings: { speed: 1.1, position: "center" }
+        settings: { speed: 1.1, position: "center", size: "medium" }
       };
       newData.visualArchive.push(newItem);
     } else if (section === "projects") {
@@ -198,121 +225,37 @@ export default function AdminPage() {
 
       <div className={styles.mainContent}>
         <div className={styles.card}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "2rem" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "3rem" }}>
             <h3>{activeTab.toUpperCase()} SETTINGS</h3>
             {["projects", "visualArchive", "navigation", "socialReels"].includes(activeTab) && (
               <button 
                 className={styles.saveButton} 
-                style={{ width: "auto", padding: "10px 20px", fontSize: "0.8rem" }}
+                style={{ width: "auto", padding: "10px 20px", fontSize: "0.6rem" }}
                 onClick={() => addItem(activeTab)}
               >
-                + ADD ITEM
+                + ADD
               </button>
             )}
           </div>
 
-          {activeTab === "navigation" && (
-            <div className={styles.sectionGrid}>
-              <div className={styles.formGroup}>
-                <label>Left Corner Label</label>
-                <input value={data.navigation.leftLabel} onChange={(e) => handleChange("navigation", "leftLabel", e.target.value)} />
-              </div>
-              <div className={styles.itemsList} style={{ marginTop: "2rem" }}>
-                <label>Fixed Navigation Links</label>
-                {data.navigation.links.map((link, i) => (
-                  <div key={i} className={styles.itemCard}>
-                    <div style={{ display: "flex", justifyContent: "space-between" }}>
-                      <h4>Link {i + 1}</h4>
-                      <button onClick={() => removeItem("navigation", i)} style={{ color: "#ff4444" }}>[ REMOVE ]</button>
-                    </div>
-                    <div className={styles.formRow}>
-                      <div className={styles.formGroup}>
-                        <label>Label</label>
-                        <input value={link.label} onChange={(e) => handleChange("navigation", "links", e.target.value, i, "label")} />
-                      </div>
-                      <div className={styles.formGroup}>
-                        <label>URL</label>
-                        <input value={link.url} onChange={(e) => handleChange("navigation", "links", e.target.value, i, "url")} />
-                      </div>
-                      <div className={styles.formGroup}>
-                        <label>Highlight (Button Style)</label>
-                        <select 
-                          value={link.highlight ? "yes" : "no"} 
-                          onChange={(e) => handleChange("navigation", "links", e.target.value === "yes", i, "highlight")}
-                        >
-                          <option value="no">No</option>
-                          <option value="yes">Yes</option>
-                        </select>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {activeTab === "socialReels" && (
-            <div className={styles.itemsList}>
-              {data.socialReels.map((reel, i) => (
-                <div key={i} className={styles.itemCard}>
-                  <div style={{ display: "flex", justifyContent: "space-between" }}>
-                    <h4>Reel {i + 1}</h4>
-                    <button onClick={() => removeItem("socialReels", i)} style={{ color: "#ff4444" }}>[ REMOVE ]</button>
-                  </div>
-                  <div className={styles.formRow}>
-                    <div className={styles.formGroup}>
-                      <label>Instagram URL</label>
-                      <input value={reel.url} onChange={(e) => handleChange("socialReels", "url", e.target.value, i)} />
-                    </div>
-                    <div className={styles.formGroup}>
-                      <label>Thumbnail Path</label>
-                      <input value={reel.thumbnail} onChange={(e) => handleChange("socialReels", "thumbnail", e.target.value, i)} />
-                    </div>
-                  </div>
-                  <div className={styles.formGroup}>
-                    <label>Caption</label>
-                    <input value={reel.caption} onChange={(e) => handleChange("socialReels", "caption", e.target.value, i)} />
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-
           {activeTab === "hero" && (
             <div className={styles.sectionGrid}>
               <div className={styles.formGroup}>
-                <label>Title</label>
+                <label>Sublabel</label>
+                <input value={data.hero.sublabel} onChange={(e) => handleChange("hero", "sublabel", e.target.value)} />
+              </div>
+              <div className={styles.formGroup}>
+                <label>Title (use \n for line break)</label>
                 <textarea 
                   value={data.hero.title} 
                   onChange={(e) => handleChange("hero", "title", e.target.value)}
                 />
               </div>
               <div className={styles.formGroup}>
-                <label>Parallax Speed</label>
-                <input 
-                  type="number" step="0.1"
-                  value={data.hero.settings.parallaxSpeed} 
-                  onChange={(e) => handleChange("hero", "settings", parseFloat(e.target.value), undefined, "parallaxSpeed")}
-                />
-              </div>
-            </div>
-          )}
-
-          {activeTab === "about" && (
-            <div className={styles.sectionGrid}>
-              <div className={styles.formGroup}>
                 <label>Description</label>
                 <textarea 
-                  value={data.about.description} 
-                  onChange={(e) => handleChange("about", "description", e.target.value)}
-                />
-              </div>
-              <div className={styles.formGroup}>
-                <label>Scroll Lag (0.1 = high lag)</label>
-                <input 
-                  type="number" step="0.05"
-                  value={data.about.settings.lag} 
-                  onChange={(e) => handleChange("about", "settings", parseFloat(e.target.value), undefined, "lag")}
+                  value={data.hero.description} 
+                  onChange={(e) => handleChange("hero", "description", e.target.value)}
                 />
               </div>
             </div>
@@ -322,31 +265,36 @@ export default function AdminPage() {
             <div className={styles.itemsList}>
               {data.projects.map((item, i) => (
                 <div key={i} className={styles.itemCard}>
-                  <div style={{ display: "flex", justifyContent: "space-between" }}>
-                    <h4>{item.title || `Item ${i + 1}`}</h4>
-                    <button onClick={() => removeItem("projects", i)} style={{ color: "#ff4444" }}>[ REMOVE ]</button>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
+                    <div style={{ display: "flex", gap: "10px" }}>
+                      <button onClick={() => moveItem("projects", i, 'up')} disabled={i === 0}>↑</button>
+                      <button onClick={() => moveItem("projects", i, 'down')} disabled={i === data.projects.length - 1}>↓</button>
+                      <h4 style={{ fontSize: "0.9rem" }}>ORDEM: {i + 1}</h4>
+                    </div>
+                    <button onClick={() => removeItem("projects", i)} style={{ color: "#ff4444", fontSize: "0.7rem" }}>[ REMOVE ]</button>
                   </div>
                   <div className={styles.formRow}>
                     <div className={styles.formGroup}>
-                      <label>Image Path</label>
-                      <input value={item.image} onChange={(e) => handleChange("projects", "image", e.target.value, i)} />
+                      <label>Image</label>
+                      <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+                        <img src={item.image} style={{ width: "60px", height: "40px", objectFit: "cover", borderRadius: "2px" }} />
+                        <input 
+                          type="file" 
+                          accept="image/*" 
+                          style={{ fontSize: "0.7rem" }}
+                          onChange={(e) => e.target.files?.[0] && handleUpload("projects", i, "image", e.target.files[0])}
+                        />
+                        {uploading === `projects-${i}-image` && <span>Uploading...</span>}
+                      </div>
                     </div>
                     <div className={styles.formGroup}>
-                      <label>Foco</label>
-                      <select value={item.settings.objectPosition} onChange={(e) => handleChange("projects", "settings", e.target.value, i, "objectPosition")}>
-                        <option value="center">Center</option>
-                        <option value="top">Top</option>
-                        <option value="bottom">Bottom</option>
-                      </select>
+                      <label>Title</label>
+                      <input value={item.title} onChange={(e) => handleChange("projects", "title", e.target.value, i)} />
                     </div>
                     <div className={styles.formGroup}>
-                      <label>Speed</label>
-                      <input type="number" step="0.1" value={item.settings.parallaxSpeed} onChange={(e) => handleChange("projects", "settings", parseFloat(e.target.value), i, "parallaxSpeed")} />
+                      <label>Category</label>
+                      <input value={item.category} onChange={(e) => handleChange("projects", "category", e.target.value, i)} />
                     </div>
-                  </div>
-                  <div className={styles.formGroup}>
-                    <label>Title</label>
-                    <input value={item.title} onChange={(e) => handleChange("projects", "title", e.target.value, i)} />
                   </div>
                 </div>
               ))}
@@ -357,18 +305,36 @@ export default function AdminPage() {
             <div className={styles.itemsList}>
               {data.visualArchive.map((item, i) => (
                 <div key={i} className={styles.itemCard}>
-                  <div style={{ display: "flex", justifyContent: "space-between" }}>
-                    <h4>{item.title}</h4>
-                    <button onClick={() => removeItem("visualArchive", i)} style={{ color: "#ff4444" }}>[ REMOVE ]</button>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
+                    <div style={{ display: "flex", gap: "10px" }}>
+                      <button onClick={() => moveItem("visualArchive", i, 'up')} disabled={i === 0}>↑</button>
+                      <button onClick={() => moveItem("visualArchive", i, 'down')} disabled={i === data.visualArchive.length - 1}>↓</button>
+                      <h4 style={{ fontSize: "0.9rem" }}>ORDEM: {i + 1}</h4>
+                    </div>
+                    <button onClick={() => removeItem("visualArchive", i)} style={{ color: "#ff4444", fontSize: "0.7rem" }}>[ REMOVE ]</button>
                   </div>
                   <div className={styles.formRow}>
                     <div className={styles.formGroup}>
-                      <label>Img Path</label>
-                      <input value={item.img} onChange={(e) => handleChange("visualArchive", "img", e.target.value, i)} />
+                      <label>Gallery Image</label>
+                      <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+                        <img src={item.img} style={{ width: "60px", height: "60px", objectFit: "cover", borderRadius: "4px" }} />
+                        <input 
+                          type="file" 
+                          accept="image/*"
+                          style={{ fontSize: "0.7rem" }}
+                          onChange={(e) => e.target.files?.[0] && handleUpload("visualArchive", i, "img", e.target.files[0])}
+                        />
+                        {uploading === `visualArchive-${i}-img` && <span>...</span>}
+                      </div>
                     </div>
                     <div className={styles.formGroup}>
-                      <label>Speed</label>
-                      <input type="number" step="0.1" value={item.settings.speed} onChange={(e) => handleChange("visualArchive", "settings", parseFloat(e.target.value), i, "speed")} />
+                      <label>Size</label>
+                      <select value={item.settings.size || "medium"} onChange={(e) => handleChange("visualArchive", "settings", e.target.value, i, "size")}>
+                        <option value="small">Pequeña (Span 4)</option>
+                        <option value="medium">Media (Span 6)</option>
+                        <option value="large">Grande (Span 8)</option>
+                        <option value="full">Total (Span 12)</option>
+                      </select>
                     </div>
                   </div>
                   <div className={styles.formRow}>
@@ -386,15 +352,42 @@ export default function AdminPage() {
             </div>
           )}
 
+          {activeTab === "navigation" && (
+            <div className={styles.sectionGrid}>
+              <div className={styles.formGroup}>
+                <label>Left Corner Label</label>
+                <input value={data.navigation.leftLabel} onChange={(e) => handleChange("navigation", "leftLabel", e.target.value)} />
+              </div>
+              {data.navigation.links.map((link, i) => (
+                <div key={i} className={styles.itemCard}>
+                  <div className={styles.formRow}>
+                    <div className={styles.formGroup}>
+                      <label>Label</label>
+                      <input value={link.label} onChange={(e) => handleChange("navigation", "links", e.target.value, i, "label")} />
+                    </div>
+                    <div className={styles.formGroup}>
+                      <label>URL</label>
+                      <input value={link.url} onChange={(e) => handleChange("navigation", "links", e.target.value, i, "url")} />
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
           {activeTab === "contact" && (
             <div className={styles.sectionGrid}>
               <div className={styles.formGroup}>
-                <label>Phone</label>
-                <input value={data.contact.phone} onChange={(e) => handleChange("contact", "phone", e.target.value)} />
+                <label>Title</label>
+                <textarea value={data.contact.title} onChange={(e) => handleChange("contact", "title", e.target.value)} />
               </div>
               <div className={styles.formGroup}>
                 <label>Email</label>
                 <input value={data.contact.email} onChange={(e) => handleChange("contact", "email", e.target.value)} />
+              </div>
+              <div className={styles.formGroup}>
+                <label>Phone</label>
+                <input value={data.contact.phone} onChange={(e) => handleChange("contact", "phone", e.target.value)} />
               </div>
             </div>
           )}

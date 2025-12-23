@@ -83,7 +83,7 @@ export default function InteractiveGrid({ data }: { data: any[] }) {
         {data.map((item: any) => (
           <div 
             key={item.id} 
-            className={`grid-item grid-item-${item.id}`}
+            className={`grid-item grid-item-${item.id} ${item.settings.size ? `span-${item.settings.size === 'small' ? '4' : item.settings.size === 'large' ? '8' : item.settings.size === 'full' ? '12' : '6'}` : 'span-6'}`}
             data-speed={item.settings.speed}
           >
             <div className="grid-item-inner" style={{ overflow: "hidden", height: "100%", width: "100%" }}>
@@ -101,7 +101,7 @@ export default function InteractiveGrid({ data }: { data: any[] }) {
             </div>
             <div className="grid-item-overlay">
               <span className="sub-label" style={{ color: "white", opacity: 0.7 }}>{item.cat}</span>
-              <h4 style={{ fontSize: "1.5rem", marginTop: "0.5rem", color: "white" }}>
+              <h4 style={{ fontSize: "1.2rem", marginTop: "0.5rem", color: "white" }}>
                 {item.title}
               </h4>
             </div>
