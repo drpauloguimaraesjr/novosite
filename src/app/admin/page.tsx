@@ -84,40 +84,119 @@ export default function AdminPage() {
     setUploading(null);
   };
 
+  // Image compression utility
+  const compressImage = async (file: File): Promise<Blob> => {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.src = URL.createObjectURL(file);
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        const ctx = canvas.getContext("2d");
+        if (!ctx) {
+          reject(new Error("Canvas context not available"));
+          return;
+        }
+
+        // Max dimensions for "Grand" quality but web-optimized
+        const MAX_WIDTH = 2500;
+        const MAX_HEIGHT = 2000;
+        let width = img.width;
+        let height = img.height;
+
+        if (width > height) {
+          if (width > MAX_WIDTH) {
+            height *= MAX_WIDTH / width;
+            width = MAX_WIDTH;
+          }
+        } else {
+          if (height > MAX_HEIGHT) {
+            width *= MAX_HEIGHT / height;
+            height = MAX_HEIGHT;
+          }
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        ctx.drawImage(img, 0, 0, width, height);
+
+        canvas.toBlob(
+          (blob) => {
+            if (blob) resolve(blob);
+            else reject(new Error("Compression failed"));
+          },
+          "image/jpeg",
+          0.85 // High quality, but compressed
+        );
+      };
+      img.onerror = (err) => reject(err);
+    });
+  };
+
   const handleBulkUpload = async (e: React.ChangeEvent<HTMLInputElement>, category: string = "Geral") => {
     if (!e.target.files?.length) return;
     const files = Array.from(e.target.files);
+    
     setUploading("bulk");
     setUploadProgress(0);
     
+    // Process in batches of 3 to avoid overwhelming connections
+    const BATCH_SIZE = 3;
     const newData = { ...data };
-    let completed = 0;
-    
-    for (const file of files) {
+    let completedCount = 0;
+
+    // Helper to process a single file
+    const processFile = async (file: File) => {
       try {
-        const storageRef = ref(storage, `site-images/${Date.now()}-${file.name}`);
-        await uploadBytes(storageRef, file);
+        // 1. Optimize
+        const compressedBlob = await compressImage(file);
+        
+        // 2. Upload
+        const storageRef = ref(storage, `site-images/${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.]/g, "_")}`);
+        await uploadBytes(storageRef, compressedBlob);
         const url = await getDownloadURL(storageRef);
         
+        // 3. Create Item
         const newItem = {
           id: Date.now() + Math.random(),
           title: file.name.split('.')[0],
           cat: category,
           img: url,
-          settings: { speed: 1.1, position: "center", size: "medium" }
+          settings: { speed: 1.1, position: "center", size: "medium" },
+          description: ""
         };
-        newData.visualArchive.push(newItem);
         
-        completed++;
-        setUploadProgress(Math.round((completed / files.length) * 100));
+        return newItem;
       } catch (err) {
-        console.error("Bulk upload failed for " + file.name, err);
+        console.error(`Failed to process ${file.name}:`, err);
+        return null;
+      } finally {
+        completedCount++;
+        setUploadProgress(Math.round((completedCount / files.length) * 100));
       }
+    };
+
+    // Execute batches
+    const newItems: any[] = [];
+    for (let i = 0; i < files.length; i += BATCH_SIZE) {
+      const batch = files.slice(i, i + BATCH_SIZE);
+      const results = await Promise.all(batch.map(processFile));
+      results.forEach(item => {
+        if (item) newItems.push(item);
+      });
     }
-    
+
+    // Add successfully uploaded items to new Data
+    // We append them to the START of the list or END? Usually end.
+    newData.visualArchive = [...newData.visualArchive, ...newItems];
+
     setData(newData);
     setUploading(null);
     setUploadProgress(0);
+    
+    // Auto-save after bulk upload to prevent data loss
+    if (newItems.length > 0) {
+      saveContent();
+    }
   };
 
   const setReorderedItems = (section: string, newItems: any[]) => {
