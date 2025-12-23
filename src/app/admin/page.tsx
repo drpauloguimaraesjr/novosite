@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 import siteData from "@/data/content.json";
 import styles from "./admin.module.css";
 import { getSiteContent } from "@/lib/siteService";
+import { auth } from "@/lib/firebase";
+import { onAuthStateChanged, signInWithEmailAndPassword, signOut, User } from "firebase/auth";
 
 interface ContentData {
   hero: any;
@@ -20,18 +22,48 @@ interface ContentData {
 }
 
 export default function AdminPage() {
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [authError, setAuthError] = useState("");
+  
   const [data, setData] = useState<ContentData>(siteData as any);
   const [activeTab, setActiveTab] = useState("hero");
   const [saving, setSaving] = useState(false);
   const [showToast, setShowToast] = useState(false);
 
   useEffect(() => {
-    async function load() {
-      const fresh = await getSiteContent();
-      if (fresh) setData(fresh as any);
-    }
-    load();
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+      setLoading(false);
+    });
+    return () => unsubscribe();
   }, []);
+
+  useEffect(() => {
+    if (user) {
+      async function load() {
+        const fresh = await getSiteContent();
+        if (fresh) setData(fresh as any);
+      }
+      load();
+    }
+  }, [user]);
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setAuthError("");
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+    } catch (err: any) {
+      setAuthError("CREDENCIAIS INVÁLIDAS. TENTE NOVAMENTE.");
+    }
+    setLoading(false);
+  };
+
+  const handleLogout = () => signOut(auth);
 
   const handleChange = (section: string, field: string, value: any, index?: number, subfield?: string) => {
     const newData = { ...data };
@@ -115,12 +147,39 @@ export default function AdminPage() {
     setSaving(false);
   };
 
+  if (loading) {
+    return <div className={styles.adminContainer} style={{ justifyContent: "center", alignItems: "center" }}>[ LOADING AUTH... ]</div>;
+  }
+
+  if (!user) {
+    return (
+      <div className={styles.adminContainer} style={{ justifyContent: "center", alignItems: "center" }}>
+        <form onSubmit={handleLogin} className={styles.card} style={{ width: "100%", maxWidth: "400px" }}>
+          <h2 style={{ fontSize: "0.8rem", letterSpacing: "0.3em", marginBottom: "3rem", textAlign: "center" }}>ES_ADMIN LOGIN</h2>
+          {authError && <p style={{ color: "red", fontSize: "0.7rem", marginBottom: "1rem" }}>{authError}</p>}
+          <div className={styles.formGroup}>
+            <label>Email</label>
+            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+          </div>
+          <div className={styles.formGroup}>
+            <label>Senha</label>
+            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+          </div>
+          <button type="submit" className={styles.saveButton}>ACESSAR PAINEL</button>
+        </form>
+      </div>
+    );
+  }
+
   return (
     <div className={styles.adminContainer}>
       {showToast && <div className={styles.toast}>CONTEÚDO SALVO COM SUCESSO!</div>}
       
       <div className={styles.sidebar}>
-        <h2 style={{ color: "#fff", marginBottom: "2rem" }}>ES_ADMIN</h2>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "2rem" }}>
+          <h2>ES_ADMIN</h2>
+          <button onClick={handleLogout} style={{ background: "none", border: "none", color: "rgba(255,255,255,0.4)", fontSize: "0.6rem", cursor: "pointer" }}>[ LOGOUT ]</button>
+        </div>
         <div className={styles.nav}>
           {["hero", "navigation", "about", "projects", "visualArchive", "socialReels", "contact"].map((tab) => (
             <button
