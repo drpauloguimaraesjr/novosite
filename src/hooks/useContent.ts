@@ -9,9 +9,16 @@ export function useContent() {
 
   useEffect(() => {
     async function loadData() {
-      const freshData = await getSiteContent();
-      if (freshData) {
-        setData(freshData as any);
+      try {
+        const freshData = await getSiteContent();
+        // Robust check: Ensure we actually got a valid site configuration
+        if (freshData && freshData.hero && freshData.hero.title) {
+          setData(freshData as any);
+        } else {
+          console.log("Firebase data missing key properties, staying with local data.");
+        }
+      } catch (err) {
+        console.error("useContent hook error:", err);
       }
     }
     loadData();
