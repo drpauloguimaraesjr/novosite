@@ -136,6 +136,19 @@ export default function InteractiveGrid({ data }: { data: any[] }) {
               <h4 style={{ fontSize: "1.2rem", marginTop: "0.5rem", color: "white" }}>
                 {item.title}
               </h4>
+              {item.description && (
+                <p style={{ 
+                  fontSize: "0.75rem", 
+                  marginTop: "1rem", 
+                  color: "white", 
+                  opacity: 0.6, 
+                  lineHeight: "1.6",
+                  fontWeight: 400,
+                  maxWidth: "90%"
+                }}>
+                  {item.description}
+                </p>
+              )}
             </div>
           </div>
         ))}

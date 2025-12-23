@@ -321,6 +321,15 @@ export default function AdminPage() {
                           <input value={item.category} onChange={(e) => handleChange("projects", "category", e.target.value, i)} />
                         </div>
                       </div>
+                      <div className={styles.formGroup} style={{ marginTop: "1rem" }}>
+                        <label>Description / Details</label>
+                        <textarea 
+                          value={item.description || ""} 
+                          placeholder="Fale mais sobre este serviço..."
+                          onChange={(e) => handleChange("projects", "description", e.target.value, i)} 
+                          style={{ minHeight: "60px", fontSize: "0.8rem" }}
+                        />
+                      </div>
                     </div>
                   </Reorder.Item>
                 ))}
@@ -423,6 +432,15 @@ export default function AdminPage() {
                             onChange={(e) => handleChange("visualArchive", "cat", e.target.value, i)} 
                           />
                         </div>
+                      </div>
+                      <div className={styles.formGroup} style={{ marginTop: "1rem" }}>
+                        <label>Caption / Story</label>
+                        <textarea 
+                          value={item.description || ""} 
+                          placeholder="Escreva uma pequena legenda ou curiosidade sobre esta imagem..."
+                          onChange={(e) => handleChange("visualArchive", "description", e.target.value, i)} 
+                          style={{ minHeight: "60px", fontSize: "0.8rem" }}
+                        />
                       </div>
                     </div>
                   </Reorder.Item>
