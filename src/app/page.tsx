@@ -170,10 +170,12 @@ export default function Home() {
       <section className="project-list">
         <div style={{ marginBottom: "6rem", display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
           <span className="sub-label">[ SELECTED SERVICES ]</span>
-          <button className="bar-button" data-cursor-text="EXPLORE">
-            <div className="bar-line" />
-            <span className="bar-label">SEE ALL SERVICES</span>
-          </button>
+          <Magnetic>
+            <button className="bar-button" data-cursor-text="EXPLORE">
+              <div className="bar-line" />
+              <span className="bar-label">SEE ALL SERVICES</span>
+            </button>
+          </Magnetic>
         </div>
         
         {siteData.projects.map((project: any, idx: number) => (

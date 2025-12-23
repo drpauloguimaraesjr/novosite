@@ -54,32 +54,48 @@ body.dark-theme {
 }
 .grid-line:last-child { border-right: 1px dotted var(--grid-color); }
 
-/* Custom Cursor */
-.custom-cursor {
+/* Custom Cursor Pro (Motion Dev Edition) */
+.custom-cursor-pro {
   position: fixed;
-  width: 12px;
-  height: 12px;
-  background: var(--text-color);
+  top: 0;
+  left: 0;
+  width: 14px;
+  height: 14px;
+  background-color: var(--text-color);
   border-radius: 50%;
   pointer-events: none;
   z-index: 10000;
-  mix-blend-mode: difference;
-  transition: transform 0.2s ease, background 0.3s ease;
-  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s ease;
+  mix-blend-mode: difference; /* Added mix-blend-mode */
 }
-.custom-cursor.active { transform: translate(-50%, -50%) scale(8); }
-.custom-cursor-text {
-  position: absolute;
-  top: 50%; left: 50%;
-  transform: translate(-50%, -50%);
-  font-size: 2px;
-  color: var(--bg-color);
-  font-weight: 700;
+
+.cursor-trail {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--text-color);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+.cursor-label {
+  font-family: var(--font-main);
+  font-size: 4px;
   text-transform: uppercase;
-  opacity: 0;
-  transition: opacity 0.2s ease;
+  letter-spacing: 0.15em;
+  font-weight: 800;
+  pointer-events: none;
+  white-space: nowrap;
+  color: #000;
+  display: block;
+  text-align: center;
 }
-.custom-cursor.active .custom-cursor-text { opacity: 1; font-size: 3px; }
 
 /* Typography - THE SANCHEZ SCALE (Refined) */
 h1 {

@@ -32,9 +32,11 @@ export default function ContactSection() {
           <span className="sub-label">[ SOCIAL ]</span>
           <div style={{ marginTop: "2rem" }}>
             {contact.socials.map((social) => (
-              <a key={social.name} href={social.url} className="footer-social-link">
-                {social.name}
-              </a>
+              <Magnetic key={social.name}>
+                <a href={social.url} className="footer-social-link" style={{ display: "block" }}>
+                  {social.name}
+                </a>
+              </Magnetic>
             ))}
           </div>
         </div>
@@ -58,7 +60,9 @@ export default function ContactSection() {
         <div className="footer-column">
           <span className="sub-label">[ SAY HELLO ]</span>
           <div style={{ marginTop: "2rem" }}>
-            <a href={`mailto:${contact.email}`} className="footer-social-link">{contact.email}</a>
+            <Magnetic>
+              <a href={`mailto:${contact.email}`} className="footer-social-link" style={{ display: "block" }}>{contact.email}</a>
+            </Magnetic>
             <p style={{ opacity: 0.6, marginTop: "0.5rem" }}>{contact.phone}</p>
           </div>
         </div>
