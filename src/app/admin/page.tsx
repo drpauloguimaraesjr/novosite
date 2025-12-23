@@ -35,6 +35,7 @@ export default function AdminPage() {
   const [saving, setSaving] = useState(false);
   const [showToast, setShowToast] = useState(false);
   const [uploading, setUploading] = useState<string | null>(null);
+  const [uploadProgress, setUploadProgress] = useState(0);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -87,8 +88,10 @@ export default function AdminPage() {
     if (!e.target.files?.length) return;
     const files = Array.from(e.target.files);
     setUploading("bulk");
+    setUploadProgress(0);
     
     const newData = { ...data };
+    let completed = 0;
     
     for (const file of files) {
       try {
@@ -104,6 +107,9 @@ export default function AdminPage() {
           settings: { speed: 1.1, position: "center", size: "medium" }
         };
         newData.visualArchive.push(newItem);
+        
+        completed++;
+        setUploadProgress(Math.round((completed / files.length) * 100));
       } catch (err) {
         console.error("Bulk upload failed for " + file.name, err);
       }
@@ -111,6 +117,7 @@ export default function AdminPage() {
     
     setData(newData);
     setUploading(null);
+    setUploadProgress(0);
   };
 
   const setReorderedItems = (section: string, newItems: any[]) => {
@@ -361,7 +368,18 @@ export default function AdminPage() {
                     disabled={uploading === "bulk"}
                   />
                 </div>
-                {uploading === "bulk" && <p style={{ color: "var(--accent-blue)", fontSize: "0.7rem" }}>FARMANDO IMAGENS... POR FAVOR AGUARDE.</p>}
+                {uploading === "bulk" && (
+                  <div style={{ marginTop: "2rem", display: "flex", flexDirection: "column", alignItems: "center", gap: "10px" }}>
+                    <p style={{ color: "var(--accent-blue)", fontSize: "0.7rem", letterSpacing: "0.1em" }}>FARMANDO IMAGENS... {uploadProgress}%</p>
+                    <div style={{ width: "300px", height: "2px", background: "rgba(255,255,255,0.1)", borderRadius: "2px", overflow: "hidden" }}>
+                      <motion.div 
+                        initial={{ width: 0 }}
+                        animate={{ width: `${uploadProgress}%` }}
+                        style={{ height: "100%", background: "#fff" }} 
+                      />
+                    </div>
+                  </div>
+                )}
               </div>
 
               <div style={{ display: "flex", gap: "10px", marginBottom: "2rem", flexWrap: "wrap", borderBottom: "1px solid #111", paddingBottom: "1.5rem" }}>
