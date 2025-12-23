@@ -22,6 +22,11 @@ export default function Home() {
 
   useEffect(() => {
     setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!mounted || !siteData) return;
+
     gsap.registerPlugin(ScrollTrigger);
 
     const ctx = gsap.context(() => {
@@ -34,41 +39,49 @@ export default function Home() {
       });
 
       // Reveal project list items
-      gsap.from(".project-item", {
-        y: 60,
-        opacity: 0,
-        stagger: 0.15,
-        duration: 1.2,
-        ease: "power4.out",
-        scrollTrigger: {
-          trigger: ".project-list",
-          start: "top 85%",
-        },
-      });
+      const projectItems = document.querySelectorAll(".project-item");
+      if (projectItems.length > 0) {
+        gsap.from(projectItems, {
+          y: 60,
+          opacity: 0,
+          stagger: 0.15,
+          duration: 1.2,
+          ease: "power4.out",
+          scrollTrigger: {
+            trigger: ".project-list",
+            start: "top 85%",
+          },
+        });
+      }
 
       // Theme Toggle (Light to Dark on scroll)
-      ScrollTrigger.create({
-        trigger: ".about-section",
-        start: "top 50%",
-        onEnter: () => document.body.classList.add("dark-theme"),
-        onLeaveBack: () => document.body.classList.remove("dark-theme"),
-      });
+      if (document.querySelector(".about-section")) {
+        ScrollTrigger.create({
+          trigger: ".about-section",
+          start: "top 50%",
+          onEnter: () => document.body.classList.add("dark-theme"),
+          onLeaveBack: () => document.body.classList.remove("dark-theme"),
+        });
+      }
 
-      ScrollTrigger.create({
-        trigger: ".horizontal-scroll-section",
-        start: "top 50%",
-        onEnter: () => document.body.classList.add("dark-theme"),
-        onEnterBack: () => document.body.classList.add("dark-theme"),
-      });
+      if (document.querySelector(".horizontal-scroll-section")) {
+        ScrollTrigger.create({
+          trigger: ".horizontal-scroll-section",
+          start: "top 50%",
+          onEnter: () => document.body.classList.add("dark-theme"),
+          onEnterBack: () => document.body.classList.add("dark-theme"),
+        });
+      }
 
-      ScrollTrigger.create({
-        trigger: ".contact-section",
-        start: "top 50%",
-        onEnter: () => document.body.classList.add("dark-theme"),
-      });
+      if (document.querySelector(".contact-section")) {
+        ScrollTrigger.create({
+          trigger: ".contact-section",
+          start: "top 50%",
+          onEnter: () => document.body.classList.add("dark-theme"),
+        });
+      }
 
       // Project Preview Follow Mouse
-      const projectItems = document.querySelectorAll(".project-item");
       projectItems.forEach((item) => {
         const preview = item.querySelector(".project-preview");
         
@@ -92,7 +105,7 @@ export default function Home() {
     }, containerRef);
 
     return () => ctx.revert();
-  }, []);
+  }, [mounted, siteData]);
 
   if (!mounted) return null;
 
@@ -184,9 +197,9 @@ export default function Home() {
         </div>
       </section>
 
-      <InteractiveGrid />
+      <InteractiveGrid data={siteData.visualArchive} />
 
-      <HorizontalScroll />
+      <HorizontalScroll data={siteData.playground} />
       <SocialReel />
       <Marquee />
       <ContactSection />

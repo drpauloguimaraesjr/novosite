@@ -3,14 +3,13 @@
 import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "@/lib/gsap/ScrollTrigger";
-import siteData from "@/data/content.json";
-import SplitText from "./SplitText";
-
-export default function HorizontalScroll() {
+export default function HorizontalScroll({ data }: { data: any[] }) {
   const sectionRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const progressBarRef = useRef<HTMLDivElement>(null);
   const [mounted, setMounted] = useState(false);
+
+  if (!data) return null;
 
   useEffect(() => {
     setMounted(true);
@@ -95,18 +94,18 @@ export default function HorizontalScroll() {
         </div>
 
         <div ref={containerRef} className="scroll-content">
-          {siteData.playground.map((item, idx) => (
+          {data.map((item: any, idx: number) => (
             <div key={idx} className="playground-card" data-cursor-text="EXPLORE">
               <div 
                 className="playground-card-img" 
                 style={{ backgroundImage: `url(${item.img})` }} 
               />
               <h3 style={{ fontSize: "2.5rem", marginBottom: "1rem" }}>
-                <SplitText text={item.title} trigger />
+                {item.title}
               </h3>
               <p style={{ opacity: 0.7, fontSize: "1.1rem", lineHeight: "1.4" }}>{item.desc}</p>
               <div style={{ marginTop: "auto" }} className="sub-label">
-                [ {String(idx + 1).padStart(2, '0')} / {String(siteData.playground.length).padStart(2, '0')} ]
+                [ {String(idx + 1).padStart(2, '0')} / {String(data.length).padStart(2, '0')} ]
               </div>
             </div>
           ))}

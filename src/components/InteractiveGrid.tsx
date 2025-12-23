@@ -3,11 +3,10 @@
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "@/lib/gsap/ScrollTrigger";
-import siteData from "@/data/content.json";
-import SplitText from "./SplitText";
-
-export default function InteractiveGrid() {
+export default function InteractiveGrid({ data }: { data: any[] }) {
   const sectionRef = useRef(null);
+
+  if (!data) return null;
 
   useEffect(() => {
     gsap.registerPlugin(ScrollTrigger);
@@ -81,7 +80,7 @@ export default function InteractiveGrid() {
         <span className="sub-label">[ VISUAL ARCHIVE ]</span>
       </div>
       <div className="interactive-grid">
-        {siteData.visualArchive.map((item) => (
+        {data.map((item: any) => (
           <div 
             key={item.id} 
             className={`grid-item grid-item-${item.id}`}
@@ -102,8 +101,8 @@ export default function InteractiveGrid() {
             </div>
             <div className="grid-item-overlay">
               <span className="sub-label" style={{ color: "white", opacity: 0.7 }}>{item.cat}</span>
-              <h4 style={{ fontSize: "1.5rem", marginTop: "0.5rem" }}>
-                <SplitText text={item.title} trigger />
+              <h4 style={{ fontSize: "1.5rem", marginTop: "0.5rem", color: "white" }}>
+                {item.title}
               </h4>
             </div>
           </div>
