@@ -433,6 +433,7 @@ export default function AdminPage() {
                     placeholder="Nome do Grupo (Ex: A Clínica)" 
                     id="bulkCat"
                     defaultValue="Geral"
+                    list="category-suggestions"
                     style={{ width: "200px", padding: "8px", background: "#000", border: "1px solid #333", fontSize: "0.7rem" }}
                   />
                   <input 
