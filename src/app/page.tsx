@@ -8,6 +8,7 @@ import Magnetic from "@/components/Magnetic";
 import HorizontalScroll from "@/components/HorizontalScroll";
 import Marquee from "@/components/Marquee";
 import InteractiveGrid from "@/components/InteractiveGrid";
+import GalleryCarousel from "@/components/GalleryCarousel";
 import TextMaskReveal from "@/components/TextMaskReveal";
 import ContactSection from "@/components/ContactSection";
 import SplitText from "@/components/SplitText";
@@ -223,6 +224,8 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      <GalleryCarousel data={siteData.visualArchive.filter((img: any) => img.cat.toUpperCase() === "A CLÍNICA" || img.cat.toUpperCase() === "CLÍNICA")} />
 
       <InteractiveGrid data={siteData.visualArchive} />
 
