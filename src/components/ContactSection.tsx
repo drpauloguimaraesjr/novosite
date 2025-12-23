@@ -2,10 +2,11 @@
 
 import Magnetic from "./Magnetic";
 import LiveClock from "./LiveClock";
-import siteData from "@/data/content.json";
+import { useContent } from "@/hooks/useContent";
 
 export default function ContactSection() {
-  const { contact } = siteData;
+  const siteData = useContent();
+  const contact = siteData.contact;
 
   return (
     <section className="contact-section">

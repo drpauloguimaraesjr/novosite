@@ -153,17 +153,19 @@ h1 {
 }
 .project-item:last-child { border-bottom: 1px solid var(--grid-color); }
 
-.project-item .id { font-size: 0.8rem; opacity: 0.4; }
+.project-item .id { font-size: 0.7rem; opacity: 0.3; font-weight: 700; }
 .project-item .title { 
-  font-size: 3.5rem; 
+  font-size: clamp(2rem, 7vw, 6.5rem); 
   font-weight: 400; 
-  letter-spacing: -0.02em;
+  letter-spacing: -0.03em;
+  line-height: 0.9;
 }
 .project-item .category { 
-  font-size: 0.8rem; 
+  font-size: 0.75rem; 
   text-transform: uppercase; 
-  opacity: 0.5;
+  opacity: 0.4;
   text-align: right;
+  font-weight: 700;
 }
 
 /* Floating Image Preview */

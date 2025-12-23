@@ -6,19 +6,19 @@ import { getSiteContent } from "@/lib/siteService";
 
 export function useContent() {
   const [data, setData] = useState(localData);
+  const [isLive, setIsLive] = useState(false);
 
   useEffect(() => {
     async function loadData() {
       try {
         const freshData = await getSiteContent();
-        // Robust check: Ensure we actually got a valid site configuration
+        // Only update if we have a valid hero and it's different from local
         if (freshData && freshData.hero && freshData.hero.title) {
           setData(freshData as any);
-        } else {
-          console.log("Firebase data missing key properties, staying with local data.");
+          setIsLive(true);
         }
       } catch (err) {
-        console.error("useContent hook error:", err);
+        console.warn("useContent: Using high-fidelity local fallback.", err);
       }
     }
     loadData();

@@ -121,7 +121,7 @@ export default function Home() {
       </div>
 
       {/* Hero Section */}
-      <section style={{ height: "100vh", display: "flex", flexDirection: "column", justifyContent: "center", padding: "0 40px", position: "relative" }}>
+      <section style={{ minHeight: "100vh", display: "flex", flexDirection: "column", justifyContent: "center", padding: "0 40px", position: "relative" }}>
         <div style={{ marginBottom: "2rem" }} data-speed="0.8">
           <span className="sub-label">[ {siteData.hero.sublabel} ]</span>
         </div>
@@ -131,7 +131,7 @@ export default function Home() {
             <div key={i} style={{ overflow: "hidden", display: "block" }}>
               <SplitText 
                 text={line} 
-                delay={0.8 + (i * 0.2)} 
+                delay={1.5 + (i * 0.2)} 
                 interactive={true} 
                 className="title-line-inner"
               />
@@ -160,10 +160,15 @@ export default function Home() {
         </div>
         
         {siteData.projects.map((project: any, idx: number) => (
-          <div key={project.id} className="project-item">
+          <Link 
+            href={`/project/${project.title.toLowerCase().replace(/ /g, "-")}`} 
+            key={project.id} 
+            className="project-item"
+            data-cursor-text="VIEW"
+          >
             <span className="id">[{String(idx + 1).padStart(3, '0')}]</span>
             <div className="title">
-              {project.title}
+              <SplitText text={project.title} trigger delay={0.1} />
             </div>
             <div className="category">{project.category}</div>
             
@@ -174,7 +179,7 @@ export default function Home() {
                 backgroundPosition: project.settings.objectPosition || "center"
               }} 
             />
-          </div>
+          </Link>
         ))}
       </section>
 

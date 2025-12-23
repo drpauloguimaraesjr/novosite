@@ -78,19 +78,19 @@ export default function Preloader() {
       <svg style={{ position: "absolute", top: 0, width: "100%", height: "100%" }}>
         <path 
           ref={pathRef} 
-          fill="#000" 
+          fill="#F8F6F2" 
           d={getPath()}
         />
       </svg>
 
-      <div className="preloader-content" style={{ position: "relative", zIndex: 1, color: "#f8f6f2", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", height: "100%" }}>
+      <div className="preloader-content" style={{ position: "relative", zIndex: 1, color: "#000", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", height: "100%" }}>
         <div style={{ position: "relative", overflow: "hidden" }}>
-          <h2 style={{ fontSize: "1.5rem", letterSpacing: "0.2em", margin: 0 }}>ES_STUDIO</h2>
+          <h2 style={{ fontSize: "1.2rem", letterSpacing: "0.4em", fontWeight: 400, margin: 0 }}>DR. PAULO GUIMARÃES JR.</h2>
         </div>
-        <div style={{ marginTop: "2rem", width: "200px", height: "1px", backgroundColor: "rgba(248, 246, 242, 0.2)" }}>
-          <div style={{ width: `${percentage}%`, height: "100%", backgroundColor: "#f8f6f2", transition: "width 0.1s linear" }} />
+        <div style={{ marginTop: "2rem", width: "160px", height: "1px", backgroundColor: "rgba(0, 0, 0, 0.1)" }}>
+          <div style={{ width: `${percentage}%`, height: "100%", backgroundColor: "#000", transition: "width 0.1s linear" }} />
         </div>
-        <div style={{ marginTop: "1rem", fontSize: "0.75rem", opacity: 0.5 }}>{percentage}%</div>
+        <div style={{ marginTop: "1rem", fontSize: "0.7rem", opacity: 0.4, letterSpacing: "0.1em" }}>LOADING EXPERIENCE</div>
       </div>
     </div>
   );
