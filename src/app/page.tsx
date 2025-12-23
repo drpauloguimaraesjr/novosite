@@ -225,7 +225,10 @@ export default function Home() {
         </div>
       </section>
 
-      <GalleryCarousel data={siteData.visualArchive.filter((img: any) => img.cat.toUpperCase() === "A CLÍNICA" || img.cat.toUpperCase() === "CLÍNICA")} />
+      <GalleryCarousel data={siteData.visualArchive.filter((img: any) => {
+        const cat = (img.cat || "").toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+        return cat === "A CLINICA" || cat === "CLINICA" || cat === "AMBIENTE";
+      })} />
 
       <InteractiveGrid data={siteData.visualArchive} />
 
