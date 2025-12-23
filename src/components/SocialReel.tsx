@@ -14,17 +14,20 @@ export default function SocialReel() {
     gsap.registerPlugin(ScrollTrigger);
 
     const ctx = gsap.context(() => {
-      gsap.from(".reel-card", {
-        y: 100,
-        opacity: 0,
-        stagger: 0.1,
-        duration: 1.2,
-        ease: "power4.out",
-        scrollTrigger: {
-          trigger: containerRef.current,
-          start: "top 80%",
-        }
-      });
+      const cards = document.querySelectorAll(".reel-card");
+      if (cards.length > 0) {
+        gsap.from(".reel-card", {
+          y: 100,
+          opacity: 0,
+          stagger: 0.1,
+          duration: 1.2,
+          ease: "power4.out",
+          scrollTrigger: {
+            trigger: containerRef.current,
+            start: "top 80%",
+          }
+        });
+      }
     }, containerRef);
 
     return () => ctx.revert();
