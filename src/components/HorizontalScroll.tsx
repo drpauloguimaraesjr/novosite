@@ -73,8 +73,8 @@ export default function HorizontalScroll({ data }: { data: any[] }) {
       <div className="sticky-container">
         <div style={{ position: "absolute", top: "120px", left: "40px", right: "40px", display: "flex", justifyContent: "space-between", alignItems: "flex-end", zIndex: 10 }}>
           <div>
-            <span className="sub-label" style={{ opacity: 0.6 }}>[ PLAYGROUND & EXPERIMENTS ]</span>
-            <h2 style={{ fontSize: "5rem", marginTop: "1rem" }}>Instituto Lab</h2>
+            <span className="sub-label" style={{ opacity: 0.6 }}>[ EXPERIÊNCIA ]</span>
+            <h2 style={{ fontSize: "5rem", marginTop: "1rem" }}>Instituto</h2>
           </div>
           <div style={{ width: "200px", height: "2px", backgroundColor: "rgba(255,255,255,0.1)", position: "relative" }}>
             <div 
