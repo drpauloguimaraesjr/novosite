@@ -21,6 +21,7 @@ interface ContentData {
   playground: any[];
   socialReels: any[];
   contact: any;
+  categories?: string[];
 }
 
 export default function AdminPage() {
@@ -254,9 +255,28 @@ export default function AdminPage() {
         caption: "Legenda do Reel"
       };
       newData.socialReels.push(newItem);
+    } else if (section === "categories") {
+      if (!newData.categories) newData.categories = [];
+      newData.categories.push("Nova Categoria");
     }
     
     setData(newData);
+  };
+
+  const removeCategory = (index: number) => {
+    const newData = { ...data };
+    if (newData.categories) {
+      newData.categories.splice(index, 1);
+      setData(newData);
+    }
+  };
+
+  const updateCategory = (index: number, value: string) => {
+    const newData = { ...data };
+    if (newData.categories) {
+      newData.categories[index] = value;
+      setData(newData);
+    }
   };
 
   const removeItem = (section: string, index: number) => {
@@ -318,7 +338,7 @@ export default function AdminPage() {
           <button onClick={handleLogout} style={{ background: "none", border: "none", color: "rgba(255,255,255,0.4)", fontSize: "0.6rem", cursor: "pointer" }}>[ LOGOUT ]</button>
         </div>
         <div className={styles.nav}>
-          {["hero", "navigation", "about", "projects", "visualArchive", "socialReels", "contact"].map((tab) => (
+          {["hero", "navigation", "about", "projects", "visualArchive", "categories", "socialReels", "contact"].map((tab) => (
             <button
               key={tab}
               className={`${styles.navLink} ${activeTab === tab ? styles.navLinkActive : ""}`}
@@ -337,7 +357,7 @@ export default function AdminPage() {
         <div className={styles.card}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "3rem" }}>
             <h3>{activeTab.toUpperCase()} SETTINGS</h3>
-            {["projects", "visualArchive", "navigation", "socialReels"].includes(activeTab) && (
+            {["projects", "visualArchive", "navigation", "socialReels", "categories"].includes(activeTab) && (
               <button 
                 className={styles.saveButton} 
                 style={{ width: "auto", padding: "10px 20px", fontSize: "0.6rem" }}
@@ -428,20 +448,21 @@ export default function AdminPage() {
               <div className={styles.bulkUploadArea} style={{ marginBottom: "2rem", padding: "30px", border: "2px dashed #333", borderRadius: "8px", textAlign: "center", background: "rgba(255,255,255,0.02)" }}>
                 <h4 style={{ fontSize: "0.8rem", marginBottom: "1.5rem", letterSpacing: "0.2em" }}>UPLOAD EM MASSA + GRUPO ATRIBUÍDO</h4>
                 <div style={{ display: "flex", gap: "20px", justifyContent: "center", alignItems: "center", marginBottom: "1.5rem" }}>
-                  <input 
-                    type="text" 
-                    placeholder="Nome do Grupo (Ex: A Clínica)" 
+                  <select
                     id="bulkCat"
-                    defaultValue="Geral"
-                    list="category-suggestions"
-                    style={{ width: "200px", padding: "8px", background: "#000", border: "1px solid #333", fontSize: "0.7rem" }}
-                  />
+                    defaultValue={data.categories?.[0] || "Geral"}
+                    style={{ width: "200px", padding: "8px", background: "#000", border: "1px solid #333", fontSize: "0.7rem", color: "#fff" }}
+                  >
+                    {(data.categories || ["Geral"]).map((cat, idx) => (
+                      <option key={idx} value={cat}>{cat}</option>
+                    ))}
+                  </select>
                   <input 
                     type="file" 
                     multiple 
                     accept="image/*" 
                     onChange={(e) => {
-                      const cat = (document.getElementById('bulkCat') as HTMLInputElement).value || "Geral";
+                      const cat = (document.getElementById('bulkCat') as HTMLSelectElement).value;
                       // Modify handleBulkUpload to accept cat
                       handleBulkUpload(e, cat);
                     }}
@@ -475,11 +496,7 @@ export default function AdminPage() {
                 ))}
               </div>
 
-              <datalist id="category-suggestions">
-                {Array.from(new Set(data.visualArchive.map(i => i.cat))).map(cat => (
-                  <option key={cat} value={cat} />
-                ))}
-              </datalist>
+
 
               <Reorder.Group axis="y" values={data.visualArchive} onReorder={(newItems) => setReorderedItems("visualArchive", newItems)}>
                 {data.visualArchive.map((item, i) => (
@@ -523,12 +540,15 @@ export default function AdminPage() {
                         </div>
                         <div className={styles.formGroup}>
                           <label>Category (Group)</label>
-                          <input 
+                          <select 
                             value={item.cat} 
-                            placeholder="Ex: A Clínica"
-                            list="category-suggestions"
-                            onChange={(e) => handleChange("visualArchive", "cat", e.target.value, i)} 
-                          />
+                            onChange={(e) => handleChange("visualArchive", "cat", e.target.value, i)}
+                            style={{ width: "100%", padding: "8px", background: "#111", border: "1px solid #333", color: "#fff", fontSize: "0.75rem", borderRadius: "4px" }}
+                          >
+                             {(data.categories || ["Geral", item.cat]).map((cat, idx) => (
+                                <option key={idx} value={cat}>{cat}</option>
+                             ))}
+                          </select>
                         </div>
                       </div>
                       <div className={styles.formGroup} style={{ marginTop: "1rem" }}>
@@ -584,6 +604,33 @@ export default function AdminPage() {
                 <label>Phone</label>
                 <input value={data.contact.phone} onChange={(e) => handleChange("contact", "phone", e.target.value)} />
               </div>
+            </div>
+          )}
+
+          {activeTab === "categories" && (
+            <div className={styles.sectionGrid}>
+              <div style={{gridColumn: "1 / -1", marginBottom: "1rem", fontSize: "0.8rem", color: "rgba(255,255,255,0.5)"}}>
+                GERENCIAR CATEGORIAS DISPONÍVEIS PARA UPLOAD
+              </div>
+              {(data.categories || []).map((cat, i) => (
+                <div key={i} className={styles.itemCard}>
+                  <div className={styles.formRow}>
+                    <div className={styles.formGroup} style={{flex: 1}}>
+                      <input 
+                        value={cat} 
+                        onChange={(e) => updateCategory(i, e.target.value)} 
+                        placeholder="Nome da Categoria"
+                      />
+                    </div>
+                    <button 
+                      onClick={() => removeCategory(i)} 
+                      style={{ color: "#ff4444", fontSize: "0.7rem", background: "none", border: "none", cursor: "pointer", padding: "0 10px" }}
+                    >
+                      [ REMOVER ]
+                    </button>
+                  </div>
+                </div>
+              ))}
             </div>
           )}
         </div>
