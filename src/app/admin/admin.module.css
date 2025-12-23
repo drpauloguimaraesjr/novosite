@@ -176,3 +176,22 @@
   from { transform: translateY(100%); opacity: 0; }
   to { transform: translateY(0); opacity: 1; }
 }
+
+.itemRef {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.bulkUploadArea {
+  transition: all 0.3s ease;
+}
+
+.bulkUploadArea:hover {
+  border-color: #fff !important;
+  background: rgba(255,255,255,0.02);
+}
+
+.bulkUploadArea input[type="file"] {
+  cursor: pointer;
+}

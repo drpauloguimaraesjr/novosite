@@ -1,12 +1,13 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import siteData from "@/data/content.json";
 import styles from "./admin.module.css";
 import { auth, storage } from "@/lib/firebase";
 import { onAuthStateChanged, signInWithEmailAndPassword, signOut, User } from "firebase/auth";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { getSiteContent } from "@/lib/siteService";
+import { Reorder, motion, AnimatePresence } from "framer-motion";
 
 interface ContentData {
   hero: any;
@@ -82,16 +83,39 @@ export default function AdminPage() {
     setUploading(null);
   };
 
-  const moveItem = (section: string, index: number, direction: 'up' | 'down') => {
-    const newData = { ...data };
-    const items = [...(newData[section as keyof ContentData] as any[])];
-    const newIndex = direction === 'up' ? index - 1 : index + 1;
+  const handleBulkUpload = async (e: React.ChangeEvent<HTMLInputElement>, category: string = "Geral") => {
+    if (!e.target.files?.length) return;
+    const files = Array.from(e.target.files);
+    setUploading("bulk");
     
-    if (newIndex >= 0 && newIndex < items.length) {
-      [items[index], items[newIndex]] = [items[newIndex], items[index]];
-      (newData[section as keyof ContentData] as any[]) = items;
-      setData(newData);
+    const newData = { ...data };
+    
+    for (const file of files) {
+      try {
+        const storageRef = ref(storage, `site-images/${Date.now()}-${file.name}`);
+        await uploadBytes(storageRef, file);
+        const url = await getDownloadURL(storageRef);
+        
+        const newItem = {
+          id: Date.now() + Math.random(),
+          title: file.name.split('.')[0],
+          cat: category,
+          img: url,
+          settings: { speed: 1.1, position: "center", size: "medium" }
+        };
+        newData.visualArchive.push(newItem);
+      } catch (err) {
+        console.error("Bulk upload failed for " + file.name, err);
+      }
     }
+    
+    setData(newData);
+    setUploading(null);
+  };
+
+  const setReorderedItems = (section: string, newItems: any[]) => {
+    const newData = { ...data, [section]: newItems };
+    setData(newData);
   };
 
   const handleChange = (section: string, field: string, value: any, index?: number, subfield?: string) => {
@@ -263,92 +287,147 @@ export default function AdminPage() {
 
           {activeTab === "projects" && (
             <div className={styles.itemsList}>
-              {data.projects.map((item, i) => (
-                <div key={i} className={styles.itemCard}>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
-                    <div style={{ display: "flex", gap: "10px" }}>
-                      <button onClick={() => moveItem("projects", i, 'up')} disabled={i === 0}>↑</button>
-                      <button onClick={() => moveItem("projects", i, 'down')} disabled={i === data.projects.length - 1}>↓</button>
-                      <h4 style={{ fontSize: "0.9rem" }}>ORDEM: {i + 1}</h4>
-                    </div>
-                    <button onClick={() => removeItem("projects", i)} style={{ color: "#ff4444", fontSize: "0.7rem" }}>[ REMOVE ]</button>
-                  </div>
-                  <div className={styles.formRow}>
-                    <div className={styles.formGroup}>
-                      <label>Image</label>
-                      <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
-                        <img src={item.image} style={{ width: "60px", height: "40px", objectFit: "cover", borderRadius: "2px" }} />
-                        <input 
-                          type="file" 
-                          accept="image/*" 
-                          style={{ fontSize: "0.7rem" }}
-                          onChange={(e) => e.target.files?.[0] && handleUpload("projects", i, "image", e.target.files[0])}
-                        />
-                        {uploading === `projects-${i}-image` && <span>Uploading...</span>}
+              <Reorder.Group axis="y" values={data.projects} onReorder={(newItems) => setReorderedItems("projects", newItems)}>
+                {data.projects.map((item, i) => (
+                  <Reorder.Item key={item.id} value={item} className={styles.itemRef}>
+                    <div className={styles.itemCard} style={{ cursor: "grab" }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
+                        <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+                          <div style={{ background: "#333", padding: "4px 8px", borderRadius: "4px", fontSize: "0.6rem" }}>⠿ DRAG TO REORDER</div>
+                          <h4 style={{ fontSize: "0.9rem" }}>PROJECT: {i + 1}</h4>
+                        </div>
+                        <button onClick={() => removeItem("projects", i)} style={{ color: "#ff4444", fontSize: "0.7rem", background: "none", border: "none", cursor: "pointer" }}>[ REMOVE ]</button>
+                      </div>
+                      <div className={styles.formRow}>
+                        <div className={styles.formGroup}>
+                          <label>Image</label>
+                          <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+                            <img src={item.image} style={{ width: "60px", height: "40px", objectFit: "cover", borderRadius: "2px" }} />
+                            <input 
+                              type="file" 
+                              accept="image/*" 
+                              style={{ fontSize: "0.7rem" }}
+                              onChange={(e) => e.target.files?.[0] && handleUpload("projects", i, "image", e.target.files[0])}
+                            />
+                            {uploading === `projects-${i}-image` && <span>Uploading...</span>}
+                          </div>
+                        </div>
+                        <div className={styles.formGroup}>
+                          <label>Title</label>
+                          <input value={item.title} onChange={(e) => handleChange("projects", "title", e.target.value, i)} />
+                        </div>
+                        <div className={styles.formGroup}>
+                          <label>Category</label>
+                          <input value={item.category} onChange={(e) => handleChange("projects", "category", e.target.value, i)} />
+                        </div>
                       </div>
                     </div>
-                    <div className={styles.formGroup}>
-                      <label>Title</label>
-                      <input value={item.title} onChange={(e) => handleChange("projects", "title", e.target.value, i)} />
-                    </div>
-                    <div className={styles.formGroup}>
-                      <label>Category</label>
-                      <input value={item.category} onChange={(e) => handleChange("projects", "category", e.target.value, i)} />
-                    </div>
-                  </div>
-                </div>
-              ))}
+                  </Reorder.Item>
+                ))}
+              </Reorder.Group>
             </div>
           )}
 
           {activeTab === "visualArchive" && (
             <div className={styles.itemsList}>
-              {data.visualArchive.map((item, i) => (
-                <div key={i} className={styles.itemCard}>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
-                    <div style={{ display: "flex", gap: "10px" }}>
-                      <button onClick={() => moveItem("visualArchive", i, 'up')} disabled={i === 0}>↑</button>
-                      <button onClick={() => moveItem("visualArchive", i, 'down')} disabled={i === data.visualArchive.length - 1}>↓</button>
-                      <h4 style={{ fontSize: "0.9rem" }}>ORDEM: {i + 1}</h4>
-                    </div>
-                    <button onClick={() => removeItem("visualArchive", i)} style={{ color: "#ff4444", fontSize: "0.7rem" }}>[ REMOVE ]</button>
-                  </div>
-                  <div className={styles.formRow}>
-                    <div className={styles.formGroup}>
-                      <label>Gallery Image</label>
-                      <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
-                        <img src={item.img} style={{ width: "60px", height: "60px", objectFit: "cover", borderRadius: "4px" }} />
-                        <input 
-                          type="file" 
-                          accept="image/*"
-                          style={{ fontSize: "0.7rem" }}
-                          onChange={(e) => e.target.files?.[0] && handleUpload("visualArchive", i, "img", e.target.files[0])}
-                        />
-                        {uploading === `visualArchive-${i}-img` && <span>...</span>}
+              <div className={styles.bulkUploadArea} style={{ marginBottom: "2rem", padding: "30px", border: "2px dashed #333", borderRadius: "8px", textAlign: "center", background: "rgba(255,255,255,0.02)" }}>
+                <h4 style={{ fontSize: "0.8rem", marginBottom: "1.5rem", letterSpacing: "0.2em" }}>UPLOAD EM MASSA + GRUPO ATRIBUÍDO</h4>
+                <div style={{ display: "flex", gap: "20px", justifyContent: "center", alignItems: "center", marginBottom: "1.5rem" }}>
+                  <input 
+                    type="text" 
+                    placeholder="Nome do Grupo (Ex: A Clínica)" 
+                    id="bulkCat"
+                    defaultValue="Geral"
+                    style={{ width: "200px", padding: "8px", background: "#000", border: "1px solid #333", fontSize: "0.7rem" }}
+                  />
+                  <input 
+                    type="file" 
+                    multiple 
+                    accept="image/*" 
+                    onChange={(e) => {
+                      const cat = (document.getElementById('bulkCat') as HTMLInputElement).value || "Geral";
+                      // Modify handleBulkUpload to accept cat
+                      handleBulkUpload(e, cat);
+                    }}
+                    disabled={uploading === "bulk"}
+                  />
+                </div>
+                {uploading === "bulk" && <p style={{ color: "var(--accent-blue)", fontSize: "0.7rem" }}>FARMANDO IMAGENS... POR FAVOR AGUARDE.</p>}
+              </div>
+
+              <div style={{ display: "flex", gap: "10px", marginBottom: "2rem", flexWrap: "wrap", borderBottom: "1px solid #111", paddingBottom: "1.5rem" }}>
+                <span style={{ fontSize: "0.6rem", opacity: 0.4, width: "100%" }}>FILTRAR ADMIN POR GRUPO:</span>
+                {["TODOS", ...Array.from(new Set(data.visualArchive.map(i => i.cat)))].map(cat => (
+                  <button 
+                    key={cat} 
+                    onClick={() => (window as any).adminFilter = cat === "TODOS" ? null : cat}
+                    style={{ background: "#111", border: "none", color: "#fff", fontSize: "0.6rem", padding: "5px 12px", borderRadius: "20px", cursor: "pointer" }}
+                  >
+                    {cat}
+                  </button>
+                ))}
+              </div>
+
+              <datalist id="category-suggestions">
+                {Array.from(new Set(data.visualArchive.map(i => i.cat))).map(cat => (
+                  <option key={cat} value={cat} />
+                ))}
+              </datalist>
+
+              <Reorder.Group axis="y" values={data.visualArchive} onReorder={(newItems) => setReorderedItems("visualArchive", newItems)}>
+                {data.visualArchive.map((item, i) => (
+                  <Reorder.Item key={item.id} value={item} className={styles.itemRef}>
+                    <div className={styles.itemCard} style={{ cursor: "grab" }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
+                        <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+                          <div style={{ background: "#333", padding: "4px 8px", borderRadius: "4px", fontSize: "0.6rem" }}>⠿ DRAG</div>
+                          <h4 style={{ fontSize: "0.9rem" }}>ARCHIVE: {i + 1}</h4>
+                        </div>
+                        <button onClick={() => removeItem("visualArchive", i)} style={{ color: "#ff4444", fontSize: "0.7rem", background: "none", border: "none", cursor: "pointer" }}>[ REMOVE ]</button>
+                      </div>
+                      <div className={styles.formRow}>
+                        <div className={styles.formGroup}>
+                          <label>Gallery Image</label>
+                          <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+                            <img src={item.img} style={{ width: "60px", height: "60px", objectFit: "cover", borderRadius: "4px" }} />
+                            <input 
+                              type="file" 
+                              accept="image/*"
+                              style={{ fontSize: "0.7rem" }}
+                              onChange={(e) => e.target.files?.[0] && handleUpload("visualArchive", i, "img", e.target.files[0])}
+                            />
+                            {uploading === `visualArchive-${i}-img` && <span>...</span>}
+                          </div>
+                        </div>
+                        <div className={styles.formGroup}>
+                          <label>Size</label>
+                          <select value={item.settings.size || "medium"} onChange={(e) => handleChange("visualArchive", "settings", e.target.value, i, "size")}>
+                            <option value="small">Pequeña (Span 4)</option>
+                            <option value="medium">Media (Span 6)</option>
+                            <option value="large">Grande (Span 8)</option>
+                            <option value="full">Total (Span 12)</option>
+                          </select>
+                        </div>
+                      </div>
+                      <div className={styles.formRow}>
+                        <div className={styles.formGroup}>
+                          <label>Title</label>
+                          <input value={item.title} onChange={(e) => handleChange("visualArchive", "title", e.target.value, i)} />
+                        </div>
+                        <div className={styles.formGroup}>
+                          <label>Category (Group)</label>
+                          <input 
+                            value={item.cat} 
+                            placeholder="Ex: A Clínica"
+                            list="category-suggestions"
+                            onChange={(e) => handleChange("visualArchive", "cat", e.target.value, i)} 
+                          />
+                        </div>
                       </div>
                     </div>
-                    <div className={styles.formGroup}>
-                      <label>Size</label>
-                      <select value={item.settings.size || "medium"} onChange={(e) => handleChange("visualArchive", "settings", e.target.value, i, "size")}>
-                        <option value="small">Pequeña (Span 4)</option>
-                        <option value="medium">Media (Span 6)</option>
-                        <option value="large">Grande (Span 8)</option>
-                        <option value="full">Total (Span 12)</option>
-                      </select>
-                    </div>
-                  </div>
-                  <div className={styles.formRow}>
-                    <div className={styles.formGroup}>
-                      <label>Title</label>
-                      <input value={item.title} onChange={(e) => handleChange("visualArchive", "title", e.target.value, i)} />
-                    </div>
-                    <div className={styles.formGroup}>
-                      <label>Category</label>
-                      <input value={item.cat} onChange={(e) => handleChange("visualArchive", "cat", e.target.value, i)} />
-                    </div>
-                  </div>
-                </div>
-              ))}
+                  </Reorder.Item>
+                ))}
+              </Reorder.Group>
             </div>
           )}
 
