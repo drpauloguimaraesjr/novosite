@@ -81,30 +81,31 @@ body.dark-theme {
 }
 .custom-cursor.active .custom-cursor-text { opacity: 1; font-size: 3px; }
 
-/* Typography - THE SANCHEZ SCALE */
+/* Typography - THE SANCHEZ SCALE (Refined) */
 h1 {
-  font-size: clamp(5rem, 16vw, 18rem);
-  font-weight: 400;
-  text-transform: none; /* Sanchez uses mixed case often */
-  line-height: 0.8;
-  letter-spacing: -0.04em;
+  font-size: clamp(4rem, 13vw, 12rem); /* Reduced from 18rem to match reference */
+  font-weight: 500;
+  text-transform: none;
+  line-height: 0.95;
+  letter-spacing: -0.05em;
   margin-left: -0.05em;
+  margin-bottom: 2rem;
 }
 
 .sub-label {
-  font-size: 0.75rem;
-  font-weight: 500;
-  letter-spacing: 0.05em;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.15em;
   text-transform: uppercase;
-  opacity: 0.6;
+  opacity: 0.5;
 }
 
 .hero-desc {
-  font-size: 1.4rem;
-  line-height: 1.4;
+  font-size: 1.1rem;
+  line-height: 1.5;
   font-weight: 400;
-  max-width: 400px;
-  opacity: 0.8;
+  max-width: 380px;
+  opacity: 0.6;
 }
 
 /* Navigation - Floating minimalist */
@@ -153,19 +154,20 @@ h1 {
 }
 .project-item:last-child { border-bottom: 1px solid var(--grid-color); }
 
-.project-item .id { font-size: 0.7rem; opacity: 0.3; font-weight: 700; }
+.project-item .id { font-size: 0.6rem; opacity: 0.4; font-weight: 600; font-family: monospace; }
 .project-item .title { 
-  font-size: clamp(2rem, 7vw, 6.5rem); 
-  font-weight: 400; 
-  letter-spacing: -0.03em;
-  line-height: 0.9;
+  font-size: clamp(2rem, 6vw, 5rem); 
+  font-weight: 500; 
+  letter-spacing: -0.04em;
+  line-height: 1;
 }
 .project-item .category { 
-  font-size: 0.75rem; 
+  font-size: 0.65rem; 
   text-transform: uppercase; 
   opacity: 0.4;
   text-align: right;
-  font-weight: 700;
+  font-weight: 600;
+  letter-spacing: 0.05em;
 }
 
 /* Floating Image Preview */
@@ -193,10 +195,11 @@ h1 {
   z-index: 2;
 }
 .about-description {
-  font-size: 3.2rem;
-  line-height: 1.1;
-  letter-spacing: -0.02em;
-  max-width: 85vw;
+  font-size: 2.4rem; /* Reduced from 3.2rem */
+  line-height: 1.25;
+  letter-spacing: -0.03em;
+  max-width: 80vw;
+  font-weight: 400;
 }
 
 /* Playground / Visual Archive Grid */
