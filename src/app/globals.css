@@ -8,7 +8,7 @@
 }
 
 /* Base resets */
-* { margin: 0; padding: 0; box-sizing: border-box; cursor: none; }
+* { margin: 0; padding: 0; box-sizing: border-box; cursor: none !important; }
 
 html, body {
   background-color: var(--bg-color);
@@ -17,6 +17,7 @@ html, body {
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   line-height: 1.1;
+  cursor: none !important;
 }
 
 body { transition: background-color 1.2s var(--ease-expo), color 1.2s var(--ease-expo); }
