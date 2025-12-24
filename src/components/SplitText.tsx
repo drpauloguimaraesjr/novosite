@@ -106,12 +106,12 @@ export default function SplitText({ text, className, trigger, delay = 0, interac
           }
           
           // Filtrar apenas letras visíveis deste SplitText
-          const letters = split.chars.filter((letter: HTMLElement) => {
+          const letters: HTMLElement[] = split.chars.filter((letter: HTMLElement) => {
             // Filtrar apenas letras visíveis (não espaços ou caracteres invisíveis)
             const text = letter.textContent?.trim() || '';
             const rect = letter.getBoundingClientRect();
             return text.length > 0 && rect.width > 0 && rect.height > 0;
-          });
+          }) as HTMLElement[];
           
           if (letters.length === 0) {
             console.warn('[SplitText] No visible letters found');
