@@ -242,20 +242,6 @@
       "caption": "Bastidores do Instituto Médico."
     }
   ],
-  "playground": [
-    { 
-      "title": "Bioimpedância", 
-      "desc": "Análise profunda de composição corporal para diagnósticos precisos.", 
-      "img": "/images/clinic/0Y7A0250.jpg",
-      "settings": { "skew": true }
-    },
-    { 
-      "title": "Performance Lab", 
-      "desc": "Equipamentos de ponta para avaliação metabólica e física.", 
-      "img": "/images/clinic/0Y7A0421.jpg",
-      "settings": { "skew": true }
-    }
-  ],
   "contact": {
     "label": "AGENDE SUA CONSULTA",
     "title": "CUIDE DE\nVOCÊ.",
@@ -277,5 +263,56 @@
     "Instituto",
     "Propósito",
     "Geral"
+  ],
+  "playground": [
+    {
+      "id": "001",
+      "number": "001",
+      "title": "Instituto Médico",
+      "description": "Espaços projetados para oferecer o melhor em medicina integrativa e cuidado personalizado.",
+      "images": [
+        "/images/clinic/0Y7A0247.jpg",
+        "/images/clinic/0Y7A0248.jpg",
+        "/images/clinic/0Y7A0269.jpg",
+        "/images/clinic/0Y7A0271.jpg"
+      ],
+      "category": "A Clínica"
+    },
+    {
+      "id": "002",
+      "number": "002",
+      "title": "Equipamentos de Diagnóstico",
+      "description": "Tecnologia de ponta para análises precisas e diagnósticos avançados.",
+      "images": [
+        "/images/clinic/0Y7A0250.jpg",
+        "/images/clinic/0Y7A0287.jpg"
+      ],
+      "category": "Tecnologia"
+    },
+    {
+      "id": "003",
+      "number": "003",
+      "title": "Ambientes de Cuidado",
+      "description": "Espaços que transmitem tranquilidade e conforto para nossos pacientes.",
+      "images": [
+        "/images/clinic/0Y7A0280.jpg",
+        "/images/clinic/0Y7A0288.jpg",
+        "/images/clinic/0Y7A0292.jpg"
+      ],
+      "category": "Ambiente"
+    },
+    {
+      "id": "004",
+      "number": "004",
+      "title": "Infraestrutura Premium",
+      "description": "Design contemporâneo aliado à funcionalidade em cada detalhe.",
+      "images": [
+        "/images/clinic/0Y7A0315.jpg",
+        "/images/clinic/0Y7A0326.jpg",
+        "/images/clinic/0Y7A0329.jpg",
+        "/images/clinic/0Y7A0358.jpg"
+      ],
+      "category": "Infraestrutura"
+    }
   ]
 }

@@ -99,17 +99,27 @@ body.dark-theme {
 
 /* Typography - THE SANCHEZ SCALE (Refined) */
 h1 {
-  font-size: clamp(4rem, 13vw, 12rem); /* Reduced from 18rem to match reference */
+  font-size: clamp(3rem, 8vw + 2rem, 8rem); /* Mais responsivo: mínimo 3rem, máximo 8rem */
   font-weight: 500;
   text-transform: none;
   line-height: 0.95;
   letter-spacing: -0.05em;
   margin-left: -0.05em;
   margin-bottom: 2rem;
+  position: relative; /* Garantir posicionamento estável */
+  width: 100%;
+}
+
+/* Estilos para o efeito de lente nas letras */
+.letter {
+  display: inline-block;
+  position: relative;
+  transform-origin: center center;
+  will-change: transform;
 }
 
 .sub-label {
-  font-size: 0.7rem;
+  font-size: clamp(0.6rem, 0.8vw + 0.3rem, 0.85rem); /* Responsivo */
   font-weight: 600;
   letter-spacing: 0.15em;
   text-transform: uppercase;
@@ -117,10 +127,10 @@ h1 {
 }
 
 .hero-desc {
-  font-size: 1.1rem;
+  font-size: clamp(0.9rem, 1.2vw + 0.5rem, 1.3rem); /* Responsivo */
   line-height: 1.5;
   font-weight: 400;
-  max-width: 380px;
+  max-width: clamp(300px, 40vw, 500px); /* Responsivo */
   opacity: 0.6;
 }
 
@@ -152,9 +162,15 @@ h1 {
 .project-list { 
   position: relative; 
   width: 100%; 
-  margin-top: 15vh;
   padding: 0 40px;
   z-index: 2;
+}
+
+/* Horizontal Scroll Section */
+.horizontal-scroll-section {
+  margin-top: 10vh;
+  margin-bottom: 10vh;
+  min-height: 100vh;
 }
 
 .project-item {
@@ -172,7 +188,7 @@ h1 {
 
 .project-item .id { font-size: 0.6rem; opacity: 0.4; font-weight: 600; font-family: monospace; }
 .project-item .title { 
-  font-size: clamp(2rem, 6vw, 5rem); 
+  font-size: clamp(1.8rem, 5vw + 1rem, 4.5rem); /* Mais responsivo */
   font-weight: 500; 
   letter-spacing: -0.04em;
   line-height: 1;
@@ -216,20 +232,26 @@ h1 {
 
 /* About Section */
 .about-section {
-  padding: 25vh 40px;
+  padding: 20vh 40px;
   position: relative;
   z-index: 2;
 }
 .about-description {
-  font-size: 2.4rem; /* Reduced from 3.2rem */
+  font-size: clamp(1.5rem, 4vw + 1rem, 2.8rem); /* Responsivo */
   line-height: 1.25;
   letter-spacing: -0.03em;
-  max-width: 80vw;
+  max-width: clamp(300px, 80vw, 1200px); /* Responsivo */
   font-weight: 400;
 }
 
 /* Playground / Visual Archive Grid */
-.interactive-grid-section { padding: 15vh 40px; z-index: 2; position: relative; }
+.interactive-grid-section { 
+  padding: 20vh 40px; 
+  z-index: 2; 
+  position: relative;
+  margin-top: 10vh;
+  margin-bottom: 10vh;
+}
 .interactive-grid { 
   display: grid; 
   grid-template-columns: repeat(12, 1fr); 
@@ -302,7 +324,7 @@ h1 {
 
 /* Contact */
 .contact-section { 
-  padding: 25vh 40px; 
+  padding: 20vh 40px; 
   background: var(--text-color); 
   color: var(--bg-color); 
   position: relative;
@@ -310,9 +332,11 @@ h1 {
   display: flex;
   flex-direction: column;
   align-items: center;
+  margin-top: 10vh;
+  margin-bottom: 10vh;
 }
 .contact-title { 
-  font-size: clamp(3rem, 12vw, 10rem); 
+  font-size: clamp(2.5rem, 8vw + 2rem, 8rem); /* Mais responsivo */
   line-height: 0.9; 
   margin-bottom: 8vh; 
   letter-spacing: -0.05em;

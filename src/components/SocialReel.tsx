@@ -36,7 +36,7 @@ export default function SocialReel() {
   if (!mounted || !siteData.socialReels) return null;
 
   return (
-    <section ref={containerRef} style={{ padding: "160px 40px", position: "relative" }}>
+    <section ref={containerRef} style={{ padding: "20vh 40px", position: "relative", marginTop: "10vh", marginBottom: "10vh" }}>
       <div style={{ marginBottom: "4rem", display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
         <div>
           <span className="sub-label">[ SOCIAL INSIGHTS ]</span>

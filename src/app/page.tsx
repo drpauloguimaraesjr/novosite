@@ -13,6 +13,11 @@ import TextMaskReveal from "@/components/TextMaskReveal";
 import ContactSection from "@/components/ContactSection";
 import SplitText from "@/components/SplitText";
 import SocialReel from "@/components/SocialReel";
+import TypingAnimation from "@/components/TypingAnimation";
+import FloatingCards from "@/components/FloatingCards";
+import VerticalTimeline from "@/components/VerticalTimeline";
+import Playground from "@/components/Playground";
+import ScrollIndicator from "@/components/ScrollIndicator";
 
 import { useContent } from "@/hooks/useContent";
 
@@ -82,6 +87,22 @@ export default function Home() {
         });
       }
 
+      // Parallax Effect for elements with data-speed attribute
+      const parallaxElements = document.querySelectorAll("[data-speed]");
+      parallaxElements.forEach((element) => {
+        const speed = parseFloat(element.getAttribute("data-speed") || "1");
+        ScrollTrigger.create({
+          trigger: element,
+          start: "top bottom",
+          end: "bottom top",
+          scrub: true,
+          onUpdate: (self) => {
+            const y = (1 - self.progress) * 100 * (speed - 1);
+            gsap.set(element, { y: y });
+          }
+        });
+      });
+
       // Project Preview Follow Mouse with Stacking Lag
       projectItems.forEach((item) => {
         const container = item.querySelector(".project-preview-container");
@@ -135,14 +156,41 @@ export default function Home() {
       </div>
 
       {/* Hero Section */}
-      <section style={{ minHeight: "100vh", display: "flex", flexDirection: "column", justifyContent: "center", padding: "0 40px", position: "relative" }}>
-        <div style={{ marginBottom: "2rem" }} data-speed="0.8">
+      <section style={{ 
+        minHeight: "100vh", 
+        display: "flex", 
+        flexDirection: "column", 
+        justifyContent: "center", 
+        padding: "0 clamp(20px, 4vw, 40px)", 
+        position: "relative",
+        width: "100%",
+        maxWidth: "100vw",
+        overflow: "hidden"
+      }}>
+        <div style={{ marginBottom: "2rem", position: "relative" }} data-speed="0.8">
           <span className="sub-label">[ {siteData.hero.sublabel} ]</span>
         </div>
         
-        <h1 style={{ cursor: "default" }} data-speed={siteData.hero.settings.parallaxSpeed}>
+        <h1 style={{ 
+          cursor: "default",
+          position: "relative",
+          width: "100%",
+          maxWidth: "100%",
+          margin: 0,
+          padding: 0,
+          transform: "translateZ(0)" // Force hardware acceleration
+        }} data-speed={siteData.hero.settings.parallaxSpeed}>
           {titleLines.map((line, i) => (
-            <div key={i} style={{ overflow: "hidden", display: "block" }}>
+            <div 
+              key={i} 
+              style={{ 
+                overflow: "visible", 
+                display: "block",
+                position: "relative",
+                width: "100%",
+                whiteSpace: "nowrap"
+              }}
+            >
               <SplitText 
                 text={line} 
                 delay={1.5 + (i * 0.2)} 
@@ -160,15 +208,12 @@ export default function Home() {
           <div className="sub-label" data-speed="1.1">[ {siteData.hero.edition} ]</div>
         </div>
 
-        {/* Scroll To Explore Indicator */}
-        <div className="scroll-explore">
-          <span className="sub-label">[ SCROLL TO EXPLORE ]</span>
-          <div className="scroll-line" />
-        </div>
+        {/* Scroll To Explore Indicator - Estilo Eva Sanchez */}
+        <ScrollIndicator />
       </section>
 
       {/* Project Index Section */}
-      <section className="project-list">
+      <section className="project-list" style={{ marginTop: "20vh", marginBottom: "20vh" }}>
         <div style={{ marginBottom: "6rem", display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
           <span className="sub-label">[ SELECTED SERVICES ]</span>
           <Magnetic>
@@ -211,7 +256,7 @@ export default function Home() {
       </section>
 
       {/* About Section */}
-      <section className="about-section">
+      <section className="about-section" style={{ marginTop: "20vh", marginBottom: "20vh" }}>
         <div className="sub-label" style={{ color: "rgba(248, 246, 242, 0.5)", marginBottom: "3rem" }}>[ {siteData.about.label} ]</div>
         
         <TextMaskReveal phrase={siteData.about.phrase} />
@@ -227,9 +272,67 @@ export default function Home() {
 
       <GalleryCarousel data={siteData.visualArchive} />
 
+      {/* FloatingCards - Alternativa ao InteractiveGrid */}
+      <FloatingCards 
+        items={siteData.visualArchive.slice(0, 6).map((item: any) => ({
+          id: item.id,
+          title: item.title,
+          category: item.cat,
+          image: item.img,
+          description: item.description || `Explore ${item.title}`
+        }))} 
+        columns={3} 
+      />
+
       <InteractiveGrid data={siteData.visualArchive} />
 
-      <HorizontalScroll data={siteData.playground} />
+      {/* VerticalTimeline - Alternativa ao HorizontalScroll */}
+      <VerticalTimeline 
+        items={siteData.projects.map((project: any, index: number) => ({
+          id: project.id,
+          title: project.title,
+          description: project.category,
+          date: `2025 - ${String(index + 1).padStart(2, '0')}`,
+          image: project.image,
+          category: project.category
+        }))}
+        title="Nossos Serviços"
+      />
+
+      {/* Playground - Estilo Eva Sanchez */}
+      {siteData.playground && Array.isArray(siteData.playground) && siteData.playground.length > 0 && (
+        <Playground 
+          items={siteData.playground.map((item: any, index: number) => {
+            // Verificar se já tem estrutura de playground ou é do formato antigo
+            if (item.images && Array.isArray(item.images)) {
+              return {
+                id: item.id || item.number || `playground-${index}`,
+                number: item.number || String(index + 1).padStart(3, '0'),
+                title: item.title,
+                description: item.description,
+                images: item.images,
+                category: item.category
+              };
+            } else {
+              // Formato antigo - agrupar por categoria ou criar seções
+              return {
+                id: `playground-${index}`,
+                number: String(index + 1).padStart(3, '0'),
+                title: item.title,
+                description: item.desc || item.description,
+                images: [item.img].filter(Boolean),
+                category: item.category || item.cat
+              };
+            }
+          })}
+          title="Playground"
+        />
+      )}
+
+      {/* HorizontalScroll usa dados diferentes - manter compatibilidade */}
+      {siteData.playground && siteData.playground.some((item: any) => item.img) && (
+        <HorizontalScroll data={siteData.playground.filter((item: any) => item.img)} />
+      )}
       <SocialReel />
       <Marquee />
       <ContactSection />
