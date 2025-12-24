@@ -187,8 +187,9 @@ export default function Home() {
         const container = item.querySelector(".project-preview-container");
         const layers = item.querySelectorAll(".project-preview");
         
-        const handleMouseMove = (e: MouseEvent) => {
-          const { clientX, clientY } = e;
+        const handleMouseMove = (e: Event) => {
+          const mouseEvent = e as MouseEvent;
+          const { clientX, clientY } = mouseEvent;
           const rect = item.getBoundingClientRect();
           
           const x = clientX - rect.left;
@@ -217,7 +218,7 @@ export default function Home() {
           });
         };
         
-        item.addEventListener("mousemove", handleMouseMove);
+        (item as HTMLElement).addEventListener("mousemove", handleMouseMove);
         
         // Cleanup será feito pelo ctx.revert()
       });
