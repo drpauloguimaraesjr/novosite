@@ -122,8 +122,9 @@ export default function SplitText({ text, className, trigger, delay = 0, interac
           let closestLetter: HTMLElement | null = null;
           let minDistance = Infinity;
           
-          letters.forEach((letter: HTMLElement) => {
-            const rect = letter.getBoundingClientRect();
+          letters.forEach((letter) => {
+            const letterElement = letter as HTMLElement;
+            const rect = letterElement.getBoundingClientRect();
             
             // Verificar se o cursor está sobre a letra
             const isOverLetter = (
@@ -142,7 +143,7 @@ export default function SplitText({ text, className, trigger, delay = 0, interac
               // Priorizar letras que o cursor está sobrepondo diretamente
               if (distance < minDistance) {
                 minDistance = distance;
-                closestLetter = letter;
+                closestLetter = letterElement;
               }
             } else {
               // Se não está sobre a letra, calcular distância até a borda mais próxima
@@ -153,19 +154,21 @@ export default function SplitText({ text, className, trigger, delay = 0, interac
               // Só considerar se estiver muito próximo (dentro de 50px)
               if (distance < 50 && distance < minDistance) {
                 minDistance = distance;
-                closestLetter = letter;
+                closestLetter = letterElement;
               }
             }
           });
           
           // Aplicar efeito apenas na letra mais próxima DENTRO deste container
           if (closestLetter) {
-            console.log('[SplitText] Closest letter:', closestLetter.textContent, 'distance:', minDistance.toFixed(2));
+            const letterElement = closestLetter as HTMLElement;
+            console.log('[SplitText] Closest letter:', letterElement.textContent, 'distance:', minDistance.toFixed(2));
           }
           
-          letters.forEach((letter: HTMLElement) => {
-            if (letter === closestLetter) {
-              const rect = letter.getBoundingClientRect();
+          letters.forEach((letter) => {
+            const letterElement = letter as HTMLElement;
+            if (letterElement === closestLetter) {
+              const rect = letterElement.getBoundingClientRect();
               const letterCenterX = rect.left + rect.width / 2;
               const letterCenterY = rect.top + rect.height / 2;
               const distanceX = mouseX - letterCenterX;
@@ -183,17 +186,18 @@ export default function SplitText({ text, className, trigger, delay = 0, interac
               const moveX = distanceX * power * 0.3;
               const moveY = distanceY * power * 0.3;
               
-              gsap.to(letter, {
+              gsap.to(letterElement, {
                 scale: scale,
                 x: moveX,
                 y: moveY,
+                opacity: 1, // GARANTIR que a opacidade sempre fique em 1
                 duration: 0.3,
                 ease: "power2.out",
                 overwrite: true
               });
             } else {
               // Retorna ao estado normal para todas as outras letras
-              gsap.to(letter, {
+              gsap.to(letterElement, {
                 scale: 1,
                 x: 0,
                 y: 0,
