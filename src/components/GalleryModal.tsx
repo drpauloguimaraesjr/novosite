@@ -2,7 +2,7 @@
 
 import { Carousel, useCarousel } from "motion-plus/react";
 import { motion, AnimatePresence } from "motion/react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 
 interface GalleryImage {
     id: number;
@@ -21,20 +21,50 @@ interface GalleryModalProps {
 
 
 function MainImage({ image }: { image: GalleryImage }) {
+    console.log('[MainImage] Rendering image:', image?.title, 'src:', image?.img);
+    
+    if (!image || !image.img) {
+        console.warn('[MainImage] Image not found or missing src:', image);
+        return (
+            <div className="main-image-container" style={{ display: "flex", alignItems: "center", justifyContent: "center", color: "white", width: "100%", height: "100%" }}>
+                <p>Imagem não encontrada</p>
+            </div>
+        );
+    }
+
     return (
         <div className="main-image-container">
             <img
                 draggable={false}
                 className="main-photo"
                 src={image.img}
-                alt={image.title}
+                alt={image.title || "Imagem"}
+                onLoad={(e) => {
+                    console.log('[MainImage] Image loaded successfully:', image.img);
+                    const target = e.currentTarget;
+                    const rect = target.getBoundingClientRect();
+                    console.log('[MainImage] Image dimensions after load:', {
+                        width: rect.width,
+                        height: rect.height,
+                        naturalWidth: target.naturalWidth,
+                        naturalHeight: target.naturalHeight,
+                        computedStyle: window.getComputedStyle(target).display
+                    });
+                }}
+                onError={(e) => {
+                    console.error('[MainImage] Image failed to load:', image.img);
+                    const target = e.currentTarget;
+                    target.style.border = "2px solid red";
+                    target.style.padding = "20px";
+                    target.alt = "Erro ao carregar imagem";
+                }}
             />
             <div className="main-image-info">
                 <span className="sub-label" style={{ fontSize: "0.7rem", opacity: 0.7 }}>
-                    {image.cat}
+                    {image.cat || ""}
                 </span>
                 <h3 style={{ fontSize: "clamp(1.5rem, 3vw, 2rem)", marginTop: "1rem", letterSpacing: "-0.02em" }}>
-                    {image.title}
+                    {image.title || ""}
                 </h3>
                 {image.description && (
                     <p style={{ fontSize: "clamp(0.9rem, 1.2vw, 1rem)", opacity: 0.6, marginTop: "1.5rem", lineHeight: "1.6", maxWidth: "500px" }}>
@@ -46,51 +76,70 @@ function MainImage({ image }: { image: GalleryImage }) {
     );
 }
 
-function SidebarNavigation({ onPageChange, initialPage }: { onPageChange: (page: number) => void; initialPage: number }) {
-    const { currentPage, totalPages, nextPage, prevPage, goToPage } = useCarousel();
+function SidebarNavigation({ onPageChange, currentSelectedPage }: { onPageChange: (page: number) => void; currentSelectedPage: number }) {
+    const carouselInfo = useCarousel();
+    const { currentPage, totalPages, nextPage, prevPage } = carouselInfo;
+    const goToPage = (carouselInfo as any).goToPage;
 
-    // Sincronizar com a página inicial quando o componente montar
+    // Sincronizar o carrossel com a página selecionada externamente
     useEffect(() => {
-        if (currentPage !== initialPage) {
-            goToPage(initialPage);
-            onPageChange(initialPage);
+        if (totalPages > 0 && currentSelectedPage >= 0 && currentSelectedPage < totalPages) {
+            const normalizedCarouselPage = currentPage % totalPages;
+            if (normalizedCarouselPage !== currentSelectedPage && goToPage) {
+                try {
+                    (goToPage as any)(currentSelectedPage);
+                } catch (e) {
+                    console.error('[SidebarNavigation] Error calling goToPage:', e);
+                }
+            }
         }
-    }, []); // Apenas na montagem
+    }, [currentSelectedPage, totalPages, currentPage]);
 
     // Notificar quando a página mudar
     useEffect(() => {
-        onPageChange(currentPage);
-    }, [currentPage, onPageChange]);
+        if (totalPages > 0) {
+            // Normalizar o índice para o range válido (0 a totalPages-1)
+            const normalizedPage = currentPage % totalPages;
+            console.log('[SidebarNavigation] Carousel page changed:', currentPage, 'normalized:', normalizedPage, 'calling onPageChange');
+            onPageChange(normalizedPage);
+        }
+    }, [currentPage, totalPages, onPageChange]);
+
 
     return (
         <div className="navigation">
             <motion.button
-                className={`nav-button ${currentPage === 0 ? "disabled" : ""}`}
+                className="nav-button"
                 onClick={prevPage}
-                disabled={currentPage === 0}
-                whileHover={{ scale: currentPage === 0 ? 1 : 1.1 }}
-                whileTap={{ scale: currentPage === 0 ? 1 : 0.9 }}
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
             >
                 <ChevronUpIcon />
             </motion.button>
 
             <div className="dots">
-                {Array.from({ length: totalPages }).map((_, index) => (
-                    <div
-                        key={index}
-                        className={`dot ${index === currentPage ? "active" : ""}`}
-                        onClick={() => goToPage(index)}
-                        style={{ cursor: "pointer" }}
-                    />
-                ))}
+                {Array.from({ length: totalPages }).map((_, index) => {
+                    const normalizedPage = currentPage % totalPages;
+                    return (
+                        <div
+                            key={index}
+                            className={`dot ${index === normalizedPage ? "active" : ""}`}
+                            onClick={() => {
+                                if (goToPage && typeof goToPage === 'function') {
+                                    goToPage(index);
+                                }
+                            }}
+                            style={{ cursor: "pointer" }}
+                        />
+                    );
+                })}
             </div>
 
             <motion.button
-                className={`nav-button ${currentPage === totalPages - 1 ? "disabled" : ""}`}
+                className="nav-button"
                 onClick={nextPage}
-                disabled={currentPage === totalPages - 1}
-                whileHover={{ scale: currentPage === totalPages - 1 ? 1 : 1.1 }}
-                whileTap={{ scale: currentPage === totalPages - 1 ? 1 : 0.9 }}
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
                 style={{ willChange: "transform" }}
             >
                 <ChevronDownIcon />
@@ -99,7 +148,7 @@ function SidebarNavigation({ onPageChange, initialPage }: { onPageChange: (page:
     );
 }
 
-function SidebarPhotoItem({ image, index, isSelected }: { image: GalleryImage; index: number; isSelected: boolean }) {
+function SidebarPhotoItemWrapper({ image, index, isSelected, onPhotoClick }: { image: GalleryImage; index: number; isSelected: boolean; onPhotoClick: (index: number) => void }) {
     return (
         <motion.div
             className={`sidebar-photo-wrapper ${isSelected ? "selected" : ""}`}
@@ -109,38 +158,44 @@ function SidebarPhotoItem({ image, index, isSelected }: { image: GalleryImage; i
                 opacity: isSelected ? 1 : 0.5
             }}
             transition={{ duration: 0.3 }}
+            onClick={() => onPhotoClick(index)}
+            style={{ cursor: "pointer" }}
         >
             <img
                 draggable={false}
                 className="sidebar-photo"
                 src={image.img}
                 alt={image.title}
-                style={{ aspectRatio: "4/3" }}
+                style={{ aspectRatio: "4/3", pointerEvents: "none" }}
             />
         </motion.div>
     );
 }
 
 function SidebarCarousel({ images, onPageChange, initialPage, currentSelectedPage, carouselKey }: { images: GalleryImage[]; onPageChange: (page: number) => void; initialPage: number; currentSelectedPage: number; carouselKey: number }) {
+    // Garantir que initialPage está dentro do range válido
+    const validInitialPage = Math.max(0, Math.min(initialPage, images.length - 1));
+    
     return (
         <Carousel
-            key={`carousel-${carouselKey}-${initialPage}`}
+            key={`carousel-${carouselKey}-${validInitialPage}`}
             className="sidebar-carousel"
             items={images.map((image, index) => (
-                <SidebarPhotoItem
+                <SidebarPhotoItemWrapper
                     key={image.id}
                     image={image}
                     index={index}
                     isSelected={index === currentSelectedPage}
+                    onPhotoClick={onPageChange}
                 />
             ))}
             gap={20}
             snap="page"
-            loop={false}
+            loop={true}
             axis="y"
             overflow
         >
-            <SidebarNavigation onPageChange={onPageChange} initialPage={initialPage} />
+            <SidebarNavigation onPageChange={onPageChange} currentSelectedPage={currentSelectedPage} />
         </Carousel>
     );
 }
@@ -149,38 +204,63 @@ export default function GalleryModal({ images, initialIndex, isOpen, onClose }: 
     const [currentPage, setCurrentPage] = useState(initialIndex);
     const [carouselKey, setCarouselKey] = useState(0);
 
+    console.log('[GalleryModal] Component rendered, isOpen:', isOpen, 'images:', images?.length || 0, 'initialIndex:', initialIndex);
+    
+    // Log quando currentPage muda
     useEffect(() => {
-        if (isOpen) {
-            setCurrentPage(initialIndex);
+        console.log('[GalleryModal] currentPage changed to:', currentPage, 'image:', images[currentPage]);
+    }, [currentPage, images]);
+
+    useEffect(() => {
+        if (isOpen && images && images.length > 0) {
+            console.log('[GalleryModal] Opening modal with', images.length, 'images, initialIndex:', initialIndex);
+            // Garantir que o índice inicial está dentro do range válido
+            const validIndex = Math.max(0, Math.min(initialIndex, images.length - 1));
+            console.log('[GalleryModal] Valid index:', validIndex, 'current image:', images[validIndex]);
+            setCurrentPage(validIndex);
             // Forçar re-render do carrossel para começar na página correta
             setCarouselKey(prev => prev + 1);
             document.body.style.overflow = "hidden";
         } else {
+            console.log('[GalleryModal] Modal closed or no images');
             document.body.style.overflow = "";
         }
 
         return () => {
             document.body.style.overflow = "";
         };
-    }, [isOpen, initialIndex]);
+    }, [isOpen, initialIndex, images]);
+
 
     useEffect(() => {
         const handleEscape = (e: KeyboardEvent) => {
             if (e.key === "Escape") {
+                console.log('[GalleryModal] Escape key pressed, closing modal');
                 onClose();
             }
         };
 
         if (isOpen) {
+            console.log('[GalleryModal] Adding escape key listener');
             window.addEventListener("keydown", handleEscape);
         }
 
         return () => {
+            console.log('[GalleryModal] Removing escape key listener');
             window.removeEventListener("keydown", handleEscape);
         };
     }, [isOpen, onClose]);
 
-    if (!isOpen || images.length === 0) return null;
+    if (!isOpen || images.length === 0) {
+        console.log('[GalleryModal] Not rendering - isOpen:', isOpen, 'images.length:', images.length);
+        return null;
+    }
+    
+    // Garantir que currentPage está dentro do range válido
+    const validCurrentPage = Math.max(0, Math.min(currentPage, images.length - 1));
+    const currentImage = images[validCurrentPage];
+    
+    console.log('[GalleryModal] Rendering modal, currentPage:', currentPage, 'validCurrentPage:', validCurrentPage, 'current image:', currentImage);
 
     return (
         <AnimatePresence>
@@ -215,17 +295,13 @@ export default function GalleryModal({ images, initialIndex, isOpen, onClose }: 
                         <div className="gallery-modal-content">
                             {/* Imagem Principal à Esquerda */}
                             <div className="gallery-main-image">
-                                <AnimatePresence mode="wait">
-                                    <motion.div
-                                        key={currentPage}
-                                        initial={{ opacity: 0, x: 20 }}
-                                        animate={{ opacity: 1, x: 0 }}
-                                        exit={{ opacity: 0, x: -20 }}
-                                        transition={{ duration: 0.3 }}
-                                    >
-                                        <MainImage image={images[currentPage]} />
-                                    </motion.div>
-                                </AnimatePresence>
+                                {currentImage && currentImage.img ? (
+                                    <MainImage image={currentImage} />
+                                ) : (
+                                    <div style={{ display: "flex", alignItems: "center", justifyContent: "center", width: "100%", height: "100%", color: "white" }}>
+                                        <p>Nenhuma imagem disponível (página: {validCurrentPage}, total: {images?.length || 0})</p>
+                                    </div>
+                                )}
                             </div>
 
                             {/* Carrossel Vertical à Direita */}
@@ -323,12 +399,13 @@ function Stylesheet() {
             }
 
             .gallery-modal-content {
-                display: grid;
-                grid-template-columns: 1fr 400px;
-                gap: 40px;
-                width: 100%;
-                max-width: 1400px;
-                height: 90vh;
+                display: grid !important;
+                grid-template-columns: 1fr 280px !important;
+                gap: 30px;
+                width: 100% !important;
+                max-width: 1800px;
+                height: 95vh !important;
+                min-height: 600px !important;
                 pointer-events: all;
             }
 
@@ -359,9 +436,15 @@ function Stylesheet() {
             .gallery-main-image {
                 width: 100%;
                 height: 100%;
+                min-height: 600px;
                 display: flex;
                 align-items: center;
                 justify-content: center;
+                position: relative;
+                background: #000;
+                overflow: hidden;
+                padding: 0;
+                box-sizing: border-box;
             }
 
             .main-carousel {
@@ -374,18 +457,24 @@ function Stylesheet() {
                 width: 100%;
                 height: 100%;
                 display: flex;
-                flex-direction: column;
-                justify-content: flex-start;
+                align-items: center;
+                justify-content: center;
                 position: relative;
+                background: #000;
+                padding: 40px;
+                box-sizing: border-box;
             }
 
             .main-photo {
-                width: 100%;
-                height: 100%;
-                max-height: 100%;
+                width: auto;
+                height: auto;
+                max-width: calc(100% - 80px);
+                max-height: calc(100vh - 200px);
                 object-fit: contain;
-                border-radius: 12px;
-                flex: 1;
+                display: block;
+                margin: 0 auto;
+                visibility: visible;
+                opacity: 1;
             }
 
             .main-image-info {
@@ -394,9 +483,11 @@ function Stylesheet() {
                 bottom: 0;
                 left: 0;
                 right: 0;
-                padding: 2rem;
-                background: linear-gradient(to top, rgba(0, 0, 0, 0.9), transparent);
+                padding: 1.5rem;
+                background: linear-gradient(to top, rgba(0, 0, 0, 0.95), transparent);
                 border-radius: 0 0 12px 12px;
+                z-index: 10;
+                pointer-events: none;
             }
 
             .gallery-sidebar {
@@ -427,7 +518,7 @@ function Stylesheet() {
 
             .sidebar-photo {
                 width: 100%;
-                height: 300px;
+                height: 250px;
                 border-radius: 10px;
                 object-fit: cover;
                 cursor: pointer;

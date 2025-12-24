@@ -18,6 +18,7 @@ import FloatingCards from "@/components/FloatingCards";
 import VerticalTimeline from "@/components/VerticalTimeline";
 import Playground from "@/components/Playground";
 import ScrollIndicator from "@/components/ScrollIndicator";
+import ServicesShowcase from "@/components/ServicesShowcase";
 
 import { useContent } from "@/hooks/useContent";
 
@@ -26,13 +27,91 @@ export default function Home() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [mounted, setMounted] = useState(false);
 
+  console.log('[Home] Component rendered, siteData:', !!siteData);
+  console.log('[Home] Projects count:', siteData?.projects?.length || 0);
+  console.log('[Home] Visual archive count:', siteData?.visualArchive?.length || 0);
+  console.log('[Home] Playground items:', siteData?.playground?.length || 0);
+
   useEffect(() => {
+    console.log('[Home] Setting mounted to true');
     setMounted(true);
   }, []);
 
+  // Navegação por tecla ESPAÇO - Scroll para próxima seção
   useEffect(() => {
-    if (!mounted || !siteData) return;
+    if (!mounted) return;
 
+    const handleKeyPress = (e: KeyboardEvent) => {
+      // Ignorar se estiver digitando em um input/textarea
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
+        return;
+      }
+
+      // Verificar se a tecla pressionada é ESPAÇO
+      if (e.code === "Space" || e.key === " ") {
+        e.preventDefault(); // Prevenir scroll padrão da página
+
+        // Selecionar todas as seções principais
+        const sections = Array.from(document.querySelectorAll("section")).filter((section) => {
+          // Filtrar apenas seções visíveis e com conteúdo significativo
+          const rect = section.getBoundingClientRect();
+          return rect.height > 100; // Seções com pelo menos 100px de altura
+        });
+
+        if (sections.length === 0) return;
+
+        const currentScroll = window.scrollY;
+        const viewportHeight = window.innerHeight;
+        const threshold = viewportHeight * 0.3; // 30% da viewport como threshold
+
+        // Encontrar a próxima seção que está abaixo do threshold
+        let nextSection: Element | null = null;
+        
+        for (const section of sections) {
+          const rect = section.getBoundingClientRect();
+          const sectionTop = window.scrollY + rect.top;
+          
+          // Se a seção está abaixo do threshold atual
+          if (sectionTop > currentScroll + threshold) {
+            nextSection = section;
+            break;
+          }
+        }
+
+        // Se não encontrou próxima seção, verificar se está no final
+        if (!nextSection) {
+          const lastSection = sections[sections.length - 1];
+          const lastSectionBottom = window.scrollY + lastSection.getBoundingClientRect().bottom;
+          
+          // Se está próximo do final, voltar ao topo
+          if (lastSectionBottom - currentScroll < viewportHeight * 1.5) {
+            window.scrollTo({ top: 0, behavior: "smooth" });
+            return;
+          }
+          
+          // Caso contrário, ir para a última seção
+          nextSection = lastSection;
+        }
+
+        if (nextSection) {
+          nextSection.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyPress);
+    return () => {
+      window.removeEventListener("keydown", handleKeyPress);
+    };
+  }, [mounted]);
+
+  useEffect(() => {
+    if (!mounted || !siteData) {
+      console.log('[Home] useEffect skipped - mounted:', mounted, 'siteData:', !!siteData);
+      return;
+    }
+
+    console.log('[Home] Setting up GSAP animations');
     gsap.registerPlugin(ScrollTrigger);
 
     const ctx = gsap.context(() => {
@@ -108,20 +187,22 @@ export default function Home() {
         const container = item.querySelector(".project-preview-container");
         const layers = item.querySelectorAll(".project-preview");
         
-        item.addEventListener("mousemove", (e: any) => {
+        const handleMouseMove = (e: MouseEvent) => {
           const { clientX, clientY } = e;
-          const { left, top } = item.getBoundingClientRect();
+          const rect = item.getBoundingClientRect();
           
-          const x = clientX - left;
-          const y = clientY - top;
+          const x = clientX - rect.left;
+          const y = clientY - rect.top;
 
-          gsap.to(container, {
-            x: x - 200, 
-            y: y - 125,
-            duration: 0.8,
-            ease: "power3.out",
-            overwrite: "auto"
-          });
+          if (container) {
+            gsap.to(container, {
+              x: x - 200, 
+              y: y - 125,
+              duration: 0.8,
+              ease: "power3.out",
+              overwrite: "auto"
+            });
+          }
 
           // Offset individual layers for the ghosting effect
           layers.forEach((layer, idx) => {
@@ -134,7 +215,11 @@ export default function Home() {
               overwrite: "auto"
             });
           });
-        });
+        };
+        
+        item.addEventListener("mousemove", handleMouseMove);
+        
+        // Cleanup será feito pelo ctx.revert()
       });
 
     }, containerRef);
@@ -167,19 +252,23 @@ export default function Home() {
         maxWidth: "100vw",
         overflow: "hidden"
       }}>
-        <div style={{ marginBottom: "2rem", position: "relative" }} data-speed="0.8">
+        <div style={{ marginBottom: "3rem", position: "relative" }} data-speed="0.8">
           <span className="sub-label">[ {siteData.hero.sublabel} ]</span>
         </div>
         
-        <h1 style={{ 
-          cursor: "default",
-          position: "relative",
-          width: "100%",
-          maxWidth: "100%",
-          margin: 0,
-          padding: 0,
-          transform: "translateZ(0)" // Force hardware acceleration
-        }} data-speed={siteData.hero.settings.parallaxSpeed}>
+        <h1 
+          style={{ 
+            cursor: "default",
+            position: "relative",
+            width: "100%",
+            maxWidth: "100%",
+            margin: 0,
+            padding: 0,
+            transform: "translateZ(0)" // Force hardware acceleration
+          }} 
+          data-speed={siteData.hero.settings.parallaxSpeed}
+          data-cursor-ignore="true"
+        >
           {titleLines.map((line, i) => (
             <div 
               key={i} 
@@ -193,8 +282,8 @@ export default function Home() {
             >
               <SplitText 
                 text={line} 
-                delay={1.5 + (i * 0.2)} 
-                interactive={true} 
+                delay={1.5 + (i * 0.2)}
+                interactive={true}
                 className="title-line-inner"
               />
             </div>
@@ -211,6 +300,9 @@ export default function Home() {
         {/* Scroll To Explore Indicator - Estilo Eva Sanchez */}
         <ScrollIndicator />
       </section>
+
+      {/* Services Showcase - Principais Serviços */}
+      <ServicesShowcase />
 
       {/* Project Index Section */}
       <section className="project-list" style={{ marginTop: "20vh", marginBottom: "20vh" }}>
@@ -272,19 +364,24 @@ export default function Home() {
 
       <GalleryCarousel data={siteData.visualArchive} />
 
-      {/* FloatingCards - Alternativa ao InteractiveGrid */}
-      <FloatingCards 
-        items={siteData.visualArchive.slice(0, 6).map((item: any) => ({
-          id: item.id,
-          title: item.title,
-          category: item.cat,
-          image: item.img,
-          description: item.description || `Explore ${item.title}`
-        }))} 
-        columns={3} 
-      />
+      {/* FloatingCards - Ocultado (fotos já estão no GalleryCarousel) */}
+      <div style={{ display: "none" }}>
+        <FloatingCards 
+          items={siteData.visualArchive.slice(0, 6).map((item: any) => ({
+            id: item.id,
+            title: item.title,
+            category: item.cat,
+            image: item.img,
+            description: item.description || `Explore ${item.title}`
+          }))} 
+          columns={3} 
+        />
+      </div>
 
-      <InteractiveGrid data={siteData.visualArchive} />
+      {/* InteractiveGrid - Ocultado (fotos já estão no GalleryCarousel) */}
+      <div style={{ display: "none" }}>
+        <InteractiveGrid data={siteData.visualArchive} />
+      </div>
 
       {/* VerticalTimeline - Alternativa ao HorizontalScroll */}
       <VerticalTimeline 

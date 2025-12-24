@@ -8,24 +8,40 @@ export default function GalleryCarousel({ data }: { data: any[] }) {
     const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
 
-    if (!data || data.length === 0) return null;
+    console.log('[GalleryCarousel] Component rendered, data length:', data?.length || 0);
+    console.log('[GalleryCarousel] Data:', data);
+
+    if (!data || data.length === 0) {
+        console.warn('[GalleryCarousel] No data provided or empty array');
+        return null;
+    }
 
     // Filtrar apenas imagens da categoria "A Clínica" (case-insensitive)
     const clinicImages = data.filter((item) => 
         item.cat && item.cat.toLowerCase() === "a clínica"
     );
 
+    console.log('[GalleryCarousel] Clinic images found:', clinicImages.length);
+    console.log('[GalleryCarousel] Clinic images:', clinicImages);
+
     // Se não houver imagens filtradas, usar todas as imagens como fallback
     const imagesToShow = clinicImages.length > 0 ? clinicImages : data;
 
-    if (imagesToShow.length === 0) return null;
+    console.log('[GalleryCarousel] Images to show:', imagesToShow.length);
+
+    if (imagesToShow.length === 0) {
+        console.warn('[GalleryCarousel] No images to show');
+        return null;
+    }
 
     const handleImageClick = (index: number) => {
+        console.log('[GalleryCarousel] Image clicked, index:', index, 'image:', imagesToShow[index]);
         setSelectedImageIndex(index);
         setIsModalOpen(true);
     };
 
     const handleCloseModal = () => {
+        console.log('[GalleryCarousel] Modal closed');
         setIsModalOpen(false);
     };
 

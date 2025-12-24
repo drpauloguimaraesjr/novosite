@@ -22,6 +22,7 @@ interface ContentData {
   socialReels: any[];
   contact: any;
   categories?: string[];
+  services?: any[];
 }
 
 export default function AdminPage() {
@@ -31,7 +32,14 @@ export default function AdminPage() {
   const [password, setPassword] = useState("");
   const [authError, setAuthError] = useState("");
   
-  const [data, setData] = useState<ContentData>(siteData as any);
+  const [data, setData] = useState<ContentData>(() => {
+    const initialData = siteData as any;
+    // Garantir que services existe
+    if (!initialData.services) {
+      initialData.services = [];
+    }
+    return initialData;
+  });
   const [activeTab, setActiveTab] = useState("hero");
   const [saving, setSaving] = useState(false);
   const [showToast, setShowToast] = useState(false);
@@ -50,7 +58,14 @@ export default function AdminPage() {
     if (user) {
       async function load() {
         const fresh = await getSiteContent();
-        if (fresh) setData(fresh as any);
+        if (fresh) {
+          const freshData = fresh as any;
+          // Garantir que services existe
+          if (!freshData.services) {
+            freshData.services = [];
+          }
+          setData(freshData);
+        }
       }
       load();
     }
@@ -258,6 +273,19 @@ export default function AdminPage() {
     } else if (section === "categories") {
       if (!newData.categories) newData.categories = [];
       newData.categories.push("Nova Categoria");
+    } else if (section === "services") {
+      if (!newData.services) newData.services = [];
+      const newService = {
+        id: (newData.services.length + 1),
+        title: "Novo Serviço",
+        subtitle: "Subtítulo do serviço",
+        description: "Descrição breve do serviço",
+        fullDescription: "Descrição completa do serviço",
+        image: "/images/clinic/0Y7A0247.jpg",
+        thumbnail: "/images/clinic/0Y7A0247.jpg",
+        slug: `novo-servico-${newData.services.length + 1}`
+      };
+      newData.services.push(newService);
     }
     
     setData(newData);
@@ -338,7 +366,7 @@ export default function AdminPage() {
           <button onClick={handleLogout} style={{ background: "none", border: "none", color: "rgba(255,255,255,0.4)", fontSize: "0.6rem", cursor: "pointer" }}>[ LOGOUT ]</button>
         </div>
         <div className={styles.nav}>
-          {["hero", "navigation", "about", "projects", "visualArchive", "categories", "socialReels", "contact"].map((tab) => (
+          {["hero", "navigation", "about", "projects", "services", "visualArchive", "categories", "socialReels", "contact"].map((tab) => (
             <button
               key={tab}
               className={`${styles.navLink} ${activeTab === tab ? styles.navLinkActive : ""}`}
@@ -357,7 +385,7 @@ export default function AdminPage() {
         <div className={styles.card}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "3rem" }}>
             <h3>{activeTab.toUpperCase()} SETTINGS</h3>
-            {["projects", "visualArchive", "navigation", "socialReels", "categories"].includes(activeTab) && (
+            {["projects", "services", "visualArchive", "navigation", "socialReels", "categories"].includes(activeTab) && (
               <button 
                 className={styles.saveButton} 
                 style={{ width: "auto", padding: "10px 20px", fontSize: "0.6rem" }}
@@ -434,6 +462,91 @@ export default function AdminPage() {
                           placeholder="Fale mais sobre este serviço..."
                           onChange={(e) => handleChange("projects", "description", e.target.value, i)} 
                           style={{ minHeight: "60px", fontSize: "0.8rem" }}
+                        />
+                      </div>
+                    </div>
+                  </Reorder.Item>
+                ))}
+              </Reorder.Group>
+            </div>
+          )}
+
+          {activeTab === "services" && (
+            <div className={styles.itemsList}>
+              <Reorder.Group axis="y" values={data.services || []} onReorder={(newItems) => setReorderedItems("services", newItems)}>
+                {(data.services || []).map((item: any, i: number) => (
+                  <Reorder.Item key={item.id} value={item} className={styles.itemRef}>
+                    <div className={styles.itemCard} style={{ cursor: "grab" }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
+                        <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+                          <div style={{ background: "#333", padding: "4px 8px", borderRadius: "4px", fontSize: "0.6rem" }}>⠿ DRAG TO REORDER</div>
+                          <h4 style={{ fontSize: "0.9rem" }}>SERVICE: {i + 1}</h4>
+                        </div>
+                        <button onClick={() => removeItem("services", i)} style={{ color: "#ff4444", fontSize: "0.7rem", background: "none", border: "none", cursor: "pointer" }}>[ REMOVE ]</button>
+                      </div>
+                      
+                      <div className={styles.formRow}>
+                        <div className={styles.formGroup}>
+                          <label>Imagem Principal (Página Individual)</label>
+                          <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+                            <img src={item.image} style={{ width: "60px", height: "40px", objectFit: "cover", borderRadius: "2px" }} />
+                            <input 
+                              type="file" 
+                              accept="image/*" 
+                              style={{ fontSize: "0.7rem" }}
+                              onChange={(e) => e.target.files?.[0] && handleUpload("services", i, "image", e.target.files[0])}
+                            />
+                            {uploading === `services-${i}-image` && <span>Uploading...</span>}
+                          </div>
+                        </div>
+                        <div className={styles.formGroup}>
+                          <label>Miniatura (Grid Principal)</label>
+                          <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+                            <img src={item.thumbnail || item.image} style={{ width: "60px", height: "40px", objectFit: "cover", borderRadius: "2px" }} />
+                            <input 
+                              type="file" 
+                              accept="image/*" 
+                              style={{ fontSize: "0.7rem" }}
+                              onChange={(e) => e.target.files?.[0] && handleUpload("services", i, "thumbnail", e.target.files[0])}
+                            />
+                            {uploading === `services-${i}-thumbnail` && <span>Uploading...</span>}
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className={styles.formRow}>
+                        <div className={styles.formGroup}>
+                          <label>Título</label>
+                          <input value={item.title || ""} onChange={(e) => handleChange("services", "title", e.target.value, i)} />
+                        </div>
+                        <div className={styles.formGroup}>
+                          <label>Slug (URL)</label>
+                          <input value={item.slug || ""} onChange={(e) => handleChange("services", "slug", e.target.value, i)} placeholder="ex: checkup-premium" />
+                        </div>
+                      </div>
+
+                      <div className={styles.formGroup} style={{ marginTop: "1rem" }}>
+                        <label>Subtítulo</label>
+                        <input value={item.subtitle || ""} onChange={(e) => handleChange("services", "subtitle", e.target.value, i)} />
+                      </div>
+
+                      <div className={styles.formGroup} style={{ marginTop: "1rem" }}>
+                        <label>Descrição Breve (Miniatura)</label>
+                        <textarea 
+                          value={item.description || ""} 
+                          placeholder="Descrição curta que aparece na miniatura..."
+                          onChange={(e) => handleChange("services", "description", e.target.value, i)} 
+                          style={{ minHeight: "60px", fontSize: "0.8rem" }}
+                        />
+                      </div>
+
+                      <div className={styles.formGroup} style={{ marginTop: "1rem" }}>
+                        <label>Descrição Completa (Página Individual)</label>
+                        <textarea 
+                          value={item.fullDescription || ""} 
+                          placeholder="Descrição completa que aparece na página individual do serviço..."
+                          onChange={(e) => handleChange("services", "fullDescription", e.target.value, i)} 
+                          style={{ minHeight: "120px", fontSize: "0.8rem" }}
                         />
                       </div>
                     </div>

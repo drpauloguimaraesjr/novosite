@@ -71,10 +71,10 @@ export default function HorizontalScroll({ data }: { data: any[] }) {
   return (
     <div ref={sectionRef} className="horizontal-scroll-section">
       <div className="sticky-container">
-        <div style={{ position: "absolute", top: "120px", left: "40px", right: "40px", display: "flex", justifyContent: "space-between", alignItems: "flex-end", zIndex: 10 }}>
-          <div>
-            <span className="sub-label" style={{ opacity: 0.6 }}>[ EXPERIÊNCIA ]</span>
-            <h2 style={{ fontSize: "5rem", marginTop: "1rem" }}>Instituto</h2>
+        <div style={{ position: "absolute", top: "120px", left: "40px", right: "40px", display: "flex", justifyContent: "space-between", alignItems: "flex-start", zIndex: 10 }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: "2.5rem", alignItems: "flex-start" }}>
+            <span className="sub-label" style={{ opacity: 0.6, marginBottom: "0", lineHeight: "1.5", display: "block" }}>[ EXPERIÊNCIA ]</span>
+            <h2 style={{ fontSize: "5rem", marginTop: "0", marginBottom: "0", lineHeight: "1.1", display: "block" }}>Instituto</h2>
           </div>
           <div style={{ width: "200px", height: "2px", backgroundColor: "rgba(255,255,255,0.1)", position: "relative" }}>
             <div 

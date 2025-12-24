@@ -18,18 +18,27 @@ export default function SplitText({ text, className, trigger, delay = 0, interac
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    console.log('[SplitText] Component mounted, text:', text, 'interactive:', interactive);
+    
     gsap.registerPlugin(ScrollTrigger, GSAPSplitText);
     
-    if (!textRef.current) return;
+    if (!textRef.current) {
+      console.warn('[SplitText] textRef.current is null');
+      return;
+    }
 
     const ctx = gsap.context(() => {
+      let split: any;
       // @ts-ignore
-      const split = new GSAPSplitText(textRef.current!, {
+      split = new GSAPSplitText(textRef.current!, {
         type: "chars,words",
         charsClass: "letter",
       });
+      
+      console.log('[SplitText] Split created, chars count:', split.chars?.length || 0);
 
       // Entrance Animation - Apenas fade e scale, sem rotação
+      // IMPORTANTE: Garantir que após a animação, a opacidade sempre fique em 1
       gsap.fromTo(
         split.chars,
         { 
@@ -46,22 +55,77 @@ export default function SplitText({ text, className, trigger, delay = 0, interac
           scrollTrigger: trigger ? {
             trigger: textRef.current,
             start: "top 95%",
-          } : null
+          } : null,
+          onComplete: () => {
+            // Garantir que todas as letras tenham opacidade 1 após animação
+            split.chars.forEach((letter: HTMLElement) => {
+              gsap.set(letter, { opacity: 1 });
+            });
+          }
         }
       );
 
       // Interactive Lens Effect - Estilo Eva Sanchez
-      // Aplica efeito apenas nas letras que o cursor está realmente sobrepondo
+      // Aplica efeito apenas na letra mais próxima do cursor DENTRO deste componente específico
       if (interactive) {
         const handleMouseMove = (e: MouseEvent) => {
-          const letters = split.chars;
+          // Verificar se o mouse está realmente sobre o container deste SplitText
+          const container = containerRef.current || textRef.current;
+          if (!container) {
+            console.warn('[SplitText] Container not found');
+            return;
+          }
+          
+          const containerRect = container.getBoundingClientRect();
           const mouseX = e.clientX;
           const mouseY = e.clientY;
+          
+          // Verificar se o cursor está dentro dos limites do container (com margem de erro)
+          const padding = 30; // Margem para detectar quando está próximo
+          const isInsideContainer = (
+            mouseX >= containerRect.left - padding &&
+            mouseX <= containerRect.right + padding &&
+            mouseY >= containerRect.top - padding &&
+            mouseY <= containerRect.bottom + padding
+          );
+          
+          // Se não estiver dentro do container, resetar todas as letras e sair
+          if (!isInsideContainer) {
+            split.chars.forEach((letter: HTMLElement) => {
+              gsap.to(letter, {
+                scale: 1,
+                x: 0,
+                y: 0,
+                opacity: 1, // GARANTIR que a opacidade sempre fique em 1
+                duration: 0.4,
+                ease: "power2.out",
+                overwrite: true
+              });
+            });
+            return;
+          }
+          
+          // Filtrar apenas letras visíveis deste SplitText
+          const letters = split.chars.filter((letter: HTMLElement) => {
+            // Filtrar apenas letras visíveis (não espaços ou caracteres invisíveis)
+            const text = letter.textContent?.trim() || '';
+            const rect = letter.getBoundingClientRect();
+            return text.length > 0 && rect.width > 0 && rect.height > 0;
+          });
+          
+          if (letters.length === 0) {
+            console.warn('[SplitText] No visible letters found');
+            return;
+          }
+          
+          // Encontrar a letra mais próxima do cursor DENTRO deste container
+          let closestLetter: HTMLElement | null = null;
+          let minDistance = Infinity;
           
           letters.forEach((letter: HTMLElement) => {
             const rect = letter.getBoundingClientRect();
             
-            // Verifica se o cursor está realmente sobre a letra
+            // Verificar se o cursor está sobre a letra
             const isOverLetter = (
               mouseX >= rect.left &&
               mouseX <= rect.right &&
@@ -70,24 +134,52 @@ export default function SplitText({ text, className, trigger, delay = 0, interac
             );
             
             if (isOverLetter) {
-              // Calcula a distância do cursor até o centro da letra
+              // Se o cursor está sobre a letra, calcular distância do centro
+              const centerX = rect.left + rect.width / 2;
+              const centerY = rect.top + rect.height / 2;
+              const distance = Math.hypot(mouseX - centerX, mouseY - centerY);
+              
+              // Priorizar letras que o cursor está sobrepondo diretamente
+              if (distance < minDistance) {
+                minDistance = distance;
+                closestLetter = letter;
+              }
+            } else {
+              // Se não está sobre a letra, calcular distância até a borda mais próxima
+              const closestX = Math.max(rect.left, Math.min(mouseX, rect.right));
+              const closestY = Math.max(rect.top, Math.min(mouseY, rect.bottom));
+              const distance = Math.hypot(mouseX - closestX, mouseY - closestY);
+              
+              // Só considerar se estiver muito próximo (dentro de 50px)
+              if (distance < 50 && distance < minDistance) {
+                minDistance = distance;
+                closestLetter = letter;
+              }
+            }
+          });
+          
+          // Aplicar efeito apenas na letra mais próxima DENTRO deste container
+          if (closestLetter) {
+            console.log('[SplitText] Closest letter:', closestLetter.textContent, 'distance:', minDistance.toFixed(2));
+          }
+          
+          letters.forEach((letter: HTMLElement) => {
+            if (letter === closestLetter) {
+              const rect = letter.getBoundingClientRect();
               const letterCenterX = rect.left + rect.width / 2;
               const letterCenterY = rect.top + rect.height / 2;
               const distanceX = mouseX - letterCenterX;
               const distanceY = mouseY - letterCenterY;
               
-              // Distância máxima para calcular a força do efeito (baseada no tamanho da letra)
-              const maxDistance = Math.max(rect.width, rect.height) * 0.8;
+              // Distância máxima para calcular a força do efeito
+              const maxDistance = Math.max(rect.width, rect.height) * 1.2;
               const distance = Math.hypot(distanceX, distanceY);
               
-              // Força do efeito baseada na proximidade do centro da letra
-              // Quanto mais próximo do centro, maior o efeito
+              // Força do efeito baseada na proximidade
               const power = Math.max(0, 1 - (distance / maxDistance));
               
-              // Efeito de lente: zoom nas letras que o cursor está sobrepondo
-              const scale = 1 + (power * 1.5); // Zoom mais pronunciado
-              
-              // Movimento suave em direção ao cursor
+              // Efeito de lente: zoom na letra mais próxima
+              const scale = 1 + (power * 1.5);
               const moveX = distanceX * power * 0.3;
               const moveY = distanceY * power * 0.3;
               
@@ -100,11 +192,12 @@ export default function SplitText({ text, className, trigger, delay = 0, interac
                 overwrite: true
               });
             } else {
-              // Retorna ao estado normal suavemente quando o cursor não está sobre a letra
+              // Retorna ao estado normal para todas as outras letras
               gsap.to(letter, {
                 scale: 1,
                 x: 0,
                 y: 0,
+                opacity: 1, // GARANTIR que a opacidade sempre fique em 1
                 duration: 0.4,
                 ease: "power2.out",
                 overwrite: true
@@ -116,15 +209,19 @@ export default function SplitText({ text, className, trigger, delay = 0, interac
         // Adicionar listener no container do texto para melhor performance
         const container = containerRef.current || textRef.current;
         if (container) {
-          container.addEventListener("mousemove", handleMouseMove);
+          console.log('[SplitText] Adding mouse listeners to container');
+          // Adicionar listener no window para garantir captura (apenas um listener)
+          window.addEventListener("mousemove", handleMouseMove);
           
           // Reset quando o mouse sai do container
           const handleMouseLeave = () => {
+            console.log('[SplitText] Mouse left container, resetting letters');
             split.chars.forEach((letter: HTMLElement) => {
               gsap.to(letter, {
                 scale: 1,
                 x: 0,
                 y: 0,
+                opacity: 1, // GARANTIR que a opacidade sempre fique em 1
                 duration: 0.4,
                 ease: "power2.out",
                 overwrite: true
@@ -134,21 +231,46 @@ export default function SplitText({ text, className, trigger, delay = 0, interac
           
           container.addEventListener("mouseleave", handleMouseLeave);
           
+          // Cleanup function
           return () => {
-            container.removeEventListener("mousemove", handleMouseMove);
+            console.log('[SplitText] Cleaning up listeners');
+            window.removeEventListener("mousemove", handleMouseMove);
             container.removeEventListener("mouseleave", handleMouseLeave);
+            // Resetar todas as letras ao desmontar
+            if (split && split.chars) {
+              split.chars.forEach((letter: HTMLElement) => {
+                gsap.to(letter, {
+                  scale: 1,
+                  x: 0,
+                  y: 0,
+                  opacity: 1, // GARANTIR que a opacidade sempre fique em 1
+                  duration: 0.2,
+                  ease: "power2.out",
+                  overwrite: true
+                });
+              });
+            }
           };
+        } else {
+          console.warn('[SplitText] Container not found, cannot add listeners');
         }
       }
+      
+      // Cleanup do contexto GSAP
+      return () => {
+        ctx.revert();
+      };
     }, textRef);
-
-    return () => ctx.revert();
   }, [delay, trigger, text, interactive]);
 
   return (
     <div 
       ref={containerRef}
-      style={{ display: "inline-block" }}
+      style={{ 
+        display: "inline-block",
+        pointerEvents: "auto"
+      }}
+      data-cursor-ignore="true"
     >
       <div 
         ref={textRef} 
@@ -156,7 +278,8 @@ export default function SplitText({ text, className, trigger, delay = 0, interac
         style={{ 
           display: "inline-block", 
           position: "relative",
-          willChange: interactive ? "transform" : "auto"
+          willChange: interactive ? "transform" : "auto",
+          pointerEvents: "auto"
         }}
       >
         {text}

@@ -9,12 +9,16 @@ import Preloader from "@/components/Preloader";
 import LiveClock from "@/components/LiveClock";
 import PageTransition from "@/components/PageTransition";
 import GSAPConfig from "@/components/GSAPConfig";
+import SplitText from "@/components/SplitText";
 import { useContent } from "@/hooks/useContent";
 
 export default function ClientLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const isAdmin = pathname?.startsWith("/admin");
   const siteData = useContent();
+  
+  console.log('[ClientLayout] Component rendered, pathname:', pathname, 'isAdmin:', isAdmin);
+  console.log('[ClientLayout] Site data loaded:', !!siteData, 'navigation links:', siteData?.navigation?.links?.length || 0);
 
   return (
     <>
@@ -44,8 +48,9 @@ export default function ClientLayout({ children }: { children: ReactNode }) {
                   <a 
                     href={link.url} 
                     className={`nav-link ${link.highlight ? 'nav-link-highlight' : ''}`}
+                    data-cursor-text="VIEW"
                   >
-                    {link.label}
+                    <SplitText text={link.label} interactive={true} />
                   </a>
                 </Magnetic>
               ))}
