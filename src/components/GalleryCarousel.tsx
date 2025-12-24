@@ -1,20 +1,22 @@
 "use client";
 
+import { Carousel, useCarousel } from "motion-plus/react";
 import { animate, motion, useMotionValue } from "motion/react";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 function AutoplayProgress({ duration }: { duration: number }) {
+    const { currentPage, nextPage } = useCarousel();
     const progress = useMotionValue(0);
 
     useEffect(() => {
         const animation = animate(progress, [0, 1], {
             duration,
             ease: "linear",
-            repeat: Infinity,
+            onComplete: nextPage,
         });
 
         return () => animation.stop();
-    }, [duration, progress]);
+    }, [duration, nextPage, progress, currentPage]);
 
     return (
         <div className="autoplay-progress">
@@ -27,20 +29,17 @@ function AutoplayProgress({ duration }: { duration: number }) {
 }
 
 export default function GalleryCarousel({ data }: { data: any[] }) {
-    const [currentIndex, setCurrentIndex] = useState(0);
-    const [isDragging, setIsDragging] = useState(false);
-
     if (!data || data.length === 0) return null;
 
-    const clinicImages = data;
+    // Filtrar apenas imagens da categoria "A Clínica" (case-insensitive)
+    const clinicImages = data.filter((item) => 
+        item.cat && item.cat.toLowerCase() === "a clínica"
+    );
 
-    const nextSlide = () => {
-        setCurrentIndex((prev) => (prev + 1) % clinicImages.length);
-    };
+    // Se não houver imagens filtradas, usar todas as imagens como fallback
+    const imagesToShow = clinicImages.length > 0 ? clinicImages : data;
 
-    const prevSlide = () => {
-        setCurrentIndex((prev) => (prev - 1 + clinicImages.length) % clinicImages.length);
-    };
+    if (imagesToShow.length === 0) return null;
 
     return (
         <section className="clinic-carousel-section" style={{ padding: "100px 0", backgroundColor: "#000" }}>
@@ -51,117 +50,89 @@ export default function GalleryCarousel({ data }: { data: any[] }) {
                 </div>
 
                 <article style={{ width: "100%", maxWidth: "600px", display: "flex", flexDirection: "column", gap: "20px", margin: "0 auto" }}>
-                    <motion.div
-                        style={{
-                            position: "relative",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            padding: "20px 50px",
-                            overflow: "hidden"
-                        }}
-                    >
-                        <motion.div
-                            drag="x"
-                            dragConstraints={{ left: 0, right: 0 }}
-                            onDragStart={() => setIsDragging(true)}
-                            onDragEnd={(event, info) => {
-                                setIsDragging(false);
-                                const threshold = 50;
-                                if (info.offset.x < -threshold) {
-                                    nextSlide();
-                                } else if (info.offset.x > threshold) {
-                                    prevSlide();
-                                }
-                            }}
-                            animate={{ x: -currentIndex * 100 + "%" }}
-                            transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                            style={{
-                                display: "flex",
-                                width: `${clinicImages.length * 100}%`,
-                                cursor: isDragging ? "grabbing" : "grab"
-                            }}
-                        >
-                            {clinicImages.map((image, index) => (
-                                <motion.div
-                                    key={index}
+                    <Carousel
+                        axis="x"
+                        className="carousel"
+                        items={imagesToShow.map((item, index) => (
+                            <motion.div
+                                key={index}
+                                className="photo-container"
+                                style={{
+                                    borderRadius: "12px",
+                                    overflow: "hidden",
+                                    position: "relative",
+                                    aspectRatio: "4/3",
+                                    width: "100%",
+                                    maxWidth: "600px",
+                                    height: "400px"
+                                }}
+                            >
+                                <motion.img
+                                    draggable={false}
+                                    className="photo"
+                                    src={item.img}
+                                    alt={item.title}
                                     style={{
-                                        flex: "0 0 100%",
-                                        padding: "0 20px",
-                                        display: "flex",
-                                        justifyContent: "center"
+                                        width: "100%",
+                                        height: "100%",
+                                        objectFit: "cover"
                                     }}
-                                >
-                                    <motion.div
-                                        style={{
-                                            borderRadius: "12px",
-                                            overflow: "hidden",
-                                            position: "relative",
-                                            aspectRatio: "4/3",
-                                            width: "100%",
-                                            maxWidth: "600px",
-                                            height: "400px"
-                                        }}
-                                        whileHover={{ scale: 1.02 }}
-                                        transition={{ duration: 0.3 }}
-                                    >
-                                        <motion.img
-                                            src={image.img}
-                                            alt={image.title}
-                                            style={{
-                                                width: "100%",
-                                                height: "100%",
-                                                objectFit: "cover"
-                                            }}
-                                        />
-                                        <div style={{
-                                            position: "absolute",
-                                            bottom: 0,
-                                            left: 0,
-                                            right: 0,
-                                            padding: "40px",
-                                            background: "linear-gradient(to top, rgba(0,0,0,0.8), transparent)",
-                                            color: "#fff"
-                                        }}>
-                                            <span style={{ fontSize: "0.6rem", opacity: 0.7 }}>{image.cat}</span>
-                                            <h4 style={{ fontSize: "1.2rem", marginTop: "0.5rem", letterSpacing: "-0.02em" }}>{image.title}</h4>
-                                            {image.description && (
-                                                <p style={{ fontSize: "0.8rem", opacity: 0.5, marginTop: "1rem", maxWidth: "400px", lineHeight: "1.6" }}>
-                                                    {image.description}
-                                                </p>
-                                            )}
-                                        </div>
-                                    </motion.div>
-                                </motion.div>
-                            ))}
-                        </motion.div>
-                    </motion.div>
-
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                        <AutoplayProgress duration={3} />
-                        <div style={{ display: "flex", gap: "20px", alignItems: "center" }}>
-                            <span style={{ opacity: 0.3, letterSpacing: "0.2em", color: "#fff" }}>DRAG TO EXPLORE</span>
-                            <div style={{ display: "flex", gap: "8px" }}>
-                                {clinicImages.map((_, index) => (
-                                    <button
-                                        key={index}
-                                        onClick={() => setCurrentIndex(index)}
-                                        style={{
-                                            width: "8px",
-                                            height: "8px",
-                                            borderRadius: "50%",
-                                            border: "1px solid rgba(255,255,255,0.3)",
-                                            backgroundColor: index === currentIndex ? "#fff" : "transparent",
-                                            cursor: "pointer"
-                                        }}
-                                    />
-                                ))}
+                                />
+                                <div className="photo-overlay" style={{
+                                    position: "absolute",
+                                    bottom: 0,
+                                    left: 0,
+                                    right: 0,
+                                    padding: "40px",
+                                    background: "linear-gradient(to top, rgba(0,0,0,0.8), transparent)",
+                                    color: "#fff"
+                                }}>
+                                    <span className="sub-label" style={{ fontSize: "0.6rem", opacity: 0.7 }}>{item.cat}</span>
+                                    <h4 style={{ fontSize: "1.2rem", marginTop: "0.5rem", letterSpacing: "-0.02em" }}>{item.title}</h4>
+                                    {item.description && (
+                                        <p style={{ fontSize: "0.8rem", opacity: 0.5, marginTop: "1rem", maxWidth: "400px", lineHeight: "1.6" }}>
+                                            {item.description}
+                                        </p>
+                                    )}
+                                </div>
+                            </motion.div>
+                        ))}
+                        gap={20}
+                        snap="page"
+                        loop={true}
+                        fade={80}
+                    >
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "4rem", borderTop: "1px solid rgba(255,255,255,0.05)", paddingTop: "2rem" }}>
+                            <AutoplayProgress duration={5} />
+                            <div style={{ display: "flex", gap: "20px" }}>
+                                <span className="sub-label" style={{ opacity: 0.3, letterSpacing: "0.2em" }}>DRAG TO EXPLORE</span>
                             </div>
                         </div>
-                    </div>
+                    </Carousel>
                 </article>
 
                 <style jsx>{`
+                    .carousel {
+                        position: relative;
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+                        justify-content: center;
+                        padding: 20px 50px;
+                    }
+
+                    .photo {
+                        height: 400px;
+                        border-radius: 12px;
+                        object-fit: cover;
+                    }
+
+                    @media (max-width: 600px) {
+                        .photo {
+                            height: 250px;
+                        }
+                    }
+
                     .autoplay-progress {
                         width: 120px;
                         height: 6px;
@@ -179,6 +150,13 @@ export default function GalleryCarousel({ data }: { data: any[] }) {
                         background: white;
                         transform-origin: left;
                         border-radius: 3px;
+                    }
+
+                    .photo-container {
+                        cursor: grab;
+                    }
+                    .photo-container:active {
+                        cursor: grabbing;
                     }
 
                     @media (max-width: 600px) {
