@@ -175,7 +175,7 @@ export default function Home() {
           start: "top bottom",
           end: "bottom top",
           scrub: true,
-          onUpdate: (self) => {
+          onUpdate: (self: any) => {
             const y = (1 - self.progress) * 100 * (speed - 1);
             gsap.set(element, { y: y });
           }
