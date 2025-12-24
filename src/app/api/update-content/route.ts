@@ -1,12 +1,12 @@
 import { NextResponse } from 'next/server';
-import { updateSiteContent } from '@/lib/siteService';
+import { adminDb } from '@/lib/firebaseAdmin';
 
 export async function POST(request: Request) {
   try {
     const data = await request.json();
     
-    // Always update Firebase in production
-    await updateSiteContent(data);
+    // Use Admin SDK to bypass security rules for server-side writing
+    await adminDb.collection('site-config').doc('main-content').set(data);
     
     return NextResponse.json({ message: 'Content updated successfully in Firebase' });
   } catch (error) {
