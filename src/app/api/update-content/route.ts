@@ -1,8 +1,15 @@
 import { NextResponse } from 'next/server';
-import { adminDb } from '@/lib/firebaseAdmin';
 
 export async function POST(request: Request) {
   try {
+    // Dynamic import to avoid initialization during build
+    const { getAdminDb } = await import('@/lib/firebaseAdmin');
+    const adminDb = getAdminDb();
+    
+    if (!adminDb) {
+      return NextResponse.json({ error: 'Firebase Admin not available' }, { status: 503 });
+    }
+    
     const data = await request.json();
     
     // Use Admin SDK to bypass security rules for server-side writing
