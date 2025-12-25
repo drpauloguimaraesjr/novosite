@@ -51,39 +51,47 @@ export default function ScrollIndicator() {
     const endX = textWidth + squareSize;
     const totalDistance = endX - startX;
 
-    // Animação do quadrado com curva de aceleração/desaceleração
-    // power2.inOut = velocidade menor nas extremidades, maior no meio
-    const animation = gsap.to(squareRef.current, {
-      x: totalDistance,
-      duration: 6,
+    // Timeline para animações sincronizadas (movimento + rotação + pulsação)
+    const tl = gsap.timeline({
       repeat: -1,
-      ease: "power2.inOut", // Velocidade menor nas extremidades, maior no meio
+      defaults: { ease: "none" }
+    });
+
+    // Animação principal de movimento com curva cubic-bezier similar ao CSS original
+    // cubic-bezier(0.128, 1.000, 1.000, 1.000) ≈ power4.out no GSAP
+    tl.to(squareRef.current, {
+      x: totalDistance,
+      duration: 1.8,
+      ease: "power4.out",
       onUpdate: function() {
         if (maskRef.current && squareRef.current && textRef.current) {
-          // Posição atual do quadrado em relação ao container
+          // Posição atual do quadrado
           const squareX = gsap.getProperty(squareRef.current, "x") as number;
           
-          // Posição do quadrado relativa ao texto (o texto começa em 0)
-          const squareRelativeLeft = squareX - squareSize / 2;
-          const squareRelativeRight = squareX + squareSize / 2;
-          
-          // Verifica se o quadrado está sobrepondo o texto
-          if (squareRelativeRight >= 0 && squareRelativeLeft <= textWidth) {
-            // Calcula a interseção entre o quadrado e o texto
-            const intersectionStart = Math.max(0, squareRelativeLeft);
-            const intersectionEnd = Math.min(textWidth, squareRelativeRight);
-            
-            // Aplica o clipPath para revelar apenas a parte onde o quadrado está
-            // clipPath: inset(top right bottom left)
-            maskRef.current.style.clipPath = `inset(0 ${textWidth - intersectionEnd}px 0 ${intersectionStart}px)`;
-            maskRef.current.style.opacity = "1";
-          } else {
-            // Esconde o texto invertido quando o quadrado não está sobre ele
-            maskRef.current.style.clipPath = "inset(0 100% 0 0)";
-            maskRef.current.style.opacity = "0";
-          }
+          // O texto dentro do quadrado precisa se mover na direção oposta
+          // para ficar alinhado com o texto base atrás
+          // Compensar: posição do texto base (0) - posição atual do quadrado
+          maskRef.current.style.left = `${-squareX}px`;
         }
       }
+    });
+
+    // Animação de rotação 360° sincronizada com o movimento
+    const rotationAnim = gsap.to(squareRef.current, {
+      rotation: 360,
+      duration: 1.8,
+      repeat: -1,
+      ease: "linear",
+      transformOrigin: "center center"
+    });
+
+    // Animação de pulsação sutil (escala)
+    const pulseAnim = gsap.to(squareRef.current, {
+      scale: 1.05,
+      duration: 0.6,
+      repeat: -1,
+      yoyo: true,
+      ease: "power1.inOut"
     });
 
     // Animação da linha decorativa
@@ -101,7 +109,9 @@ export default function ScrollIndicator() {
     }
 
     return () => {
-      animation.kill();
+      tl.kill();
+      rotationAnim.kill();
+      pulseAnim.kill();
     };
   }, [textWidth]);
 
@@ -143,34 +153,10 @@ export default function ScrollIndicator() {
         >
           [ SCROLL TO EXPLORE ]
         </span>
-
-        {/* Texto invertido com máscara que segue o quadrado */}
-        {/* No modo claro: branco sobre fundo preto do quadrado */}
-        {/* No modo escuro: preto sobre fundo branco do quadrado */}
-        <span
-          ref={maskRef}
-          className="sub-label"
-          style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            color: isDark ? "#000" : "#fff",
-            display: "inline-block",
-            whiteSpace: "nowrap",
-            mixBlendMode: isDark ? "normal" : "difference",
-            zIndex: 2,
-            clipPath: "inset(0 100% 0 0)",
-            opacity: 0,
-            transition: "opacity 0.2s ease, color 0.3s ease"
-          }}
-        >
-          [ SCROLL TO EXPLORE ]
-        </span>
       </div>
 
-      {/* Quadrado que caminha apenas pelo texto */}
-      {/* No modo claro: preto */}
-      {/* No modo escuro: branco */}
+      {/* Quadrado que caminha pelo texto com texto invertido DENTRO */}
+      {/* Seguindo a estrutura CSS original: o texto fica dentro do quadrado */}
       <div
         ref={squareRef}
         style={{
@@ -179,13 +165,35 @@ export default function ScrollIndicator() {
           left: -squareSize,
           width: `${squareSize}px`,
           height: `${squareSize}px`,
-          backgroundColor: isDark ? "#fff" : "#000",
+          backgroundColor: isDark ? "#fff" : "#0d0202",
           transform: "translateY(-50%)",
           zIndex: 3,
           borderRadius: "2px",
-          transition: "background-color 0.3s ease"
+          overflow: "hidden",
+          boxShadow: "0 4px 15px rgba(0, 0, 0, 0.2)"
         }}
-      />
+      >
+        {/* Texto invertido dentro do quadrado */}
+        <span
+          ref={maskRef}
+          className="sub-label"
+          style={{
+            position: "absolute",
+            top: "50%",
+            left: 0,
+            right: 0,
+            transform: "translateY(-50%)",
+            color: isDark ? "#000" : "#fff",
+            whiteSpace: "nowrap",
+            mixBlendMode: "difference",
+            pointerEvents: "none",
+            textAlign: "center",
+            padding: "0 20px"
+          }}
+        >
+          [ SCROLL TO EXPLORE ]
+        </span>
+      </div>
 
       {/* Linha decorativa */}
       <div 
