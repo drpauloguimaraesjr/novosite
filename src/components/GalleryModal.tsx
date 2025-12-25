@@ -435,8 +435,8 @@ function Stylesheet() {
             }
 
             .gallery-modal-content {
-                display: grid !important;
-                grid-template-columns: 1fr 280px !important;
+                display: flex !important;
+                flex-direction: row !important;
                 gap: 30px;
                 width: 100% !important;
                 max-width: 1800px;
@@ -470,17 +470,16 @@ function Stylesheet() {
             }
 
             .gallery-main-image {
-                width: 100%;
+                flex: 1;
+                min-width: 0;
                 height: 100%;
-                min-width: 400px;
-                min-height: 600px;
                 display: flex;
                 align-items: center;
                 justify-content: center;
                 position: relative;
                 background: #111;
                 overflow: hidden;
-                padding: 0;
+                padding: 20px;
                 box-sizing: border-box;
             }
 
@@ -493,23 +492,17 @@ function Stylesheet() {
             .main-image-container {
                 width: 100%;
                 height: 100%;
-                min-height: 500px;
                 display: flex;
                 align-items: center;
                 justify-content: center;
                 position: relative;
-                background: #111;
-                padding: 20px;
-                box-sizing: border-box;
             }
 
             .main-photo {
                 max-width: 100%;
-                max-height: calc(100vh - 200px);
+                max-height: 100%;
                 width: auto;
                 height: auto;
-                min-width: 200px;
-                min-height: 200px;
                 object-fit: contain;
                 display: block !important;
                 visibility: visible !important;
@@ -530,7 +523,8 @@ function Stylesheet() {
             }
 
             .gallery-sidebar {
-                width: 100%;
+                width: 280px;
+                flex-shrink: 0;
                 height: 100%;
                 position: relative;
             }
