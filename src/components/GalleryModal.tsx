@@ -22,6 +22,42 @@ interface GalleryModalProps {
 
 
 function MainImage({ image }: { image: GalleryImage }) {
+    const containerRef = useRef<HTMLDivElement>(null);
+    const imgRef = useRef<HTMLImageElement>(null);
+
+    // Debug: Monitor dimensions
+    useEffect(() => {
+        const logDimensions = () => {
+            const viewport = { width: window.innerWidth, height: window.innerHeight };
+            const container = containerRef.current?.getBoundingClientRect();
+            const img = imgRef.current?.getBoundingClientRect();
+            
+            console.log('[MainImage DEBUG] Viewport:', viewport);
+            console.log('[MainImage DEBUG] Container:', container ? { width: container.width, height: container.height } : 'NOT FOUND');
+            console.log('[MainImage DEBUG] Image:', img ? { width: img.width, height: img.height } : 'NOT FOUND');
+            
+            // Check if image has zero dimensions
+            if (img && (img.width === 0 || img.height === 0)) {
+                console.error('[MainImage DEBUG] ⚠️ IMAGE HAS ZERO DIMENSIONS!');
+                // Try to force a repaint
+                if (imgRef.current) {
+                    imgRef.current.style.display = 'none';
+                    imgRef.current.offsetHeight; // Force reflow
+                    imgRef.current.style.display = 'block';
+                }
+            }
+        };
+
+        // Log on mount
+        setTimeout(logDimensions, 100);
+        setTimeout(logDimensions, 500);
+        setTimeout(logDimensions, 1000);
+
+        // Log on resize
+        window.addEventListener('resize', logDimensions);
+        return () => window.removeEventListener('resize', logDimensions);
+    }, [image]);
+
     console.log('[MainImage] Rendering image:', image?.title, 'src:', image?.img);
     
     if (!image || !image.img) {
@@ -34,13 +70,31 @@ function MainImage({ image }: { image: GalleryImage }) {
     }
 
     return (
-        <div className="main-image-container">
-            <ProxyImage
+        <div className="main-image-container" ref={containerRef}>
+            <img
+                ref={imgRef}
                 className="main-photo"
                 src={image.img}
                 alt={image.title || "Imagem"}
                 onLoad={() => console.log('[MainImage] Image loaded successfully:', image.img)}
-                onError={() => console.error('[MainImage] Image failed to load:', image.img)}
+                onError={(e) => {
+                    console.error('[MainImage] Image failed to load:', image.img);
+                    // Fallback to proxy
+                    const target = e.target as HTMLImageElement;
+                    if (!target.src.includes('/api/image')) {
+                        target.src = `/api/image?url=${encodeURIComponent(image.img)}`;
+                    }
+                }}
+                style={{ 
+                    maxWidth: '100%',
+                    maxHeight: 'calc(100vh - 200px)',
+                    width: 'auto',
+                    height: 'auto',
+                    minWidth: '200px',
+                    minHeight: '200px',
+                    objectFit: 'contain',
+                    display: 'block'
+                }}
             />
             <div className="main-image-info">
                 <span className="sub-label" style={{ fontSize: "0.7rem", opacity: 0.7 }}>
