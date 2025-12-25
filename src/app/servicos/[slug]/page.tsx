@@ -7,6 +7,7 @@ import { ScrollTrigger } from "@/lib/gsap/ScrollTrigger";
 import Link from "next/link";
 import SplitText from "@/components/SplitText";
 import Magnetic from "@/components/Magnetic";
+import ProxyImage from "@/components/ProxyImage";
 import { useContent } from "@/hooks/useContent";
 
 export default function ServicePage() {
@@ -93,7 +94,7 @@ export default function ServicePage() {
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "4rem", marginBottom: "6rem" }}>
           {/* Image */}
           <div style={{ aspectRatio: "4/3", borderRadius: "8px", overflow: "hidden" }}>
-            <img
+            <ProxyImage
               src={service.image}
               alt={service.title}
               style={{ width: "100%", height: "100%", objectFit: "cover" }}

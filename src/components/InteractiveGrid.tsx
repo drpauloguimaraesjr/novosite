@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "@/lib/gsap/ScrollTrigger";
+import ProxyImage from "./ProxyImage";
 
 export default function InteractiveGrid({ data }: { data: any[] }) {
   const sectionRef = useRef(null);
@@ -118,7 +119,7 @@ export default function InteractiveGrid({ data }: { data: any[] }) {
                 />
               ))}
               
-              <img 
+              <ProxyImage 
                 src={item.img} 
                 alt={item.title} 
                 className="grid-item-img"

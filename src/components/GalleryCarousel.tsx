@@ -3,6 +3,7 @@
 import { Carousel } from "motion-plus/react";
 import { useState } from "react";
 import GalleryModal from "./GalleryModal";
+import ProxyImage from "./ProxyImage";
 
 export default function GalleryCarousel({ data }: { data: any[] }) {
     const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
@@ -68,8 +69,7 @@ export default function GalleryCarousel({ data }: { data: any[] }) {
                                 }}
                                 onClick={() => handleImageClick(index)}
                             >
-                                <img
-                                    draggable={false}
+                                <ProxyImage
                                     className="photo"
                                     src={item.img}
                                     alt={item.title}

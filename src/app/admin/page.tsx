@@ -33,11 +33,20 @@ export default function AdminPage() {
   const [authError, setAuthError] = useState("");
   
   const [data, setData] = useState<ContentData>(() => {
-    const initialData = siteData as any;
-    // Garantir que services existe
-    if (!initialData.services) {
-      initialData.services = [];
+    const initialData = JSON.parse(JSON.stringify(siteData)) as any;
+    // Garantir que campos essenciais existam
+    if (!initialData.services) initialData.services = [];
+    if (!initialData.socialReels) initialData.socialReels = [];
+    if (!initialData.categories) initialData.categories = ["A Clínica", "Destaque"];
+    
+    // Garantir que todos os itens tenham IDs únicos para o Reorder
+    initialData.projects = (initialData.projects || []).map((it: any, i: number) => ({ ...it, id: it.id || `p-${Date.now()}-${i}` }));
+    initialData.visualArchive = (initialData.visualArchive || []).map((it: any, i: number) => ({ ...it, id: it.id || `v-${Date.now()}-${i}` }));
+    initialData.socialReels = (initialData.socialReels || []).map((it: any, i: number) => ({ ...it, id: it.id || `s-${Date.now()}-${i}` }));
+    if (initialData.services) {
+      initialData.services = initialData.services.map((it: any, i: number) => ({ ...it, id: it.id || `srv-${Date.now()}-${i}` }));
     }
+    
     return initialData;
   });
   const [activeTab, setActiveTab] = useState("hero");
@@ -45,6 +54,7 @@ export default function AdminPage() {
   const [showToast, setShowToast] = useState(false);
   const [uploading, setUploading] = useState<string | null>(null);
   const [uploadProgress, setUploadProgress] = useState(0);
+  const [adminFilter, setAdminFilter] = useState<string | null>(null);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -60,10 +70,19 @@ export default function AdminPage() {
         const fresh = await getSiteContent();
         if (fresh) {
           const freshData = fresh as any;
-          // Garantir que services existe
-          if (!freshData.services) {
-            freshData.services = [];
-          }
+          // Garantir campos básicos e IDs
+          if (!freshData.services) freshData.services = [];
+          if (!freshData.socialReels) freshData.socialReels = [];
+          
+          // Preservar IDs ou adicionar se faltar
+          const processItems = (items: any[], prefix: string) => 
+            (items || []).map((it, i) => ({ ...it, id: it.id || `${prefix}-${Date.now()}-${i}` }));
+
+          freshData.projects = processItems(freshData.projects, "p");
+          freshData.visualArchive = processItems(freshData.visualArchive, "v");
+          freshData.socialReels = processItems(freshData.socialReels, "s");
+          freshData.services = processItems(freshData.services, "srv");
+
           setData(freshData);
         }
       }
@@ -221,23 +240,29 @@ export default function AdminPage() {
   };
 
   const handleChange = (section: string, field: string, value: any, index?: number, subfield?: string) => {
-    const newData = { ...data };
-    if (index !== undefined) {
-      const sectionData = [...(newData[section as keyof ContentData] as any[])];
-      if (subfield) {
-        sectionData[index][field][subfield] = value;
+    setData(prev => {
+      const newData = { ...prev };
+      if (index !== undefined) {
+        const sectionArray = [...(newData[section as keyof ContentData] as any[])];
+        if (subfield) {
+          if (!sectionArray[index][field]) sectionArray[index][field] = {};
+          sectionArray[index][field][subfield] = value;
+        } else {
+          sectionArray[index][field] = value;
+        }
+        (newData[section as keyof ContentData] as any[]) = sectionArray;
       } else {
-        sectionData[index][field] = value;
+        if (subfield) {
+          if (!(newData[section as keyof ContentData] as any)[field]) {
+             (newData[section as keyof ContentData] as any)[field] = {};
+          }
+          (newData[section as keyof ContentData] as any)[field][subfield] = value;
+        } else {
+          (newData[section as keyof ContentData] as any)[field] = value;
+        }
       }
-      (newData[section as keyof ContentData] as any[]) = sectionData;
-    } else {
-      if (subfield) {
-        (newData[section as keyof ContentData] as any)[field][subfield] = value;
-      } else {
-        (newData[section as keyof ContentData] as any)[field] = value;
-      }
-    }
-    setData(newData);
+      return newData;
+    });
   };
 
   const addItem = (section: string) => {
@@ -247,16 +272,17 @@ export default function AdminPage() {
       newData.navigation.links.push({ label: "Novo Link", url: "#", highlight: false });
     } else if (section === "visualArchive") {
       const newItem = {
-        id: (newData.visualArchive.length + 1),
+        id: `v-${Date.now()}`,
         title: "Novo Item",
-        cat: "Geral",
+        cat: data.categories?.[0] || "Geral",
         img: "/images/clinic/0Y7A0247.jpg",
-        settings: { speed: 1.1, position: "center", size: "medium" }
+        settings: { speed: 1.1, position: "center", size: "medium" },
+        description: ""
       };
       newData.visualArchive.push(newItem);
     } else if (section === "projects") {
       const newItem = {
-        id: String(newData.projects.length + 1).padStart(2, '0'),
+        id: `p-${Date.now()}`,
         title: "Novo Serviço",
         category: "Medicina",
         image: "/images/clinic/0Y7A0247.jpg",
@@ -265,6 +291,7 @@ export default function AdminPage() {
       newData.projects.push(newItem);
     } else if (section === "socialReels") {
       const newItem = {
+        id: `s-${Date.now()}`,
         url: "",
         thumbnail: "/images/clinic/0Y7A0247.jpg",
         caption: "Legenda do Reel"
@@ -276,14 +303,14 @@ export default function AdminPage() {
     } else if (section === "services") {
       if (!newData.services) newData.services = [];
       const newService = {
-        id: (newData.services.length + 1),
+        id: `srv-${Date.now()}`,
         title: "Novo Serviço",
         subtitle: "Subtítulo do serviço",
         description: "Descrição breve do serviço",
         fullDescription: "Descrição completa do serviço",
         image: "/images/clinic/0Y7A0247.jpg",
         thumbnail: "/images/clinic/0Y7A0247.jpg",
-        slug: `novo-servico-${newData.services.length + 1}`
+        slug: `novo-servico-${Date.now()}`
       };
       newData.services.push(newService);
     }
@@ -414,6 +441,71 @@ export default function AdminPage() {
                 <textarea 
                   value={data.hero.description} 
                   onChange={(e) => handleChange("hero", "description", e.target.value)}
+                />
+              </div>
+            </div>
+          )}
+
+          {activeTab === "about" && (
+            <div className={styles.sectionGrid}>
+              <div className={styles.formGroup}>
+                <label>Label</label>
+                <input value={data.about.label} onChange={(e) => handleChange("about", "label", e.target.value)} />
+              </div>
+              <div className={styles.formGroup} style={{ gridColumn: "span 2" }}>
+                <label>Phrase (one line per entry - shows in big reveal)</label>
+                {data.about.phrase && Array.isArray(data.about.phrase) ? (
+                  data.about.phrase.map((line: string, i: number) => (
+                    <div key={i} style={{ display: "flex", gap: "10px", marginBottom: "10px" }}>
+                      <input 
+                        value={line} 
+                        onChange={(e) => {
+                          const newPhrase = [...data.about.phrase];
+                          newPhrase[i] = e.target.value;
+                          handleChange("about", "phrase", newPhrase);
+                        }} 
+                        style={{ flex: 1 }}
+                      />
+                      <button 
+                        onClick={() => {
+                          const newPhrase = data.about.phrase.filter((_: any, idx: number) => idx !== i);
+                          handleChange("about", "phrase", newPhrase);
+                        }}
+                        style={{ background: "#ff4444", border: "none", color: "#fff", padding: "0 15px", borderRadius: "4px", cursor: "pointer", fontSize: "0.7rem" }}
+                      >
+                        [ REMOVER ]
+                      </button>
+                    </div>
+                  ))
+                ) : (
+                  <p style={{ opacity: 0.5, fontSize: "0.7rem" }}>Nenhuma frase configurada.</p>
+                )}
+                <button 
+                  className={styles.saveButton} 
+                  style={{ width: "auto", padding: "8px 20px", fontSize: "0.6rem", marginTop: "10px", background: "#333" }}
+                  onClick={() => {
+                    const currentPhrase = Array.isArray(data.about.phrase) ? data.about.phrase : [];
+                    const newPhrase = [...currentPhrase, "Nova Linha"];
+                    handleChange("about", "phrase", newPhrase);
+                  }}
+                >
+                  + ADICIONAR LINHA
+                </button>
+              </div>
+              <div className={styles.formGroup}>
+                <label>Description (main paragraph)</label>
+                <textarea 
+                  value={data.about.description} 
+                  onChange={(e) => handleChange("about", "description", e.target.value)}
+                  style={{ minHeight: "120px" }}
+                />
+              </div>
+              <div className={styles.formGroup}>
+                <label>Location / Details (bottom text)</label>
+                <textarea 
+                  value={data.about.location} 
+                  onChange={(e) => handleChange("about", "location", e.target.value)}
+                  style={{ minHeight: "100px" }}
                 />
               </div>
             </div>
@@ -601,26 +693,40 @@ export default function AdminPage() {
                 {["TODOS", ...Array.from(new Set(data.visualArchive.map(i => i.cat)))].map(cat => (
                   <button 
                     key={cat} 
-                    onClick={() => (window as any).adminFilter = cat === "TODOS" ? null : cat}
-                    style={{ background: "#111", border: "none", color: "#fff", fontSize: "0.6rem", padding: "5px 12px", borderRadius: "20px", cursor: "pointer" }}
+                    onClick={() => setAdminFilter(cat === "TODOS" ? null : cat)}
+                    style={{ 
+                      background: adminFilter === (cat === "TODOS" ? null : cat) ? "#fff" : "#111", 
+                      color: adminFilter === (cat === "TODOS" ? null : cat) ? "#000" : "#fff",
+                      border: "none", 
+                      fontSize: "0.6rem", 
+                      padding: "5px 12px", 
+                      borderRadius: "20px", 
+                      cursor: "pointer",
+                      transition: "all 0.3s ease"
+                    }}
                   >
                     {cat}
                   </button>
                 ))}
               </div>
 
-
-
-              <Reorder.Group axis="y" values={data.visualArchive} onReorder={(newItems) => setReorderedItems("visualArchive", newItems)}>
-                {data.visualArchive.map((item, i) => (
+              <Reorder.Group 
+                axis="y" 
+                values={data.visualArchive} 
+                onReorder={(newItems) => setReorderedItems("visualArchive", newItems)}
+              >
+                {data.visualArchive
+                  .map((item, i) => ({ item, originalIndex: i }))
+                  .filter(({ item }) => !adminFilter || item.cat === adminFilter)
+                  .map(({ item, originalIndex }) => (
                   <Reorder.Item key={item.id} value={item} className={styles.itemRef}>
                     <div className={styles.itemCard} style={{ cursor: "grab" }}>
                       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
                         <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
                           <div style={{ background: "#333", padding: "4px 8px", borderRadius: "4px", fontSize: "0.6rem" }}>⠿ DRAG</div>
-                          <h4 style={{ fontSize: "0.9rem" }}>ARCHIVE: {i + 1}</h4>
+                          <h4 style={{ fontSize: "0.9rem" }}>ARCHIVE: {originalIndex + 1}</h4>
                         </div>
-                        <button onClick={() => removeItem("visualArchive", i)} style={{ color: "#ff4444", fontSize: "0.7rem", background: "none", border: "none", cursor: "pointer" }}>[ REMOVE ]</button>
+                        <button onClick={() => removeItem("visualArchive", originalIndex)} style={{ color: "#ff4444", fontSize: "0.7rem", background: "none", border: "none", cursor: "pointer" }}>[ REMOVE ]</button>
                       </div>
                       <div className={styles.formRow}>
                         <div className={styles.formGroup}>
@@ -631,14 +737,14 @@ export default function AdminPage() {
                               type="file" 
                               accept="image/*"
                               style={{ fontSize: "0.7rem" }}
-                              onChange={(e) => e.target.files?.[0] && handleUpload("visualArchive", i, "img", e.target.files[0])}
+                              onChange={(e) => e.target.files?.[0] && handleUpload("visualArchive", originalIndex, "img", e.target.files[0])}
                             />
-                            {uploading === `visualArchive-${i}-img` && <span>...</span>}
+                            {uploading === `visualArchive-${originalIndex}-img` && <span>...</span>}
                           </div>
                         </div>
                         <div className={styles.formGroup}>
                           <label>Size</label>
-                          <select value={item.settings.size || "medium"} onChange={(e) => handleChange("visualArchive", "settings", e.target.value, i, "size")}>
+                          <select value={item.settings.size || "medium"} onChange={(e) => handleChange("visualArchive", "settings", e.target.value, originalIndex, "size")}>
                             <option value="small">Pequeña (Span 4)</option>
                             <option value="medium">Media (Span 6)</option>
                             <option value="large">Grande (Span 8)</option>
@@ -649,13 +755,13 @@ export default function AdminPage() {
                       <div className={styles.formRow}>
                         <div className={styles.formGroup}>
                           <label>Title</label>
-                          <input value={item.title} onChange={(e) => handleChange("visualArchive", "title", e.target.value, i)} />
+                          <input value={item.title} onChange={(e) => handleChange("visualArchive", "title", e.target.value, originalIndex)} />
                         </div>
                         <div className={styles.formGroup}>
                           <label>Category (Group)</label>
                           <select 
                             value={item.cat} 
-                            onChange={(e) => handleChange("visualArchive", "cat", e.target.value, i)}
+                            onChange={(e) => handleChange("visualArchive", "cat", e.target.value, originalIndex)}
                             style={{ width: "100%", padding: "8px", background: "#111", border: "1px solid #333", color: "#fff", fontSize: "0.75rem", borderRadius: "4px" }}
                           >
                              {(data.categories || ["Geral", item.cat]).map((cat, idx) => (
@@ -669,7 +775,7 @@ export default function AdminPage() {
                         <textarea 
                           value={item.description || ""} 
                           placeholder="Escreva uma pequena legenda ou curiosidade sobre esta imagem..."
-                          onChange={(e) => handleChange("visualArchive", "description", e.target.value, i)} 
+                          onChange={(e) => handleChange("visualArchive", "description", e.target.value, originalIndex)} 
                           style={{ minHeight: "60px", fontSize: "0.8rem" }}
                         />
                       </div>
@@ -703,47 +809,123 @@ export default function AdminPage() {
             </div>
           )}
 
+          {activeTab === "socialReels" && (
+            <div className={styles.itemsList}>
+              <Reorder.Group axis="y" values={data.socialReels} onReorder={(newItems) => setReorderedItems("socialReels", newItems)}>
+                {(data.socialReels || []).map((item, i) => (
+                  <Reorder.Item key={item.id || i} value={item} className={styles.itemRef}>
+                    <div className={styles.itemCard} style={{ cursor: "grab" }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
+                        <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+                          <div style={{ background: "#333", padding: "4px 8px", borderRadius: "4px", fontSize: "0.6rem" }}>⠿ ARRASTAR</div>
+                          <h4 style={{ fontSize: "0.9rem" }}>REEL: {i + 1}</h4>
+                        </div>
+                        <button onClick={() => removeItem("socialReels", i)} style={{ color: "#ff4444", fontSize: "0.7rem", border: "none", background: "none", cursor: "pointer" }}>[ REMOVER ]</button>
+                      </div>
+                      <div className={styles.formRow}>
+                        <div className={styles.formGroup}>
+                          <label>Miniatura (Capa do Reel)</label>
+                          <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+                            <img src={item.thumbnail} style={{ width: "45px", height: "80px", objectFit: "cover", borderRadius: "2px" }} />
+                            <input 
+                              type="file" 
+                              accept="image/*" 
+                              style={{ fontSize: "0.7rem" }}
+                              onChange={(e) => e.target.files?.[0] && handleUpload("socialReels", i, "thumbnail", e.target.files[0])}
+                            />
+                            {uploading === `socialReels-${i}-thumbnail` && <span>...</span>}
+                          </div>
+                        </div>
+                        <div className={styles.formGroup}>
+                          <label>Link do Reel (Instagram)</label>
+                          <input 
+                            value={item.url} 
+                            onChange={(e) => handleChange("socialReels", "url", e.target.value, i)} 
+                            placeholder="https://instagram.com/reel/..." 
+                          />
+                        </div>
+                      </div>
+                      <div className={styles.formGroup} style={{ marginTop: "1rem" }}>
+                        <label>Legenda (Aparece ao passar o mouse)</label>
+                        <textarea 
+                          value={item.caption} 
+                          onChange={(e) => handleChange("socialReels", "caption", e.target.value, i)} 
+                          style={{ minHeight: "60px", fontSize: "0.8rem" }}
+                        />
+                      </div>
+                    </div>
+                  </Reorder.Item>
+                ))}
+              </Reorder.Group>
+            </div>
+          )}
+
           {activeTab === "contact" && (
             <div className={styles.sectionGrid}>
               <div className={styles.formGroup}>
-                <label>Title</label>
-                <textarea value={data.contact.title} onChange={(e) => handleChange("contact", "title", e.target.value)} />
+                <label>Label Superior</label>
+                <input value={data.contact.label} onChange={(e) => handleChange("contact", "label", e.target.value)} />
               </div>
               <div className={styles.formGroup}>
-                <label>Email</label>
+                <label>Título da Seção (use \n p/ quebra)</label>
+                <textarea 
+                  value={data.contact.title} 
+                  onChange={(e) => handleChange("contact", "title", e.target.value)}
+                  style={{ minHeight: "80px" }}
+                />
+              </div>
+              <div className={styles.formGroup}>
+                <label>Texto do Botão CTA</label>
+                <input value={data.contact.button} onChange={(e) => handleChange("contact", "button", e.target.value)} />
+              </div>
+              <div className={styles.formGroup}>
+                <label>Email de Contato</label>
                 <input value={data.contact.email} onChange={(e) => handleChange("contact", "email", e.target.value)} />
               </div>
               <div className={styles.formGroup}>
-                <label>Phone</label>
+                <label>Telefone / WhatsApp</label>
                 <input value={data.contact.phone} onChange={(e) => handleChange("contact", "phone", e.target.value)} />
+              </div>
+              <div className={styles.formGroup}>
+                <label>Endereço - Rua e Número</label>
+                <input value={data.contact.address?.street} onChange={(e) => handleChange("contact", "address", e.target.value, undefined, "street")} />
+              </div>
+              <div className={styles.formGroup}>
+                <label>Endereço - Cidade e Estado</label>
+                <input value={data.contact.address?.city} onChange={(e) => handleChange("contact", "address", e.target.value, undefined, "city")} />
               </div>
             </div>
           )}
 
           {activeTab === "categories" && (
-            <div className={styles.sectionGrid}>
-              <div style={{gridColumn: "1 / -1", marginBottom: "1rem", fontSize: "0.8rem", color: "rgba(255,255,255,0.5)"}}>
-                GERENCIAR CATEGORIAS DISPONÍVEIS PARA UPLOAD
+            <div className={styles.itemsList}>
+              <div className={styles.itemCard}>
+                 <h4 style={{ fontSize: "0.8rem", marginBottom: "1.5rem" }}>CATEGORIAS DO ARQUIVO VISUAL</h4>
+                 <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+                   {(data.categories || []).map((cat, idx) => (
+                     <div key={idx} style={{ display: "flex", gap: "10px" }}>
+                       <input 
+                         value={cat} 
+                         onChange={(e) => updateCategory(idx, e.target.value)} 
+                         style={{ flex: 1 }}
+                       />
+                       <button 
+                         onClick={() => removeCategory(idx)}
+                         style={{ background: "#ff4444", border: "none", color: "#fff", padding: "0 15px", borderRadius: "4px", fontSize: "0.7rem", cursor: "pointer" }}
+                       >
+                         [ X ]
+                       </button>
+                     </div>
+                   ))}
+                   <button 
+                    className={styles.saveButton}
+                    style={{ background: "#333", marginTop: "1rem", width: "auto", padding: "10px 20px", fontSize: "0.6rem" }}
+                    onClick={() => addItem("categories")}
+                   >
+                     + ADICIONAR CATEGORIA
+                   </button>
+                 </div>
               </div>
-              {(data.categories || []).map((cat, i) => (
-                <div key={i} className={styles.itemCard}>
-                  <div className={styles.formRow}>
-                    <div className={styles.formGroup} style={{flex: 1}}>
-                      <input 
-                        value={cat} 
-                        onChange={(e) => updateCategory(i, e.target.value)} 
-                        placeholder="Nome da Categoria"
-                      />
-                    </div>
-                    <button 
-                      onClick={() => removeCategory(i)} 
-                      style={{ color: "#ff4444", fontSize: "0.7rem", background: "none", border: "none", cursor: "pointer", padding: "0 10px" }}
-                    >
-                      [ REMOVER ]
-                    </button>
-                  </div>
-                </div>
-              ))}
             </div>
           )}
         </div>

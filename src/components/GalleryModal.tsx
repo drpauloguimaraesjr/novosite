@@ -3,6 +3,7 @@
 import { Carousel, useCarousel } from "motion-plus/react";
 import { motion, AnimatePresence } from "motion/react";
 import { useEffect, useState, useRef } from "react";
+import ProxyImage from "./ProxyImage";
 
 interface GalleryImage {
     id: number;
@@ -34,30 +35,12 @@ function MainImage({ image }: { image: GalleryImage }) {
 
     return (
         <div className="main-image-container">
-            <img
-                draggable={false}
+            <ProxyImage
                 className="main-photo"
                 src={image.img}
                 alt={image.title || "Imagem"}
-                onLoad={(e) => {
-                    console.log('[MainImage] Image loaded successfully:', image.img);
-                    const target = e.currentTarget;
-                    const rect = target.getBoundingClientRect();
-                    console.log('[MainImage] Image dimensions after load:', {
-                        width: rect.width,
-                        height: rect.height,
-                        naturalWidth: target.naturalWidth,
-                        naturalHeight: target.naturalHeight,
-                        computedStyle: window.getComputedStyle(target).display
-                    });
-                }}
-                onError={(e) => {
-                    console.error('[MainImage] Image failed to load:', image.img);
-                    const target = e.currentTarget;
-                    target.style.border = "2px solid red";
-                    target.style.padding = "20px";
-                    target.alt = "Erro ao carregar imagem";
-                }}
+                onLoad={() => console.log('[MainImage] Image loaded successfully:', image.img)}
+                onError={() => console.error('[MainImage] Image failed to load:', image.img)}
             />
             <div className="main-image-info">
                 <span className="sub-label" style={{ fontSize: "0.7rem", opacity: 0.7 }}>
@@ -161,8 +144,7 @@ function SidebarPhotoItemWrapper({ image, index, isSelected, onPhotoClick }: { i
             onClick={() => onPhotoClick(index)}
             style={{ cursor: "pointer" }}
         >
-            <img
-                draggable={false}
+            <ProxyImage
                 className="sidebar-photo"
                 src={image.img}
                 alt={image.title}

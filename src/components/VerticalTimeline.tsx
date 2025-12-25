@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { motion, useScroll, useTransform } from "motion/react";
 import { useInView } from "framer-motion";
+import ProxyImage from "./ProxyImage";
 
 interface TimelineItem {
     id: string | number;
@@ -104,7 +105,7 @@ function TimelineItemComponent({
     isEven: boolean;
 }) {
     const itemRef = useRef<HTMLDivElement>(null);
-    const itemInView = useInView(itemRef, { once: true, margin: "-100px" });
+    const itemInView = useInView(itemRef, { once: true, margin: "-50px" });
 
     return (
         <motion.div
@@ -181,7 +182,7 @@ function TimelineItemComponent({
                     whileHover={{ scale: 1.05 }}
                     transition={{ duration: 0.3 }}
                 >
-                    <img
+                    <ProxyImage
                         src={item.image}
                         alt={item.title}
                         style={{

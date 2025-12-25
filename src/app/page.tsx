@@ -106,61 +106,64 @@ export default function Home() {
   }, [mounted]);
 
   useEffect(() => {
-    if (!mounted || !siteData) {
-      console.log('[Home] useEffect skipped - mounted:', mounted, 'siteData:', !!siteData);
-      return;
-    }
+    // Wait for data and mounting
+    if (!mounted || !siteData || !siteData.hero) return;
 
-    console.log('[Home] Setting up GSAP animations');
+    console.log('[Home] Initializing animations...');
     gsap.registerPlugin(ScrollTrigger);
 
     const ctx = gsap.context(() => {
-      // Entrance Animation for the "Scroll to Explore" line
+      // Entrance Animation
       gsap.from(".scroll-line", {
         scaleY: 0,
         duration: 1.5,
-        delay: 2.5,
+        delay: 2,
         ease: "power4.inOut"
       });
 
       // Reveal project list items
-      const projectItems = document.querySelectorAll(".project-item");
+      const projectItems = gsap.utils.toArray(".project-item") as HTMLElement[];
       if (projectItems.length > 0) {
-        gsap.from(projectItems, {
-          y: 60,
-          opacity: 0,
-          stagger: 0.15,
-          duration: 1.2,
-          ease: "power4.out",
-          scrollTrigger: {
-            trigger: ".project-list",
-            start: "top 85%",
-          },
+        projectItems.forEach((item, i) => {
+          gsap.from(item, {
+            y: 40,
+            opacity: 0,
+            duration: 1,
+            ease: "power3.out",
+            scrollTrigger: {
+              trigger: item,
+              start: "top 92%",
+              once: true
+            },
+          });
         });
       }
 
       // Theme Toggle (Light to Dark on scroll)
-      if (document.querySelector(".about-section")) {
+      const aboutSection = document.querySelector(".about-section");
+      if (aboutSection) {
         ScrollTrigger.create({
-          trigger: ".about-section",
+          trigger: aboutSection,
           start: "top 50%",
           onEnter: () => document.body.classList.add("dark-theme"),
           onLeaveBack: () => document.body.classList.remove("dark-theme"),
         });
       }
 
-      if (document.querySelector(".horizontal-scroll-section")) {
+      const horizontalSection = document.querySelector(".horizontal-scroll-section");
+      if (horizontalSection) {
         ScrollTrigger.create({
-          trigger: ".horizontal-scroll-section",
+          trigger: horizontalSection,
           start: "top 50%",
           onEnter: () => document.body.classList.add("dark-theme"),
           onEnterBack: () => document.body.classList.add("dark-theme"),
         });
       }
 
-      if (document.querySelector(".contact-section")) {
+      const contactSection = document.querySelector(".contact-section");
+      if (contactSection) {
         ScrollTrigger.create({
-          trigger: ".contact-section",
+          trigger: contactSection,
           start: "top 50%",
           onEnter: () => document.body.classList.add("dark-theme"),
         });
@@ -187,9 +190,8 @@ export default function Home() {
         const container = item.querySelector(".project-preview-container");
         const layers = item.querySelectorAll(".project-preview");
         
-        const handleMouseMove = (e: Event) => {
-          const mouseEvent = e as MouseEvent;
-          const { clientX, clientY } = mouseEvent;
+        const handleMouseMove = (e: MouseEvent) => {
+          const { clientX, clientY } = e;
           const rect = item.getBoundingClientRect();
           
           const x = clientX - rect.left;
@@ -218,15 +220,34 @@ export default function Home() {
           });
         };
         
-        (item as HTMLElement).addEventListener("mousemove", handleMouseMove);
-        
-        // Cleanup será feito pelo ctx.revert()
+        item.addEventListener("mousemove", handleMouseMove);
+      });
+
+      // Sync ScrollTriggers after layout
+      const refreshSignals = [200, 1000, 2500, 5000];
+      refreshSignals.forEach(delay => {
+        setTimeout(() => {
+          console.log(`[Home] Triggering ScrollTrigger refresh (${delay}ms)`);
+          ScrollTrigger.refresh();
+        }, delay);
       });
 
     }, containerRef);
 
-    return () => ctx.revert();
+    return () => {
+      ctx.revert();
+      ScrollTrigger.getAll().forEach(t => t.kill());
+    };
   }, [mounted, siteData]);
+
+  useEffect(() => {
+    if (mounted && siteData) {
+      console.log('[Home] siteData updated, refreshing ScrollTrigger');
+      setTimeout(() => {
+        ScrollTrigger.refresh();
+      }, 500);
+    }
+  }, [siteData, mounted]);
 
   if (!mounted) return null;
 
@@ -326,7 +347,7 @@ export default function Home() {
           >
             <span className="id">[{String(idx + 1).padStart(3, '0')}]</span>
             <div className="title">
-              <SplitText text={project.title} trigger delay={0.1} />
+              <SplitText text={project.title} delay={0.3} />
             </div>
             <div className="category">{project.category}</div>
             

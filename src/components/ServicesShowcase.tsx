@@ -5,6 +5,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "@/lib/gsap/ScrollTrigger";
 import Link from "next/link";
 import { useContent } from "@/hooks/useContent";
+import ProxyImage from "./ProxyImage";
 
 interface Service {
   id: number;
@@ -28,27 +29,26 @@ export default function ServicesShowcase() {
 
     const ctx = gsap.context(() => {
       // Animate service cards on scroll
-      const cards = gsap.utils.toArray(".service-card");
+      const cards = gsap.utils.toArray(".service-miniature-card");
       
       cards.forEach((card: any, index) => {
         gsap.from(card, {
-          y: 100,
+          y: 40,
           opacity: 0,
-          duration: 1.2,
-          ease: "power4.out",
+          duration: 1,
+          ease: "power3.out",
           scrollTrigger: {
             trigger: card,
-            start: "top 85%",
-            end: "top 50%",
-            scrub: 1,
+            start: "top 92%",
+            once: true,
           }
         });
 
-        // Parallax effect on image
-        const image = card.querySelector(".service-image");
+        // Parallax effect on image - Keep scrub for parallax
+        const image = card.querySelector(".service-miniature-image");
         if (image) {
           gsap.to(image, {
-            yPercent: -20,
+            yPercent: -10,
             ease: "none",
             scrollTrigger: {
               trigger: card,
@@ -60,14 +60,18 @@ export default function ServicesShowcase() {
         }
       });
 
+      // Importante: Refresh após inicializar tudo
+      ScrollTrigger.refresh();
+
       // Hover animation for cards
       cards.forEach((card: any) => {
-        const image = card.querySelector(".service-image-container");
+        const imageContainer = card.querySelector(".service-miniature-image-container");
+        const image = card.querySelector(".service-miniature-image");
         
         card.addEventListener("mouseenter", () => {
           gsap.to(image, {
-            scale: 1.05,
-            duration: 0.6,
+            scale: 1.1,
+            duration: 0.8,
             ease: "power3.out"
           });
         });
@@ -75,7 +79,7 @@ export default function ServicesShowcase() {
         card.addEventListener("mouseleave", () => {
           gsap.to(image, {
             scale: 1,
-            duration: 0.6,
+            duration: 0.8,
             ease: "power3.out"
           });
         });
@@ -111,14 +115,10 @@ export default function ServicesShowcase() {
             </div>
             
             <div className="service-miniature-image-container">
-              <img
+              <ProxyImage
                 src={service.thumbnail || service.image}
                 alt={service.title}
                 className="service-miniature-image"
-                onError={(e) => {
-                  const target = e.currentTarget;
-                  target.src = "data:image/svg+xml,%3Csvg width='400' height='300' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='400' height='300' fill='%23f0f0f0'/%3E%3Ctext x='50%25' y='50%25' font-family='Arial' font-size='18' fill='%23999' text-anchor='middle' dominant-baseline='middle'%3EImagem em breve%3C/text%3E%3C/svg%3E";
-                }}
               />
             </div>
 

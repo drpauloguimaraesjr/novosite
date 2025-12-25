@@ -43,24 +43,27 @@ export default function SplitText({ text, className, trigger, delay = 0, interac
         split.chars,
         { 
           opacity: 0,
-          scale: 0.8
+          scale: 0.8,
+          y: 20
         },
         {
           opacity: 1,
           scale: 1,
-          duration: 1.2,
+          y: 0,
+          duration: 1,
           stagger: 0.02,
           ease: "power3.out",
           delay: delay,
           scrollTrigger: trigger ? {
             trigger: textRef.current,
             start: "top 95%",
+            onEnter: () => console.log('[SplitText] Animation triggered by scroll'),
+            once: true // Garantir que só rode uma vez e fique visível
           } : null,
           onComplete: () => {
+            console.log('[SplitText] Animation complete');
             // Garantir que todas as letras tenham opacidade 1 após animação
-            split.chars.forEach((letter: HTMLElement) => {
-              gsap.set(letter, { opacity: 1 });
-            });
+            gsap.set(split.chars, { opacity: 1, clearProps: "transform" });
           }
         }
       );
