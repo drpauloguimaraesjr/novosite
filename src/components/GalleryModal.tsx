@@ -418,12 +418,13 @@ function Stylesheet() {
             .gallery-main-image {
                 width: 100%;
                 height: 100%;
+                min-width: 400px;
                 min-height: 600px;
                 display: flex;
                 align-items: center;
                 justify-content: center;
                 position: relative;
-                background: #000;
+                background: #111;
                 overflow: hidden;
                 padding: 0;
                 box-sizing: border-box;
@@ -438,22 +439,25 @@ function Stylesheet() {
             .main-image-container {
                 width: 100%;
                 height: 100%;
+                min-height: 500px;
                 display: flex;
                 align-items: center;
                 justify-content: center;
                 position: relative;
-                background: #000;
-                padding: 40px;
+                background: #111;
+                padding: 20px;
                 box-sizing: border-box;
             }
 
             .main-photo {
-                width: 100%;
-                height: 100%;
                 max-width: 100%;
                 max-height: calc(100vh - 200px);
+                width: auto;
+                height: auto;
+                min-width: 200px;
+                min-height: 200px;
                 object-fit: contain;
-                display: block;
+                display: block !important;
                 visibility: visible !important;
                 opacity: 1 !important;
             }
