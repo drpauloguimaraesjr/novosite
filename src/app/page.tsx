@@ -375,40 +375,7 @@ export default function Home() {
         title="Nossos Serviços"
       />
 
-      {/* Playground - Estilo Eva Sanchez */}
-      {siteData.playground && Array.isArray(siteData.playground) && siteData.playground.length > 0 && (
-        <Playground 
-          items={siteData.playground.map((item: any, index: number) => {
-            // Verificar se já tem estrutura de playground ou é do formato antigo
-            if (item.images && Array.isArray(item.images)) {
-              return {
-                id: item.id || item.number || `playground-${index}`,
-                number: item.number || String(index + 1).padStart(3, '0'),
-                title: item.title,
-                description: item.description,
-                images: item.images,
-                category: item.category
-              };
-            } else {
-              // Formato antigo - agrupar por categoria ou criar seções
-              return {
-                id: `playground-${index}`,
-                number: String(index + 1).padStart(3, '0'),
-                title: item.title,
-                description: item.desc || item.description,
-                images: [item.img].filter(Boolean),
-                category: item.category || item.cat
-              };
-            }
-          })}
-          title="Playground"
-        />
-      )}
 
-      {/* HorizontalScroll usa dados diferentes - manter compatibilidade */}
-      {siteData.playground && siteData.playground.some((item: any) => item.img) && (
-        <HorizontalScroll data={siteData.playground.filter((item: any) => item.img)} />
-      )}
       <SocialReel />
       <Marquee />
       <ContactSection />
