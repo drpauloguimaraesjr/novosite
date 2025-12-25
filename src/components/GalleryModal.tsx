@@ -448,15 +448,14 @@ function Stylesheet() {
             }
 
             .main-photo {
-                width: auto;
-                height: auto;
-                max-width: calc(100% - 80px);
+                width: 100%;
+                height: 100%;
+                max-width: 100%;
                 max-height: calc(100vh - 200px);
                 object-fit: contain;
                 display: block;
-                margin: 0 auto;
-                visibility: visible;
-                opacity: 1;
+                visibility: visible !important;
+                opacity: 1 !important;
             }
 
             .main-image-info {
