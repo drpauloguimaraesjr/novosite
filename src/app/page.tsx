@@ -185,44 +185,6 @@ export default function Home() {
         });
       });
 
-      // Project Preview Follow Mouse with Stacking Lag
-      projectItems.forEach((item) => {
-        const container = item.querySelector(".project-preview-container");
-        const layers = item.querySelectorAll(".project-preview");
-        
-        const handleMouseMove = (e: MouseEvent) => {
-          const { clientX, clientY } = e;
-          const rect = item.getBoundingClientRect();
-          
-          const x = clientX - rect.left;
-          const y = clientY - rect.top;
-
-          if (container) {
-            gsap.to(container, {
-              x: x - 200, 
-              y: y - 125,
-              duration: 0.8,
-              ease: "power3.out",
-              overwrite: "auto"
-            });
-          }
-
-          // Offset individual layers for the ghosting effect
-          layers.forEach((layer, idx) => {
-            if (idx === 0) return;
-            gsap.to(layer, {
-              x: (clientX - (window.innerWidth / 2)) * 0.05 * idx,
-              y: (clientY - (window.innerHeight / 2)) * 0.05 * idx,
-              duration: 1.2,
-              ease: "power2.out",
-              overwrite: "auto"
-            });
-          });
-        };
-        
-        item.addEventListener("mousemove", handleMouseMove);
-      });
-
       // Sync ScrollTriggers after layout
       const refreshSignals = [200, 1000, 2500, 5000];
       refreshSignals.forEach(delay => {
