@@ -93,7 +93,7 @@ export default function ServicesShowcase() {
   return (
     <section ref={containerRef} id="services" className="services-showcase">
       <div className="services-header">
-        <span className="sub-label">[ PRINCIPAIS SERVIÇOS ]</span>
+        <span className="sub-label">[ Por que somos muito procurados? ]</span>
         <h2 className="services-title">
           Transforme sua saúde<br />
           com tratamentos integrados
