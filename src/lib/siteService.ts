@@ -1,4 +1,4 @@
-import { db } from "./firebase";
+import { db as getDb } from "./firebase";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import localData from "@/data/content.json";
 
@@ -7,7 +7,13 @@ const COLLECTION = "site-config";
 
 export async function getSiteContent() {
   try {
-    const docRef = doc(db, COLLECTION, DOC_ID);
+    const dbInstance = getDb();
+    if (!dbInstance) {
+      console.log("[siteService] Firebase not initialized, using local data");
+      return localData;
+    }
+    
+    const docRef = doc(dbInstance, COLLECTION, DOC_ID);
     const docSnap = await getDoc(docRef);
 
     if (docSnap.exists()) {
@@ -23,6 +29,10 @@ export async function getSiteContent() {
 }
 
 export async function updateSiteContent(data: any) {
-  const docRef = doc(db, COLLECTION, DOC_ID);
+  const dbInstance = getDb();
+  if (!dbInstance) {
+    throw new Error("Firebase not initialized");
+  }
+  const docRef = doc(dbInstance, COLLECTION, DOC_ID);
   await setDoc(docRef, data);
 }

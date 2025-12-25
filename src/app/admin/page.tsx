@@ -3,11 +3,14 @@
 import { useState, useEffect, useCallback } from "react";
 import siteData from "@/data/content.json";
 import styles from "./admin.module.css";
-import { auth, storage } from "@/lib/firebase";
-import { onAuthStateChanged, signInWithEmailAndPassword, signOut, User } from "firebase/auth";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { auth as getAuth, storage as getStorage } from "@/lib/firebase";
+import { onAuthStateChanged, signInWithEmailAndPassword, signOut, User, Auth } from "firebase/auth";
+import { ref, uploadBytes, getDownloadURL, FirebaseStorage } from "firebase/storage";
 import { getSiteContent } from "@/lib/siteService";
 import { Reorder, motion, AnimatePresence } from "framer-motion";
+
+// Force dynamic rendering to avoid build-time Firebase errors
+export const dynamic = 'force-dynamic';
 
 interface ContentData {
   hero: any;
@@ -57,7 +60,12 @@ export default function AdminPage() {
   const [adminFilter, setAdminFilter] = useState<string | null>(null);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+    const authInstance = getAuth();
+    if (!authInstance) {
+      setLoading(false);
+      return;
+    }
+    const unsubscribe = onAuthStateChanged(authInstance, (currentUser) => {
       setUser(currentUser);
       setLoading(false);
     });
@@ -95,20 +103,27 @@ export default function AdminPage() {
     setLoading(true);
     setAuthError("");
     try {
-      await signInWithEmailAndPassword(auth, email, password);
+      const authInstance = getAuth();
+      if (!authInstance) throw new Error("Firebase not initialized");
+      await signInWithEmailAndPassword(authInstance, email, password);
     } catch (err: any) {
       setAuthError("CREDENCIAIS INVÁLIDAS. TENTE NOVAMENTE.");
     }
     setLoading(false);
   };
 
-  const handleLogout = () => signOut(auth);
+  const handleLogout = () => {
+    const authInstance = getAuth();
+    if (authInstance) signOut(authInstance);
+  };
 
   const handleUpload = async (section: string, index: number, field: string, file: File) => {
     const uploadKey = `${section}-${index}-${field}`;
     setUploading(uploadKey);
     try {
-      const storageRef = ref(storage, `site-images/${Date.now()}-${file.name}`);
+      const storageInstance = getStorage();
+      if (!storageInstance) throw new Error("Firebase Storage not initialized");
+      const storageRef = ref(storageInstance, `site-images/${Date.now()}-${file.name}`);
       await uploadBytes(storageRef, file);
       const url = await getDownloadURL(storageRef);
       handleChange(section, field, url, index);
@@ -186,7 +201,9 @@ export default function AdminPage() {
         const compressedBlob = await compressImage(file);
         
         // 2. Upload
-        const storageRef = ref(storage, `site-images/${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.]/g, "_")}`);
+        const storageInstance = getStorage();
+        if (!storageInstance) throw new Error("Firebase Storage not initialized");
+        const storageRef = ref(storageInstance, `site-images/${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.]/g, "_")}`);
         await uploadBytes(storageRef, compressedBlob);
         const url = await getDownloadURL(storageRef);
         
