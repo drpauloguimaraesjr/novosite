@@ -382,9 +382,28 @@ export default function Home() {
 
       {/* Final Footer Section */}
       <footer style={{ padding: "40px", backgroundColor: "var(--text-color)", color: "var(--bg-color)" }}>
-        <div style={{ borderTop: "1px solid rgba(248, 246, 242, 0.1)", paddingTop: "40px", display: "flex", justifyContent: "space-between" }}>
-          <div className="sub-label">© 2025 DESIGN HOUSE</div>
-          <div className="sub-label">DESIGNED BY ES_STUDIO</div>
+        <div style={{ 
+          borderTop: "1px solid rgba(248, 246, 242, 0.1)", 
+          paddingTop: "40px", 
+          display: "flex", 
+          flexDirection: "column",
+          alignItems: "center",
+          textAlign: "center",
+          gap: "15px"
+        }}>
+          <div className="sub-label" style={{ opacity: 0.7 }}>© 2025 Todos os direitos reservados.</div>
+          <div className="sub-label" style={{ fontSize: "0.65rem", opacity: 0.5 }}>
+            P C GUIMARAES JUNIOR LTDA – CNPJ 14.705.723/0001-09
+          </div>
+          <div className="sub-label" style={{ fontSize: "0.65rem", opacity: 0.5 }}>
+            Rua Blumenau, 797 – Joinville/SC
+          </div>
+          <div className="sub-label" style={{ fontSize: "0.65rem", opacity: 0.5 }}>
+            contato@drpauloguimaraesjr.com.br
+          </div>
+          <div className="sub-label" style={{ fontSize: "0.7rem", opacity: 0.6, marginTop: "10px" }}>
+            RT: CRM-SC 21698
+          </div>
         </div>
       </footer>
     </div>
