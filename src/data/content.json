@@ -36,6 +36,7 @@
       "id": "01",
       "title": "Endocrinologia Avançada",
       "category": "Medicina Integrada",
+      "description": "Tratamento especializado em disfunções hormonais, metabólicas e otimização da saúde. Abordagem personalizada baseada em análises avançadas.",
       "image": "/images/clinic/0Y7A0287.jpg",
       "settings": {
         "parallaxSpeed": 1.1,
@@ -47,6 +48,7 @@
       "id": "02",
       "title": "Protocolos Injetáveis",
       "category": "Performance e Saúde",
+      "description": "Protocolos personalizados com vitaminas, aminoácidos e nutrientes injetáveis para otimização da performance e recuperação acelerada.",
       "image": "/images/clinic/0Y7A0358.jpg",
       "settings": {
         "parallaxSpeed": 1.0,
@@ -58,6 +60,7 @@
       "id": "03",
       "title": "TRI Método Kraisch",
       "category": "Saúde Mental",
+      "description": "Metodologia exclusiva que integra corpo e mente para equilíbrio emocional e mental, desenvolvida pelo Dr. Paulo Guimarães Jr.",
       "image": "/images/clinic/0Y7A0397.jpg",
       "settings": {
         "parallaxSpeed": 1.2,

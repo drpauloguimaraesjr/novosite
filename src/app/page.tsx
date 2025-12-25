@@ -301,33 +301,28 @@ export default function Home() {
         </div>
         
         {siteData.projects.map((project: any, idx: number) => (
-          <Link 
-            href={`/project/${project.title.toLowerCase().replace(/ /g, "-")}`} 
+          <div 
             key={project.id} 
-            className="project-item"
-            data-cursor-text="VIEW"
+            className="project-item-wrapper"
           >
-            <span className="id">[{String(idx + 1).padStart(3, '0')}]</span>
-            <div className="title">
-              <SplitText text={project.title} delay={0.3} />
-            </div>
-            <div className="category">{project.category}</div>
-            
-            {/* Sanchez Stacking Preview */}
-            <div className="project-preview-container">
-              {[...Array(3)].map((_, i) => (
-                <div 
-                  key={i}
-                  className={`project-preview ${i > 0 ? 'stack-layer' : ''}`}
-                  style={{ 
-                    backgroundImage: `url(${project.image})`,
-                    backgroundPosition: project.settings.objectPosition || "center",
-                    transform: `scale(${1 - i * 0.05}) translateY(${i * 10}px)`
-                  }} 
-                />
-              ))}
-            </div>
-          </Link>
+            <Link 
+              href={`/project/${project.title.toLowerCase().replace(/ /g, "-")}`} 
+              className="project-item"
+              data-cursor-text="VIEW"
+            >
+              <span className="id">[{String(idx + 1).padStart(3, '0')}]</span>
+              <div className="title">
+                <SplitText text={project.title} delay={0.3} />
+              </div>
+              <div className="category">{project.category}</div>
+            </Link>
+            {/* Descrição que expande no hover */}
+            {project.description && (
+              <div className="project-description">
+                <p>{project.description}</p>
+              </div>
+            )}
+          </div>
         ))}
       </section>
 
