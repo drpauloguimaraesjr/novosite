@@ -521,6 +521,78 @@ export default function AdminPage() {
                   onChange={(e) => handleChange("hero", "description", e.target.value)}
                 />
               </div>
+              
+              {/* Hero Carousel Images */}
+              <div className={styles.formGroup} style={{ gridColumn: "span 2", marginTop: "2rem", borderTop: "1px solid #222", paddingTop: "2rem" }}>
+                <label style={{ fontSize: "0.9rem", marginBottom: "1rem", display: "block" }}>IMAGENS DO CARROSSEL HERO</label>
+                <p style={{ fontSize: "0.7rem", opacity: 0.5, marginBottom: "1.5rem" }}>
+                  Essas imagens aparecem no lado direito do Hero, com efeito de fade e movimento sutil.
+                </p>
+                
+                {/* Current images */}
+                <div style={{ display: "flex", gap: "10px", flexWrap: "wrap", marginBottom: "1.5rem" }}>
+                  {(data.hero.heroImages || []).map((img: string, idx: number) => (
+                    <div key={idx} style={{ position: "relative" }}>
+                      <img 
+                        src={img} 
+                        style={{ width: "100px", height: "70px", objectFit: "cover", borderRadius: "4px" }} 
+                      />
+                      <button
+                        onClick={() => {
+                          const newImages = [...(data.hero.heroImages || [])];
+                          newImages.splice(idx, 1);
+                          handleChange("hero", "heroImages", newImages);
+                        }}
+                        style={{ 
+                          position: "absolute", 
+                          top: "-5px", 
+                          right: "-5px", 
+                          background: "#ff4444", 
+                          border: "none", 
+                          color: "#fff", 
+                          width: "20px", 
+                          height: "20px", 
+                          borderRadius: "50%", 
+                          fontSize: "0.7rem", 
+                          cursor: "pointer" 
+                        }}
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ))}
+                </div>
+                
+                {/* Add new image */}
+                <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+                  <input 
+                    type="file" 
+                    accept="image/*" 
+                    style={{ fontSize: "0.7rem" }}
+                    onChange={async (e) => {
+                      const file = e.target.files?.[0];
+                      if (!file) return;
+                      
+                      const formData = new FormData();
+                      formData.append("file", file);
+                      formData.append("folder", "hero");
+                      
+                      try {
+                        const res = await fetch("/api/upload", { method: "POST", body: formData });
+                        const result = await res.json();
+                        if (result.url) {
+                          const newImages = [...(data.hero.heroImages || []), result.url];
+                          handleChange("hero", "heroImages", newImages);
+                        }
+                      } catch (err) {
+                        console.error("Upload failed:", err);
+                      }
+                      e.target.value = "";
+                    }}
+                  />
+                  <span style={{ fontSize: "0.6rem", opacity: 0.4 }}>Adicionar nova imagem ao carrossel</span>
+                </div>
+              </div>
             </div>
           )}
 

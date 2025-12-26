@@ -4,6 +4,12 @@
     "title": "DR. PAULO\nGUIMARÃES JR",
     "description": "Tratamento integrado e exclusivo focado em otimizar sua saúde física e mental para alcançar sua melhor versão.",
     "edition": "INSTITUTO MÉDICO 2025",
+    "heroImages": [
+      "/images/clinic/checkup-premium.jpg",
+      "/images/clinic/reposicao-hormonal.jpg",
+      "/images/clinic/emagrecimento.jpg",
+      "/images/clinic/performance-esportiva.jpg"
+    ],
     "settings": {
       "parallaxSpeed": 1.2,
       "textAnimation": "split"

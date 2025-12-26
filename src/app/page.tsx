@@ -19,6 +19,7 @@ import VerticalTimeline from "@/components/VerticalTimeline";
 import Playground from "@/components/Playground";
 import ScrollIndicator from "@/components/ScrollIndicator";
 import ServicesShowcase from "@/components/ServicesShowcase";
+import HeroCarousel from "@/components/HeroCarousel";
 
 import { useContent } from "@/hooks/useContent";
 
@@ -280,6 +281,11 @@ export default function Home() {
           </p>
           <div className="sub-label" data-speed="1.1">[ {siteData.hero.edition} ]</div>
         </div>
+
+        {/* Hero Carousel - Slideshow de imagens */}
+        {siteData.hero.heroImages && siteData.hero.heroImages.length > 0 && (
+          <HeroCarousel images={siteData.hero.heroImages} interval={6000} />
+        )}
 
         {/* Scroll To Explore Indicator - Estilo Eva Sanchez */}
         <ScrollIndicator />
