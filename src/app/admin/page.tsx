@@ -593,6 +593,95 @@ export default function AdminPage() {
                   <span style={{ fontSize: "0.6rem", opacity: 0.4 }}>Adicionar nova imagem ao carrossel</span>
                 </div>
               </div>
+
+              {/* Carousel Settings */}
+              <div className={styles.formGroup} style={{ gridColumn: "span 2", marginTop: "2rem", borderTop: "1px solid #222", paddingTop: "2rem" }}>
+                <label style={{ fontSize: "0.9rem", marginBottom: "1rem", display: "block" }}>CONFIGURAÇÕES DO CARROSSEL</label>
+                <p style={{ fontSize: "0.7rem", opacity: 0.5, marginBottom: "1.5rem" }}>
+                  Ajuste o tempo de exibição, velocidade da transição e efeitos do carrossel.
+                </p>
+                
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px" }}>
+                  {/* Display Time */}
+                  <div className={styles.formGroup}>
+                    <label>Tempo de Exibição (ms)</label>
+                    <input 
+                      type="number" 
+                      min="1000" 
+                      max="20000" 
+                      step="500"
+                      value={data.hero.carouselSettings?.displayTime || 4000}
+                      onChange={(e) => {
+                        const newSettings = { ...(data.hero.carouselSettings || {}), displayTime: parseInt(e.target.value) };
+                        handleChange("hero", "carouselSettings", newSettings);
+                      }}
+                    />
+                    <span style={{ fontSize: "0.6rem", opacity: 0.4, marginTop: "5px", display: "block" }}>
+                      Quanto tempo cada imagem fica visível (1000ms = 1 segundo)
+                    </span>
+                  </div>
+
+                  {/* Transition Duration */}
+                  <div className={styles.formGroup}>
+                    <label>Duração da Transição (segundos)</label>
+                    <input 
+                      type="number" 
+                      min="0.2" 
+                      max="3" 
+                      step="0.1"
+                      value={data.hero.carouselSettings?.transitionDuration || 0.6}
+                      onChange={(e) => {
+                        const newSettings = { ...(data.hero.carouselSettings || {}), transitionDuration: parseFloat(e.target.value) };
+                        handleChange("hero", "carouselSettings", newSettings);
+                      }}
+                    />
+                    <span style={{ fontSize: "0.6rem", opacity: 0.4, marginTop: "5px", display: "block" }}>
+                      Velocidade da transição entre imagens
+                    </span>
+                  </div>
+
+                  {/* Transition Effect */}
+                  <div className={styles.formGroup}>
+                    <label>Efeito de Transição</label>
+                    <select 
+                      value={data.hero.carouselSettings?.transitionEffect || "fade"} 
+                      onChange={(e) => {
+                        const newSettings = { ...(data.hero.carouselSettings || {}), transitionEffect: e.target.value };
+                        handleChange("hero", "carouselSettings", newSettings);
+                      }}
+                      style={{ width: "100%", padding: "8px", background: "#111", border: "1px solid #333", color: "#fff", fontSize: "0.75rem", borderRadius: "4px" }}
+                    >
+                      <option value="fade">Fade (Desvanecer com movimento)</option>
+                      <option value="fadeZoom">Fade + Zoom (Desvanecer com zoom)</option>
+                      <option value="slide">Slide (Deslizar)</option>
+                      <option value="zoom">Zoom (Zoom apenas)</option>
+                    </select>
+                    <span style={{ fontSize: "0.6rem", opacity: 0.4, marginTop: "5px", display: "block" }}>
+                      Como uma imagem transiciona para outra
+                    </span>
+                  </div>
+
+                  {/* Movement Intensity */}
+                  <div className={styles.formGroup}>
+                    <label>Intensidade do Movimento: {data.hero.carouselSettings?.movementIntensity || 15}px</label>
+                    <input 
+                      type="range" 
+                      min="0" 
+                      max="30" 
+                      step="1"
+                      value={data.hero.carouselSettings?.movementIntensity || 15}
+                      onChange={(e) => {
+                        const newSettings = { ...(data.hero.carouselSettings || {}), movementIntensity: parseInt(e.target.value) };
+                        handleChange("hero", "carouselSettings", newSettings);
+                      }}
+                      style={{ width: "100%", cursor: "pointer" }}
+                    />
+                    <span style={{ fontSize: "0.6rem", opacity: 0.4, marginTop: "5px", display: "block" }}>
+                      Quanto as imagens se movem horizontalmente (0 = sem movimento)
+                    </span>
+                  </div>
+                </div>
+              </div>
             </div>
           )}
 

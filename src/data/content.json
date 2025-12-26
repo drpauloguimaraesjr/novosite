@@ -10,6 +10,12 @@
       "/images/clinic/hero-3.jpg",
       "/images/clinic/hero-4.jpg"
     ],
+    "carouselSettings": {
+      "displayTime": 4000,
+      "transitionDuration": 0.6,
+      "transitionEffect": "fade",
+      "movementIntensity": 15
+    },
     "settings": {
       "parallaxSpeed": 1.2,
       "textAnimation": "split"

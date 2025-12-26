@@ -4,14 +4,27 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import ProxyImage from "./ProxyImage";
 
-interface HeroCarouselProps {
-  images: string[];
-  interval?: number; // tempo entre slides em ms
+interface CarouselSettings {
+  displayTime?: number;        // tempo em ms que cada imagem fica visível
+  transitionDuration?: number; // duração da transição em segundos
+  transitionEffect?: string;   // "fade" | "slide" | "zoom" | "fadeZoom"
+  movementIntensity?: number;  // intensidade do movimento (0-30)
 }
 
-export default function HeroCarousel({ images, interval = 4000 }: HeroCarouselProps) {
+interface HeroCarouselProps {
+  images: string[];
+  settings?: CarouselSettings;
+}
+
+export default function HeroCarousel({ images, settings = {} }: HeroCarouselProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
+
+  // Default values
+  const displayTime = settings.displayTime || 4000;
+  const transitionDuration = settings.transitionDuration || 0.6;
+  const transitionEffect = settings.transitionEffect || "fade";
+  const movementIntensity = settings.movementIntensity || 15;
 
   // Detect mobile viewport
   useEffect(() => {
@@ -29,10 +42,10 @@ export default function HeroCarousel({ images, interval = 4000 }: HeroCarouselPr
 
     const timer = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % images.length);
-    }, interval);
+    }, displayTime);
 
     return () => clearInterval(timer);
-  }, [images, interval]);
+  }, [images, displayTime]);
 
   // Don't show on mobile or if no images
   if (isMobile || !images || images.length === 0) {
@@ -40,7 +53,58 @@ export default function HeroCarousel({ images, interval = 4000 }: HeroCarouselPr
   }
 
   // Direção alternada: par = direita, ímpar = esquerda
-  const moveDirection = currentIndex % 2 === 0 ? 15 : -15;
+  const moveDirection = currentIndex % 2 === 0 ? movementIntensity : -movementIntensity;
+
+  // Define animation variants based on transition effect
+  const getAnimationProps = () => {
+    switch (transitionEffect) {
+      case "slide":
+        return {
+          initial: { opacity: 0, x: 100 },
+          animate: { opacity: 1, x: 0 },
+          exit: { opacity: 0, x: -100 },
+          transition: {
+            opacity: { duration: transitionDuration, ease: "easeInOut" as const },
+            x: { duration: transitionDuration, ease: "easeOut" as const }
+          }
+        };
+      case "zoom":
+        return {
+          initial: { opacity: 0, scale: 1.2 },
+          animate: { opacity: 1, scale: 1 },
+          exit: { opacity: 0, scale: 0.9 },
+          transition: {
+            opacity: { duration: transitionDuration, ease: "easeInOut" as const },
+            scale: { duration: transitionDuration * 1.5, ease: "easeOut" as const }
+          }
+        };
+      case "fadeZoom":
+        return {
+          initial: { opacity: 0, scale: 1.08, x: -moveDirection },
+          animate: { opacity: 1, scale: 1, x: moveDirection },
+          exit: { opacity: 0, scale: 1.02 },
+          transition: {
+            opacity: { duration: transitionDuration, ease: "easeInOut" as const },
+            scale: { duration: 5, ease: "easeOut" as const },
+            x: { duration: 5, ease: "easeOut" as const }
+          }
+        };
+      case "fade":
+      default:
+        return {
+          initial: { opacity: 0, scale: 1.08, x: -moveDirection },
+          animate: { opacity: 1, scale: 1, x: moveDirection },
+          exit: { opacity: 0, scale: 1.02 },
+          transition: {
+            opacity: { duration: transitionDuration, ease: "easeInOut" as const },
+            scale: { duration: 5, ease: "easeOut" as const },
+            x: { duration: 5, ease: "easeOut" as const }
+          }
+        };
+    }
+  };
+
+  const animProps = getAnimationProps();
 
   return (
     <div
@@ -73,18 +137,10 @@ export default function HeroCarousel({ images, interval = 4000 }: HeroCarouselPr
       <AnimatePresence mode="wait">
         <motion.div
           key={currentIndex}
-          initial={{ opacity: 0, scale: 1.08, x: -moveDirection }}
-          animate={{ 
-            opacity: 1, 
-            scale: 1,
-            x: moveDirection,
-          }}
-          exit={{ opacity: 0, scale: 1.02 }}
-          transition={{
-            opacity: { duration: 0.6, ease: "easeInOut" },
-            scale: { duration: 5, ease: "easeOut" },
-            x: { duration: 5, ease: "easeOut" }
-          }}
+          initial={animProps.initial}
+          animate={animProps.animate}
+          exit={animProps.exit}
+          transition={animProps.transition}
           style={{
             position: "absolute",
             inset: 0,
@@ -132,3 +188,4 @@ export default function HeroCarousel({ images, interval = 4000 }: HeroCarouselPr
     </div>
   );
 }
+

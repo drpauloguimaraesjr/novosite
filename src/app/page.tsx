@@ -284,7 +284,10 @@ export default function Home() {
 
         {/* Hero Carousel - Slideshow de imagens */}
         {siteData.hero.heroImages && siteData.hero.heroImages.length > 0 && (
-          <HeroCarousel images={siteData.hero.heroImages} interval={6000} />
+          <HeroCarousel 
+            images={siteData.hero.heroImages} 
+            settings={siteData.hero.carouselSettings || {}} 
+          />
         )}
 
         {/* Scroll To Explore Indicator - Estilo Eva Sanchez */}
