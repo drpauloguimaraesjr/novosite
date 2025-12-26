@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import ProxyImage from "./ProxyImage";
 
@@ -9,7 +9,7 @@ interface HeroCarouselProps {
   interval?: number; // tempo entre slides em ms
 }
 
-export default function HeroCarousel({ images, interval = 5000 }: HeroCarouselProps) {
+export default function HeroCarousel({ images, interval = 4000 }: HeroCarouselProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   // Auto-advance slides
@@ -26,6 +26,9 @@ export default function HeroCarousel({ images, interval = 5000 }: HeroCarouselPr
   if (!images || images.length === 0) {
     return null;
   }
+
+  // Direção alternada: par = direita, ímpar = esquerda
+  const moveDirection = currentIndex % 2 === 0 ? 15 : -15;
 
   return (
     <div
@@ -47,8 +50,8 @@ export default function HeroCarousel({ images, interval = 5000 }: HeroCarouselPr
           left: 0,
           top: 0,
           bottom: 0,
-          width: "150px",
-          background: "linear-gradient(to right, var(--bg-color) 0%, var(--bg-color) 20%, transparent 100%)",
+          width: "180px",
+          background: "linear-gradient(to right, var(--bg-color) 0%, var(--bg-color) 30%, transparent 100%)",
           zIndex: 10,
           pointerEvents: "none",
         }}
@@ -58,17 +61,17 @@ export default function HeroCarousel({ images, interval = 5000 }: HeroCarouselPr
       <AnimatePresence mode="wait">
         <motion.div
           key={currentIndex}
-          initial={{ opacity: 0, scale: 1.1 }}
+          initial={{ opacity: 0, scale: 1.08, x: -moveDirection }}
           animate={{ 
             opacity: 1, 
             scale: 1,
-            x: [0, -10, 0], // movimento sutil horizontal
+            x: moveDirection,
           }}
-          exit={{ opacity: 0, scale: 1.05 }}
+          exit={{ opacity: 0, scale: 1.02 }}
           transition={{
-            opacity: { duration: 1.2, ease: "easeInOut" },
-            scale: { duration: 8, ease: "easeOut" },
-            x: { duration: 8, ease: "easeInOut", repeat: Infinity, repeatType: "reverse" }
+            opacity: { duration: 0.6, ease: "easeInOut" },
+            scale: { duration: 5, ease: "easeOut" },
+            x: { duration: 5, ease: "easeOut" }
           }}
           style={{
             position: "absolute",

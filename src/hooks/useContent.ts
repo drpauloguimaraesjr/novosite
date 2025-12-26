@@ -26,6 +26,11 @@ export function useContent() {
           if (!freshData.contact) freshData.contact = localData.contact;
           if (!freshData.categories) freshData.categories = localData.categories;
           
+          // Fallback para heroImages
+          if (!freshData.hero.heroImages || freshData.hero.heroImages.length === 0) {
+            freshData.hero.heroImages = (localData as any).hero?.heroImages || [];
+          }
+          
           setData(freshData);
           setIsLive(true);
         }
