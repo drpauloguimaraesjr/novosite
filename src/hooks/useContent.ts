@@ -14,10 +14,12 @@ export function useContent() {
         const freshData = await getSiteContent() as any;
         // Only update if we have a valid hero and it's different from local
         if (freshData && freshData.hero && freshData.hero.title) {
-          // Robustness: ensure critical arrays exist even if missing in Firestore
-          if (!freshData.services) freshData.services = localData.services || [];
+          // Robustness: ensure critical arrays exist even if missing or empty in Firestore
+          if (!freshData.services || freshData.services.length === 0) {
+            freshData.services = localData.services || [];
+          }
+          if (!freshData.projects || freshData.projects.length === 0) freshData.projects = localData.projects || [];
           if (!freshData.socialReels) freshData.socialReels = localData.socialReels || [];
-          if (!freshData.projects) freshData.projects = localData.projects || [];
           if (!freshData.visualArchive) freshData.visualArchive = localData.visualArchive || [];
           if (!freshData.about) freshData.about = localData.about;
           if (!freshData.navigation) freshData.navigation = localData.navigation;
