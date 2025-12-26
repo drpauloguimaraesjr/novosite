@@ -11,6 +11,17 @@ interface HeroCarouselProps {
 
 export default function HeroCarousel({ images, interval = 4000 }: HeroCarouselProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Detect mobile viewport
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   // Auto-advance slides
   useEffect(() => {
@@ -23,7 +34,8 @@ export default function HeroCarousel({ images, interval = 4000 }: HeroCarouselPr
     return () => clearInterval(timer);
   }, [images, interval]);
 
-  if (!images || images.length === 0) {
+  // Don't show on mobile or if no images
+  if (isMobile || !images || images.length === 0) {
     return null;
   }
 
