@@ -526,11 +526,12 @@ h1 {
   text-decoration: none;
   color: var(--text-color);
   cursor: pointer;
-  transition: transform 0.4s var(--ease-expo);
+  transition: transform 0.4s var(--ease-expo), opacity 0.3s ease;
   padding: 1.5rem;
   border-radius: 8px;
   background-color: transparent;
   border: 1px solid transparent;
+  opacity: 1 !important; /* Ensure visibility before GSAP animation */
 }
 
 .service-miniature-card:hover {

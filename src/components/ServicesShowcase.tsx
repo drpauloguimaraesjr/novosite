@@ -29,71 +29,87 @@ export default function ServicesShowcase() {
   useEffect(() => {
     gsap.registerPlugin(ScrollTrigger);
     
-    if (!containerRef.current) return;
+    if (!containerRef.current || services.length === 0) return;
 
-    const ctx = gsap.context(() => {
-      // Animate service cards on scroll
-      const cards = gsap.utils.toArray(".service-miniature-card");
-      
-      cards.forEach((card: any, index) => {
-        gsap.from(card, {
-          y: 40,
-          opacity: 0,
-          duration: 1,
-          ease: "power3.out",
-          immediateRender: false, // Não renderiza invisível antes do trigger
-          scrollTrigger: {
-            trigger: card,
-            start: "top 98%",
-            once: true,
-          }
-        });
+    // Small delay to ensure DOM is ready
+    const timeoutId = setTimeout(() => {
+      const ctx = gsap.context(() => {
+        // Animate service cards on scroll
+        const cards = gsap.utils.toArray(".service-miniature-card") as HTMLElement[];
+        
+        if (cards.length > 0) {
+          // First, ensure all cards are visible
+          gsap.set(cards, { opacity: 1, y: 0 });
+          
+          cards.forEach((card, index) => {
+            gsap.fromTo(card, 
+              { y: 30, opacity: 0.3 },
+              {
+                y: 0,
+                opacity: 1,
+                duration: 0.8,
+                delay: index * 0.1,
+                ease: "power3.out",
+                scrollTrigger: {
+                  trigger: card,
+                  start: "top 95%",
+                  once: true,
+                }
+              }
+            );
 
-        // Parallax effect on image - Keep scrub for parallax
-        const image = card.querySelector(".service-miniature-image");
-        if (image) {
-          gsap.to(image, {
-            yPercent: -10,
-            ease: "none",
-            scrollTrigger: {
-              trigger: card,
-              start: "top bottom",
-              end: "bottom top",
-              scrub: true,
+            // Parallax effect on image
+            const image = card.querySelector(".service-miniature-image");
+            if (image) {
+              gsap.to(image, {
+                yPercent: -10,
+                ease: "none",
+                scrollTrigger: {
+                  trigger: card,
+                  start: "top bottom",
+                  end: "bottom top",
+                  scrub: true,
+                }
+              });
             }
           });
+
+          // Hover animation for cards
+          cards.forEach((card) => {
+            const image = card.querySelector(".service-miniature-image");
+            
+            card.addEventListener("mouseenter", () => {
+              if (image) {
+                gsap.to(image, {
+                  scale: 1.1,
+                  duration: 0.8,
+                  ease: "power3.out"
+                });
+              }
+            });
+
+            card.addEventListener("mouseleave", () => {
+              if (image) {
+                gsap.to(image, {
+                  scale: 1,
+                  duration: 0.8,
+                  ease: "power3.out"
+                });
+              }
+            });
+          });
         }
-      });
 
-      // Importante: Refresh após inicializar tudo
-      ScrollTrigger.refresh();
+        // Refresh after setup
+        ScrollTrigger.refresh();
 
-      // Hover animation for cards
-      cards.forEach((card: any) => {
-        const imageContainer = card.querySelector(".service-miniature-image-container");
-        const image = card.querySelector(".service-miniature-image");
-        
-        card.addEventListener("mouseenter", () => {
-          gsap.to(image, {
-            scale: 1.1,
-            duration: 0.8,
-            ease: "power3.out"
-          });
-        });
+      }, containerRef);
 
-        card.addEventListener("mouseleave", () => {
-          gsap.to(image, {
-            scale: 1,
-            duration: 0.8,
-            ease: "power3.out"
-          });
-        });
-      });
+      return () => ctx.revert();
+    }, 100);
 
-    }, containerRef);
-
-    return () => ctx.revert();
-  }, []);
+    return () => clearTimeout(timeoutId);
+  }, [services]);
 
   return (
     <section ref={containerRef} id="services" className="services-showcase">
