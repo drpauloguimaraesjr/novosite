@@ -110,19 +110,23 @@ function TimelineItemComponent({
     return (
         <motion.div
             ref={itemRef}
-            initial={{ opacity: 0, x: isEven ? -100 : 100 }}
-            animate={itemInView ? { opacity: 1, x: 0 } : {}}
-            transition={{ 
-                duration: 0.8, 
-                delay: index * 0.15,
-                ease: [0.25, 0.1, 0.25, 1]
+            initial={{ opacity: 1, x: 0 }}
+            animate={{ 
+                opacity: 1, 
+                x: 0,
+                transition: { 
+                    duration: 0.8, 
+                    delay: itemInView ? index * 0.15 : 0,
+                    ease: [0.25, 0.1, 0.25, 1]
+                }
             }}
             style={{
                 display: "flex",
                 alignItems: "center",
                 marginBottom: "8rem",
                 flexDirection: isEven ? "row" : "row-reverse",
-                gap: "60px"
+                gap: "60px",
+                opacity: 1
             }}
         >
             {/* Conteúdo */}
