@@ -41,9 +41,10 @@ export default function ServicesShowcase() {
           opacity: 0,
           duration: 1,
           ease: "power3.out",
+          immediateRender: false, // Não renderiza invisível antes do trigger
           scrollTrigger: {
             trigger: card,
-            start: "top 92%",
+            start: "top 98%",
             once: true,
           }
         });
