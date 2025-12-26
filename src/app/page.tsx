@@ -321,7 +321,7 @@ export default function Home() {
             >
               <span className="id">[{String(idx + 1).padStart(3, '0')}]</span>
               <div className="title">
-                <SplitText text={project.title} delay={0.3} />
+                {project.title}
               </div>
               <div className="category">{project.category}</div>
             </Link>
