@@ -43,7 +43,7 @@ export default function ProjectDetail({ params }: { params: { slug: string } }) 
     });
   }, []);
 
-  const projectName = params.slug.split("-").map(w => w.toUpperCase()).join(" ");
+  const projectName = params?.slug ? params.slug.split("-").map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(" ") : "Projeto";
 
   return (
     <div ref={containerRef} style={{ padding: "0 40px" }}>
