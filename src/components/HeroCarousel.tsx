@@ -117,6 +117,7 @@ export default function HeroCarousel({ images, settings = {} }: HeroCarouselProp
         height: "70%",
         overflow: "hidden",
         pointerEvents: "none",
+        zIndex: 1, // Background layer - text will be above
       }}
     >
       {/* Gradiente esfumaçado na borda esquerda */}

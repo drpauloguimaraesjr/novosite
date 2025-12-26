@@ -248,7 +248,8 @@ export default function Home() {
             maxWidth: "100%",
             margin: 0,
             padding: 0,
-            transform: "translateZ(0)" // Force hardware acceleration
+            transform: "translateZ(0)", // Force hardware acceleration
+            zIndex: 10, // Above the carousel images
           }} 
           data-speed={siteData.hero.settings.parallaxSpeed}
           data-cursor-ignore="true"
