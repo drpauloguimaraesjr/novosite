@@ -121,23 +121,7 @@ export default function Home() {
         ease: "power4.inOut"
       });
 
-      // Reveal project list items
-      const projectItems = gsap.utils.toArray(".project-item") as HTMLElement[];
-      if (projectItems.length > 0) {
-        projectItems.forEach((item, i) => {
-          gsap.from(item, {
-            y: 40,
-            opacity: 0,
-            duration: 1,
-            ease: "power3.out",
-            scrollTrigger: {
-              trigger: item,
-              start: "top 92%",
-              once: true
-            },
-          });
-        });
-      }
+
 
       // Theme Toggle (Light to Dark on scroll)
       const aboutSection = document.querySelector(".about-section");
