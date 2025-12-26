@@ -45,7 +45,7 @@ export default function VerticalTimeline({ items, title = "Timeline" }: Vertical
             <div style={{ marginBottom: "6rem", maxWidth: "1200px", margin: "0 auto 6rem" }}>
                 <span className="sub-label" style={{ opacity: 0.6 }}>[ {title.toUpperCase()} ]</span>
                 <h2 style={{ fontSize: "5rem", marginTop: "1rem", letterSpacing: "-0.04em" }}>
-                    Linha do Tempo
+                    Como é o nosso trabalho?
                 </h2>
             </div>
 
