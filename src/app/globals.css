@@ -804,16 +804,16 @@ body.dark-theme .project-item-wrapper:last-child {
   display: grid;
   grid-template-columns: 80px 1fr auto; /* ID Title Category */
   align-items: center;
-  padding: 3rem 0;
+  padding: 2.5rem 0; /* Slightly reduced padding */
   text-decoration: none;
   color: var(--text-color);
   transition: all 0.4s var(--ease-expo);
 }
 
 .project-item-wrapper:hover .project-item {
-  padding-left: 4vw;
-  padding-right: 4vw;
-  opacity: 0.2; /* Dim title when showing description */
+  padding-left: 3vw;
+  padding-right: 3vw;
+  opacity: 0.5; /* INCREASED VISIBILITY (was 0.2) */
 }
 
 .project-item .id {
@@ -823,7 +823,8 @@ body.dark-theme .project-item-wrapper:last-child {
 }
 
 .project-item .title {
-  font-size: clamp(2rem, 5vw, 4rem);
+  /* REDUCED FONT SIZE (was clamp(2rem, 5vw, 4rem)) */
+  font-size: clamp(1.5rem, 3.5vw, 2.5rem); 
   font-weight: 400;
   letter-spacing: -0.02em;
   text-transform: uppercase;
@@ -849,11 +850,12 @@ body.dark-theme .project-item-wrapper:last-child {
   pointer-events: none;
   transition: all 0.4s var(--ease-expo);
   z-index: 5;
-  mix-blend-mode: difference; /* Cool effect on blend */
-  color: var(--text-color); /* Fallback */
+  /* REMOVED mix-blend-mode for better compatibility */
+  /* mix-blend-mode: difference; */ 
+  color: var(--text-color); 
 }
 
-/* Ensure text is visible on both themes */
+/* Ensure text color is explicit and high contrast */
 body.dark-theme .project-description {
   color: #fff;
 }
@@ -867,8 +869,9 @@ body:not(.dark-theme) .project-description {
 }
 
 .project-description p {
-  font-size: clamp(1.5rem, 3vw, 2.2rem);
-  line-height: 1.2;
+  /* Slightly reduced description size */
+  font-size: clamp(1.2rem, 2.5vw, 1.8rem);
+  line-height: 1.3;
   text-align: center;
   font-weight: 500;
   margin: 0;
