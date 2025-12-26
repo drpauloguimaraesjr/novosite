@@ -524,73 +524,186 @@ export default function AdminPage() {
               
               {/* Hero Carousel Images */}
               <div className={styles.formGroup} style={{ gridColumn: "span 2", marginTop: "2rem", borderTop: "1px solid #222", paddingTop: "2rem" }}>
-                <label style={{ fontSize: "0.9rem", marginBottom: "1rem", display: "block" }}>IMAGENS DO CARROSSEL HERO</label>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
+                  <label style={{ fontSize: "0.9rem", margin: 0 }}>IMAGENS DO CARROSSEL HERO</label>
+                  <span style={{ fontSize: "0.65rem", opacity: 0.4 }}>{(data.hero.heroImages || []).length} imagens</span>
+                </div>
                 <p style={{ fontSize: "0.7rem", opacity: 0.5, marginBottom: "1.5rem" }}>
-                  Essas imagens aparecem no lado direito do Hero, com efeito de fade e movimento sutil.
+                  Essas imagens aparecem no lado direito do Hero, com efeito de transição. Arraste para reordenar.
                 </p>
                 
-                {/* Current images */}
-                <div style={{ display: "flex", gap: "10px", flexWrap: "wrap", marginBottom: "1.5rem" }}>
+                {/* Current images grid */}
+                <div style={{ 
+                  display: "grid", 
+                  gridTemplateColumns: "repeat(auto-fill, minmax(150px, 1fr))", 
+                  gap: "15px", 
+                  marginBottom: "1.5rem" 
+                }}>
                   {(data.hero.heroImages || []).map((img: string, idx: number) => (
-                    <div key={idx} style={{ position: "relative" }}>
+                    <div 
+                      key={idx} 
+                      style={{ 
+                        position: "relative", 
+                        background: "#111", 
+                        borderRadius: "8px", 
+                        overflow: "hidden",
+                        border: "1px solid #222"
+                      }}
+                    >
+                      {/* Image number */}
+                      <div style={{
+                        position: "absolute",
+                        top: "8px",
+                        left: "8px",
+                        background: "rgba(0,0,0,0.7)",
+                        color: "#fff",
+                        padding: "2px 8px",
+                        borderRadius: "4px",
+                        fontSize: "0.6rem",
+                        fontWeight: 600,
+                        zIndex: 2
+                      }}>
+                        #{idx + 1}
+                      </div>
+                      
+                      {/* Image */}
                       <img 
                         src={img} 
-                        style={{ width: "100px", height: "70px", objectFit: "cover", borderRadius: "4px" }} 
-                      />
-                      <button
-                        onClick={() => {
-                          const newImages = [...(data.hero.heroImages || [])];
-                          newImages.splice(idx, 1);
-                          handleChange("hero", "heroImages", newImages);
-                        }}
+                        alt={`Hero ${idx + 1}`}
                         style={{ 
-                          position: "absolute", 
-                          top: "-5px", 
-                          right: "-5px", 
-                          background: "#ff4444", 
-                          border: "none", 
-                          color: "#fff", 
-                          width: "20px", 
-                          height: "20px", 
-                          borderRadius: "50%", 
-                          fontSize: "0.7rem", 
-                          cursor: "pointer" 
-                        }}
-                      >
-                        ×
-                      </button>
+                          width: "100%", 
+                          height: "100px", 
+                          objectFit: "cover",
+                          display: "block"
+                        }} 
+                      />
+                      
+                      {/* Actions bar */}
+                      <div style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        padding: "8px",
+                        background: "#0a0a0a"
+                      }}>
+                        {/* Move buttons */}
+                        <div style={{ display: "flex", gap: "5px" }}>
+                          <button
+                            onClick={() => {
+                              if (idx === 0) return;
+                              const newImages = [...(data.hero.heroImages || [])];
+                              [newImages[idx - 1], newImages[idx]] = [newImages[idx], newImages[idx - 1]];
+                              handleChange("hero", "heroImages", newImages);
+                            }}
+                            disabled={idx === 0}
+                            style={{ 
+                              background: idx === 0 ? "#222" : "#333", 
+                              border: "none", 
+                              color: idx === 0 ? "#555" : "#fff", 
+                              width: "24px", 
+                              height: "24px", 
+                              borderRadius: "4px", 
+                              fontSize: "0.8rem", 
+                              cursor: idx === 0 ? "not-allowed" : "pointer" 
+                            }}
+                          >
+                            ←
+                          </button>
+                          <button
+                            onClick={() => {
+                              const images = data.hero.heroImages || [];
+                              if (idx === images.length - 1) return;
+                              const newImages = [...images];
+                              [newImages[idx], newImages[idx + 1]] = [newImages[idx + 1], newImages[idx]];
+                              handleChange("hero", "heroImages", newImages);
+                            }}
+                            disabled={idx === (data.hero.heroImages || []).length - 1}
+                            style={{ 
+                              background: idx === (data.hero.heroImages || []).length - 1 ? "#222" : "#333", 
+                              border: "none", 
+                              color: idx === (data.hero.heroImages || []).length - 1 ? "#555" : "#fff", 
+                              width: "24px", 
+                              height: "24px", 
+                              borderRadius: "4px", 
+                              fontSize: "0.8rem", 
+                              cursor: idx === (data.hero.heroImages || []).length - 1 ? "not-allowed" : "pointer" 
+                            }}
+                          >
+                            →
+                          </button>
+                        </div>
+                        
+                        {/* Delete button */}
+                        <button
+                          onClick={() => {
+                            const newImages = [...(data.hero.heroImages || [])];
+                            newImages.splice(idx, 1);
+                            handleChange("hero", "heroImages", newImages);
+                          }}
+                          style={{ 
+                            background: "#ff4444", 
+                            border: "none", 
+                            color: "#fff", 
+                            width: "24px", 
+                            height: "24px", 
+                            borderRadius: "4px", 
+                            fontSize: "0.7rem", 
+                            cursor: "pointer" 
+                          }}
+                        >
+                          ✕
+                        </button>
+                      </div>
                     </div>
                   ))}
                 </div>
                 
-                {/* Add new image */}
-                <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
-                  <input 
-                    type="file" 
-                    accept="image/*" 
-                    style={{ fontSize: "0.7rem" }}
-                    onChange={async (e) => {
-                      const file = e.target.files?.[0];
-                      if (!file) return;
-                      
-                      const formData = new FormData();
-                      formData.append("file", file);
-                      formData.append("folder", "hero");
-                      
-                      try {
-                        const res = await fetch("/api/upload", { method: "POST", body: formData });
-                        const result = await res.json();
-                        if (result.url) {
-                          const newImages = [...(data.hero.heroImages || []), result.url];
-                          handleChange("hero", "heroImages", newImages);
+                {/* Add new image button */}
+                <div style={{ 
+                  border: "2px dashed #333", 
+                  borderRadius: "8px", 
+                  padding: "20px", 
+                  textAlign: "center",
+                  background: "rgba(255,255,255,0.02)"
+                }}>
+                  <label style={{ 
+                    display: "flex", 
+                    flexDirection: "column", 
+                    alignItems: "center", 
+                    gap: "10px", 
+                    cursor: "pointer" 
+                  }}>
+                    <span style={{ fontSize: "1.5rem", opacity: 0.5 }}>+</span>
+                    <span style={{ fontSize: "0.7rem", opacity: 0.6 }}>Clique para adicionar imagem</span>
+                    <input 
+                      type="file" 
+                      accept="image/*" 
+                      style={{ display: "none" }}
+                      onChange={async (e) => {
+                        const file = e.target.files?.[0];
+                        if (!file) return;
+                        
+                        const formData = new FormData();
+                        formData.append("file", file);
+                        formData.append("folder", "hero");
+                        
+                        try {
+                          const res = await fetch("/api/upload", { method: "POST", body: formData });
+                          const result = await res.json();
+                          if (result.url) {
+                            const newImages = [...(data.hero.heroImages || []), result.url];
+                            handleChange("hero", "heroImages", newImages);
+                          } else {
+                            alert("Erro no upload: " + (result.error || "Desconhecido"));
+                          }
+                        } catch (err) {
+                          console.error("Upload failed:", err);
+                          alert("Falha no upload. Verifique o console para detalhes.");
                         }
-                      } catch (err) {
-                        console.error("Upload failed:", err);
-                      }
-                      e.target.value = "";
-                    }}
-                  />
-                  <span style={{ fontSize: "0.6rem", opacity: 0.4 }}>Adicionar nova imagem ao carrossel</span>
+                        e.target.value = "";
+                      }}
+                    />
+                  </label>
                 </div>
               </div>
 

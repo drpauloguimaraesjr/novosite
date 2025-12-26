@@ -6,7 +6,6 @@ import { ScrollTrigger } from "@/lib/gsap/ScrollTrigger";
 import Link from "next/link";
 import Magnetic from "@/components/Magnetic";
 import HorizontalScroll from "@/components/HorizontalScroll";
-import Marquee from "@/components/Marquee";
 import InteractiveGrid from "@/components/InteractiveGrid";
 import GalleryCarousel from "@/components/GalleryCarousel";
 import TextMaskReveal from "@/components/TextMaskReveal";
@@ -385,8 +384,8 @@ export default function Home() {
       />
 
 
+
       <SocialReel />
-      <Marquee />
       <ContactSection />
 
       {/* Final Footer Section */}
