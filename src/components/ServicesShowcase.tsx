@@ -22,6 +22,10 @@ export default function ServicesShowcase() {
   const services: Service[] = siteData?.services || [];
   const containerRef = useRef<HTMLDivElement>(null);
 
+  console.log('[ServicesShowcase] siteData:', !!siteData);
+  console.log('[ServicesShowcase] services count:', services.length);
+  console.log('[ServicesShowcase] services:', services);
+
   useEffect(() => {
     gsap.registerPlugin(ScrollTrigger);
     
