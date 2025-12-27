@@ -99,6 +99,7 @@ export default function SplitText({ text, className, trigger, delay = 0, interac
                 scale: 1,
                 x: 0,
                 y: 0,
+                textShadow: "none",
                 opacity: 1, // GARANTIR que a opacidade sempre fique em 1
                 duration: 0.4,
                 ease: "power2.out",
@@ -170,41 +171,60 @@ export default function SplitText({ text, className, trigger, delay = 0, interac
           
           letters.forEach((letter) => {
             const letterElement = letter as HTMLElement;
+            const rect = letterElement.getBoundingClientRect();
+            const letterCenterX = rect.left + rect.width / 2;
+            const letterCenterY = rect.top + rect.height / 2;
+            
+            // Calculate vector from char center to mouse
+            const dx = letterCenterX - mouseX;
+            const dy = letterCenterY - mouseY;
+            const dist = Math.hypot(dx, dy);
+            
+            // Shadow Logic:
+            // Shadow falls opposite to light (Cursor). 
+            // If Cursor is Left of Char (dx > 0), Shadow should be Right (positive x).
+            // Distance factor: 0.05 (Subtle)
+            const shadowX = dx * 0.08;
+            const shadowY = dy * 0.08;
+            // Blur increases with distance? Or decreases?
+            // "Sombra diminuisse" -> Maybe fade out or shrink?
+            // Let's keep it subtle: Blur proportional to distance but capped.
+            const blur = Math.min(dist * 0.04, 4);
+            const shadowColor = "rgba(0,0,0,0.15)"; // Very subtle shadow
+            const dynamicShadow = `${shadowX}px ${shadowY}px ${blur}px ${shadowColor}`;
+
             if (letterElement === closestLetter) {
-              const rect = letterElement.getBoundingClientRect();
-              const letterCenterX = rect.left + rect.width / 2;
-              const letterCenterY = rect.top + rect.height / 2;
-              const distanceX = mouseX - letterCenterX;
-              const distanceY = mouseY - letterCenterY;
-              
-              // Distância máxima para calcular a força do efeito
               const maxDistance = Math.max(rect.width, rect.height) * 1.2;
-              const distance = Math.hypot(distanceX, distanceY);
               
               // Força do efeito baseada na proximidade
-              const power = Math.max(0, 1 - (distance / maxDistance));
+              const power = Math.max(0, 1 - (dist / maxDistance));
               
               // Efeito de lente: zoom na letra mais próxima
               const scale = 1 + (power * 1.5);
-              const moveX = distanceX * power * 0.3;
-              const moveY = distanceY * power * 0.3;
+              const moveX = (mouseX - letterCenterX) * power * 0.3 * -1; // Move slightly away? Or towards? Existing was dist * power
+              // Existing logic: const moveX = distanceX * power * 0.3; (distanceX = mouse - center)
+              // So letter moves TOWARDS cursor? 
+              const existingMoveX = (mouseX - letterCenterX) * power * 0.3;
+              const existingMoveY = (mouseY - letterCenterY) * power * 0.3;
               
               gsap.to(letterElement, {
                 scale: scale,
-                x: moveX,
-                y: moveY,
-                opacity: 1, // GARANTIR que a opacidade sempre fique em 1
+                x: existingMoveX,
+                y: existingMoveY,
+                textShadow: dynamicShadow,
+                opacity: 1, 
                 duration: 0.3,
                 ease: "power2.out",
                 overwrite: true
               });
             } else {
-              // Retorna ao estado normal para todas as outras letras
+              // Retorna ao estado normal (scale 1) mas com SOMBRA dinâmica
               gsap.to(letterElement, {
                 scale: 1,
                 x: 0,
                 y: 0,
-                opacity: 1, // GARANTIR que a opacidade sempre fique em 1
+                textShadow: dynamicShadow,
+                opacity: 1, 
                 duration: 0.4,
                 ease: "power2.out",
                 overwrite: true
@@ -228,6 +248,7 @@ export default function SplitText({ text, className, trigger, delay = 0, interac
                 scale: 1,
                 x: 0,
                 y: 0,
+                textShadow: "none",
                 opacity: 1, // GARANTIR que a opacidade sempre fique em 1
                 duration: 0.4,
                 ease: "power2.out",
