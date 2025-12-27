@@ -829,11 +829,6 @@ body.dark-theme .project-item-wrapper:last-child {
   letter-spacing: -0.02em;
   text-transform: uppercase;
   margin: 0;
-  /* FORCE VISIBILITY */
-  display: block;
-  opacity: 1 !important;
-  visibility: visible !important;
-  transform: none !important;
 }
 
 .project-item .category {

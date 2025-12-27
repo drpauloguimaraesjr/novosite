@@ -123,6 +123,33 @@ export default function Home() {
 
 
 
+      // Directional Reveal for project items (Left/Right)
+      const projectItems = gsap.utils.toArray(".project-item") as HTMLElement[];
+      if (projectItems.length > 0) {
+        projectItems.forEach((item, i) => {
+          // Odd: Left (-100), Even: Right (100)
+          const xStart = i % 2 === 0 ? -100 : 100;
+          
+          gsap.fromTo(item, 
+            { 
+              opacity: 0, 
+              x: xStart 
+            },
+            {
+              opacity: 1, 
+              x: 0,
+              duration: 1.2,
+              ease: "power3.out",
+              scrollTrigger: {
+                trigger: item,
+                start: "top 85%",
+                once: true,
+              }
+            }
+          );
+        });
+      }
+
       // Theme Toggle (Light to Dark on scroll)
       const aboutSection = document.querySelector(".about-section");
       if (aboutSection) {
