@@ -12,6 +12,7 @@ import TextMaskReveal from "@/components/TextMaskReveal";
 import ContactSection from "@/components/ContactSection";
 import SplitText from "@/components/SplitText";
 import SocialReel from "@/components/SocialReel";
+import ProcessTimeline from "@/components/ProcessTimeline";
 import TypingAnimation from "@/components/TypingAnimation";
 import FloatingCards from "@/components/FloatingCards";
 import VerticalTimeline from "@/components/VerticalTimeline";
@@ -396,6 +397,10 @@ export default function Home() {
       />
 
 
+
+
+      {/* Process Timeline Animation */}
+      <ProcessTimeline />
 
       <SocialReel />
       <ContactSection />

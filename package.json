@@ -18,6 +18,7 @@
     "firebase-admin": "^13.6.0",
     "framer-motion": "^12.23.26",
     "gsap": "^3.14.2",
+    "lucide-react": "^0.562.0",
     "motion": "^12.23.26",
     "motion-plus": "https://api.motion.dev/registry?package=motion-plus&version=2.0.0-alpha.4&token=c4b0850ec3d427800207f3d68cc0ac3a34cf4e550cd02941118a5ab2e4780a86",
     "next": "latest",
