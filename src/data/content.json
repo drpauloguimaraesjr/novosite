@@ -24,7 +24,7 @@
   "navigation": {
     "leftLabel": "DR. PAULO GUIMARÃES JR.",
     "links": [
-      { "label": "Sobre", "url": "#about" },
+      { "label": "Sobre", "url": "#why-us" },
       { "label": "Serviços", "url": "#projects" },
       { "label": "Instituto", "url": "#archive" },
       { "label": "Marque uma consulta", "url": "https://wa.me/5547992547770", "highlight": true }

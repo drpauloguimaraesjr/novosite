@@ -306,6 +306,38 @@ export default function Home() {
         <ScrollIndicator />
       </section>
 
+      {/* Why Us Section - Transition from Hero */}
+      <section 
+        id="why-us" 
+        style={{ 
+          minHeight: "100vh", 
+          display: "flex", 
+          flexDirection: "column", 
+          justifyContent: "center", 
+          alignItems: "center",
+          padding: "0 clamp(20px, 4vw, 40px)",
+          textAlign: "center",
+          position: "relative",
+          zIndex: 10,
+          backgroundColor: "var(--bg-color)"
+        }}
+      >
+        <div style={{ marginBottom: "3rem" }}>
+          <span className="sub-label">[ POR QUE SOMOS MUITO PROCURADOS ? ]</span>
+        </div>
+        <h2 style={{ 
+          fontSize: "clamp(3rem, 7vw, 6rem)", 
+          fontWeight: 400, 
+          lineHeight: 1.1, 
+          letterSpacing: "-0.02em",
+          maxWidth: "1400px" 
+        }}>
+          Transforme sua saúde <br />
+          com tratamentos <br />
+          integrados
+        </h2>
+      </section>
+
       {/* Services Showcase - Principais Serviços */}
       <ServicesShowcase />
 
