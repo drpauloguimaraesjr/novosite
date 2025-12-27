@@ -200,12 +200,11 @@ export default function SplitText({ text, className, trigger, delay = 0, interac
               const power = Math.max(0, 1 - (dist / maxDistance));
               
               // Efeito de lente: zoom na letra mais próxima
-              const scale = 1 + (power * 1.5);
-              const moveX = (mouseX - letterCenterX) * power * 0.3 * -1; // Move slightly away? Or towards? Existing was dist * power
-              // Existing logic: const moveX = distanceX * power * 0.3; (distanceX = mouse - center)
-              // So letter moves TOWARDS cursor? 
-              const existingMoveX = (mouseX - letterCenterX) * power * 0.3;
-              const existingMoveY = (mouseY - letterCenterY) * power * 0.3;
+              // Reduzido drasticamente para evitar efeito "tremendo" ou exagerado (User Request: "muito sensivel")
+              const scale = 1 + (power * 0.15); 
+              
+              const existingMoveX = (mouseX - letterCenterX) * power * 0.1;
+              const existingMoveY = (mouseY - letterCenterY) * power * 0.1;
               
               gsap.to(letterElement, {
                 scale: scale,
