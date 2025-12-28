@@ -122,6 +122,31 @@ export default function Home() {
         ease: "power4.inOut"
       });
 
+      // Hero Pinning and Text Swap sequence
+      const heroTl = gsap.timeline({
+        scrollTrigger: {
+          trigger: ".hero-section",
+          start: "top top",
+          end: "+=120%", 
+          pin: true,
+          scrub: 1, 
+        }
+      });
+
+      heroTl.to(".hero-content-1", { 
+        opacity: 0, 
+        scale: 0.95, 
+        y: -30, 
+        filter: "blur(10px)",
+        pointerEvents: "none", 
+        duration: 1 
+      }, 0)
+      .fromTo(".hero-content-2", 
+        { opacity: 0, scale: 1.05, y: 50, filter: "blur(10px)", pointerEvents: "none" },
+        { opacity: 1, scale: 1, y: 0, filter: "blur(0px)", pointerEvents: "all", duration: 1 }, 
+        0
+      );
+
 
 
       // Directional Reveal for project items (Left/Right)
@@ -236,9 +261,9 @@ export default function Home() {
         ))}
       </div>
 
-      {/* Hero Section */}
-      <section style={{ 
-        minHeight: "100vh", 
+      {/* Hero Section - Pinned Transition */}
+      <section className="hero-section" style={{ 
+        height: "100vh", 
         display: "flex", 
         flexDirection: "column", 
         justifyContent: "center", 
@@ -248,53 +273,93 @@ export default function Home() {
         maxWidth: "100vw",
         overflow: "hidden"
       }}>
-        <div style={{ marginBottom: "3rem", position: "relative" }} data-speed="0.8">
-          <span className="sub-label">[ {siteData.hero.sublabel} ]</span>
-        </div>
         
-        <h1 
-          style={{ 
-            cursor: "default",
-            position: "relative",
-            width: "100%",
-            maxWidth: "100%",
-            margin: 0,
-            padding: 0,
-            transform: "translateZ(0)", // Force hardware acceleration
-            zIndex: 10, // Above the carousel images
-          }} 
-          data-speed={siteData.hero.settings.parallaxSpeed}
-          data-cursor-ignore="true"
-        >
-          {titleLines.map((line, i) => (
-            <div 
-              key={i} 
-              style={{ 
-                overflow: "visible", 
-                display: "block",
-                position: "relative",
-                width: "100%",
-                whiteSpace: "nowrap"
-              }}
-            >
-              <SplitText 
-                text={line} 
-                delay={1.5 + (i * 0.2)}
-                interactive={true}
-                className="title-line-inner"
-              />
-            </div>
-          ))}
-        </h1>
+        {/* Helper for pinned content alignment */}
+        <div style={{ position: "relative", width: "100%", height: "100%", display: "flex", flexDirection: "column", justifyContent: "center" }}>
+        
+          {/* Content 1: Dr Paulo (Initial) */}
+          <div className="hero-content-1" style={{ position: "relative", zIndex: 10, width: "100%", height: "100%", display: "flex", flexDirection: "column", justifyContent: "center", willChange: "transform, opacity" }}>
+              <div style={{ marginBottom: "3rem", position: "relative", zIndex: 12 }}>
+                <span className="sub-label">[ {siteData.hero.sublabel} ]</span>
+              </div>
+              
+              <h1 
+                style={{ 
+                  cursor: "default",
+                  position: "relative",
+                  width: "100%",
+                  maxWidth: "100%",
+                  margin: 0,
+                  padding: 0,
+                  transform: "translateZ(0)", 
+                  zIndex: 20, 
+                }} 
+                data-cursor-ignore="true"
+              >
+                {titleLines.map((line, i) => (
+                  <div 
+                    key={i} 
+                    style={{ 
+                      overflow: "visible", 
+                      display: "block",
+                      position: "relative",
+                      width: "100%",
+                      whiteSpace: "nowrap"
+                    }}
+                  >
+                    <SplitText 
+                      text={line} 
+                      delay={1.5 + (i * 0.2)}
+                      interactive={true}
+                      className="title-line-inner"
+                    />
+                  </div>
+                ))}
+              </h1>
+      
+              <div style={{ marginTop: "4rem", display: "flex", justifyContent: "space-between", alignItems: "flex-end", position: "relative", zIndex: 12 }}>
+                <p className="hero-desc">
+                  {siteData.hero.description}
+                </p>
+                <div className="sub-label">[ {siteData.hero.edition} ]</div>
+              </div>
+          </div>
 
-        <div style={{ marginTop: "4rem", display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
-          <p className="hero-desc" data-speed="0.9">
-            {siteData.hero.description}
-          </p>
-          <div className="sub-label" data-speed="1.1">[ {siteData.hero.edition} ]</div>
+          {/* Content 2: Why Us (Hidden initially, Swap on scroll) */}
+          <div id="why-us" className="hero-content-2" style={{ 
+              position: "absolute", 
+              top: 0, 
+              left: 0, 
+              width: "100%", 
+              height: "100%", 
+              display: "flex", 
+              flexDirection: "column", 
+              justifyContent: "center", 
+              alignItems: "center", 
+              opacity: 0, 
+              zIndex: 30,
+              pointerEvents: "none",
+              textAlign: "center",
+          }}>
+               <div style={{ marginBottom: "3rem" }}>
+                  <span className="sub-label">[ POR QUE SOMOS MUITO PROCURADOS ? ]</span>
+               </div>
+               <h2 style={{ 
+                  fontSize: "clamp(3rem, 7vw, 6rem)", 
+                  fontWeight: 400, 
+                  lineHeight: 1.1, 
+                  letterSpacing: "-0.02em",
+                  maxWidth: "1400px" 
+               }}>
+                  Transforme sua saúde <br />
+                  com tratamentos <br />
+                  integrados
+               </h2>
+          </div>
+
         </div>
 
-        {/* Hero Carousel - Slideshow de imagens */}
+        {/* Hero Carousel - Background */}
         {siteData.hero.heroImages && siteData.hero.heroImages.length > 0 && (
           <HeroCarousel 
             images={siteData.hero.heroImages} 
@@ -302,40 +367,7 @@ export default function Home() {
           />
         )}
 
-        {/* Scroll To Explore Indicator - Estilo Eva Sanchez */}
         <ScrollIndicator />
-      </section>
-
-      {/* Why Us Section - Transition from Hero */}
-      <section 
-        id="why-us" 
-        style={{ 
-          minHeight: "100vh", 
-          display: "flex", 
-          flexDirection: "column", 
-          justifyContent: "center", 
-          alignItems: "center",
-          padding: "0 clamp(20px, 4vw, 40px)",
-          textAlign: "center",
-          position: "relative",
-          zIndex: 10,
-          backgroundColor: "var(--bg-color)"
-        }}
-      >
-        <div style={{ marginBottom: "3rem" }}>
-          <span className="sub-label">[ POR QUE SOMOS MUITO PROCURADOS ? ]</span>
-        </div>
-        <h2 style={{ 
-          fontSize: "clamp(3rem, 7vw, 6rem)", 
-          fontWeight: 400, 
-          lineHeight: 1.1, 
-          letterSpacing: "-0.02em",
-          maxWidth: "1400px" 
-        }}>
-          Transforme sua saúde <br />
-          com tratamentos <br />
-          integrados
-        </h2>
       </section>
 
       {/* Services Showcase - Principais Serviços */}
