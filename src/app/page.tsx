@@ -318,9 +318,26 @@ export default function Home() {
               </h1>
       
               <div style={{ marginTop: "4rem", display: "flex", justifyContent: "space-between", alignItems: "flex-end", position: "relative", zIndex: 12 }}>
-                <p className="hero-desc">
-                  {siteData.hero.description}
-                </p>
+                <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
+                  <p className="hero-desc">
+                    {siteData.hero.description}
+                  </p>
+                  
+                  {/* Location Buttons - "Parte Inicial" Request */}
+                  <div style={{ display: "flex", gap: "15px", opacity: 0.8 }}>
+                    <Magnetic>
+                       <a href="https://www.google.com/maps/search/?api=1&query=Rua+Blumenau,+797+Joinville" target="_blank" rel="noopener noreferrer" style={{ fontSize: "0.75rem", textTransform: "uppercase", borderBottom: "1px solid rgba(0,0,0,0.2)", paddingBottom: "2px" }}>
+                          Google Maps ↗
+                       </a>
+                    </Magnetic>
+                    <Magnetic>
+                       <a href="https://waze.com/ul?q=Rua+Blumenau,797,Joinville" target="_blank" rel="noopener noreferrer" style={{ fontSize: "0.75rem", textTransform: "uppercase", borderBottom: "1px solid rgba(0,0,0,0.2)", paddingBottom: "2px" }}>
+                          Waze App ↗
+                       </a>
+                    </Magnetic>
+                  </div>
+                </div>
+                
                 <div className="sub-label">[ {siteData.hero.edition} ]</div>
               </div>
           </div>

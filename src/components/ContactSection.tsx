@@ -46,6 +46,49 @@ export default function ContactSection() {
           <div style={{ marginTop: "2rem" }}>
             <p style={{ opacity: 0.6 }}>{contact.address.city}</p>
             <p style={{ opacity: 0.6, marginTop: "0.5rem" }}>{contact.address.street}</p>
+            
+            <div style={{ display: "flex", gap: "10px", marginTop: "1rem" }}>
+              <Magnetic>
+                <a 
+                  href="https://www.google.com/maps/search/?api=1&query=Rua+Blumenau,+797+Joinville" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  style={{ 
+                    fontSize: "0.7rem", 
+                    padding: "8px 16px", 
+                    border: "1px solid rgba(100,100,100,0.2)", 
+                    borderRadius: "4px", 
+                    display: "inline-flex", 
+                    alignItems: "center", 
+                    gap: "5px",
+                    color: "inherit",
+                    textDecoration: "none"
+                  }}
+                >
+                  MAPS ↗
+                </a>
+              </Magnetic>
+              <Magnetic>
+                <a 
+                  href="https://waze.com/ul?q=Rua+Blumenau,797,Joinville" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  style={{ 
+                    fontSize: "0.7rem", 
+                    padding: "8px 16px", 
+                    border: "1px solid rgba(100,100,100,0.2)", 
+                    borderRadius: "4px", 
+                    display: "inline-flex", 
+                    alignItems: "center", 
+                    gap: "5px",
+                    color: "inherit",
+                    textDecoration: "none"
+                  }}
+                >
+                  WAZE ↗
+                </a>
+              </Magnetic>
+            </div>
           </div>
         </div>
 
