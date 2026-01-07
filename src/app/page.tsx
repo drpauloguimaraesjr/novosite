@@ -501,9 +501,7 @@ export default function Home() {
           <div className="sub-label" style={{ fontSize: "0.65rem", opacity: 0.5 }}>
             P C GUIMARAES JUNIOR LTDA – CNPJ 14.705.723/0001-09
           </div>
-          <div className="sub-label" style={{ fontSize: "0.65rem", opacity: 0.5 }}>
-            Rua Blumenau, 797 – Joinville/SC
-          </div>
+
           <div className="sub-label" style={{ fontSize: "0.65rem", opacity: 0.5 }}>
             contato@drpauloguimaraesjr.com.br
           </div>
