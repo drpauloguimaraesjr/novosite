@@ -67,11 +67,11 @@ export default function Home() {
 
         // Encontrar a próxima seção que está abaixo do threshold
         let nextSection: Element | null = null;
-        
+
         for (const section of sections) {
           const rect = section.getBoundingClientRect();
           const sectionTop = window.scrollY + rect.top;
-          
+
           // Se a seção está abaixo do threshold atual
           if (sectionTop > currentScroll + threshold) {
             nextSection = section;
@@ -83,13 +83,13 @@ export default function Home() {
         if (!nextSection) {
           const lastSection = sections[sections.length - 1];
           const lastSectionBottom = window.scrollY + lastSection.getBoundingClientRect().bottom;
-          
+
           // Se está próximo do final, voltar ao topo
           if (lastSectionBottom - currentScroll < viewportHeight * 1.5) {
             window.scrollTo({ top: 0, behavior: "smooth" });
             return;
           }
-          
+
           // Caso contrário, ir para a última seção
           nextSection = lastSection;
         }
@@ -127,25 +127,25 @@ export default function Home() {
         scrollTrigger: {
           trigger: ".hero-section",
           start: "top top",
-          end: "+=120%", 
+          end: "+=120%",
           pin: true,
-          scrub: 1, 
+          scrub: 1,
         }
       });
 
-      heroTl.to(".hero-content-1", { 
-        opacity: 0, 
-        scale: 0.95, 
-        y: -30, 
+      heroTl.to(".hero-content-1", {
+        opacity: 0,
+        scale: 0.95,
+        y: -30,
         filter: "blur(10px)",
-        pointerEvents: "none", 
-        duration: 1 
+        pointerEvents: "none",
+        duration: 1
       }, 0)
-      .fromTo(".hero-content-2", 
-        { opacity: 0, scale: 1.05, y: 50, filter: "blur(10px)", pointerEvents: "none" },
-        { opacity: 1, scale: 1, y: 0, filter: "blur(0px)", pointerEvents: "all", duration: 1 }, 
-        0
-      );
+        .fromTo(".hero-content-2",
+          { opacity: 0, scale: 1.05, y: 50, filter: "blur(10px)", pointerEvents: "none" },
+          { opacity: 1, scale: 1, y: 0, filter: "blur(0px)", pointerEvents: "all", duration: 1 },
+          0
+        );
 
 
 
@@ -155,14 +155,14 @@ export default function Home() {
         projectItems.forEach((item, i) => {
           // Odd: Left (-100), Even: Right (100)
           const xStart = i % 2 === 0 ? -100 : 100;
-          
-          gsap.fromTo(item, 
-            { 
-              opacity: 0, 
-              x: xStart 
+
+          gsap.fromTo(item,
+            {
+              opacity: 0,
+              x: xStart
             },
             {
-              opacity: 1, 
+              opacity: 1,
               x: 0,
               duration: 1.2,
               ease: "power3.out",
@@ -262,125 +262,125 @@ export default function Home() {
       </div>
 
       {/* Hero Section - Pinned Transition */}
-      <section className="hero-section" style={{ 
-        height: "100vh", 
-        display: "flex", 
-        flexDirection: "column", 
-        justifyContent: "center", 
-        padding: "0 clamp(20px, 4vw, 40px)", 
+      <section className="hero-section" style={{
+        height: "100vh",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        padding: "0 clamp(20px, 4vw, 40px)",
         position: "relative",
         width: "100%",
         maxWidth: "100vw",
         overflow: "hidden"
       }}>
-        
+
         {/* Helper for pinned content alignment */}
         <div style={{ position: "relative", width: "100%", height: "100%", display: "flex", flexDirection: "column", justifyContent: "center" }}>
-        
+
           {/* Content 1: Dr Paulo (Initial) */}
           <div className="hero-content-1" style={{ position: "relative", zIndex: 10, width: "100%", height: "100%", display: "flex", flexDirection: "column", justifyContent: "center", willChange: "transform, opacity" }}>
-              <div style={{ marginBottom: "3rem", position: "relative", zIndex: 12 }}>
-                <span className="sub-label">[ {siteData.hero.sublabel} ]</span>
-              </div>
-              
-              <h1 
-                style={{ 
-                  cursor: "default",
-                  position: "relative",
-                  width: "100%",
-                  maxWidth: "100%",
-                  margin: 0,
-                  padding: 0,
-                  transform: "translateZ(0)", 
-                  zIndex: 20, 
-                }} 
-                data-cursor-ignore="true"
-              >
-                {titleLines.map((line, i) => (
-                  <div 
-                    key={i} 
-                    style={{ 
-                      overflow: "visible", 
-                      display: "block",
-                      position: "relative",
-                      width: "100%",
-                      whiteSpace: "nowrap"
-                    }}
-                  >
-                    <SplitText 
-                      text={line} 
-                      delay={1.5 + (i * 0.2)}
-                      interactive={true}
-                      className="title-line-inner"
-                    />
-                  </div>
-                ))}
-              </h1>
-      
-              <div style={{ marginTop: "4rem", display: "flex", justifyContent: "space-between", alignItems: "flex-end", position: "relative", zIndex: 12 }}>
-                <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
-                  <p className="hero-desc">
-                    {siteData.hero.description}
-                  </p>
-                  
-                  {/* Location Buttons - "Parte Inicial" Request */}
-                  <div style={{ display: "flex", gap: "15px", opacity: 0.8 }}>
-                    <Magnetic>
-                       <a href="https://www.google.com/maps/search/?api=1&query=Rua+Blumenau,+797+Joinville" target="_blank" rel="noopener noreferrer" style={{ fontSize: "0.75rem", textTransform: "uppercase", borderBottom: "1px solid rgba(0,0,0,0.2)", paddingBottom: "2px" }}>
-                          Google Maps ↗
-                       </a>
-                    </Magnetic>
-                    <Magnetic>
-                       <a href="https://waze.com/ul?q=Rua+Blumenau,797,Joinville" target="_blank" rel="noopener noreferrer" style={{ fontSize: "0.75rem", textTransform: "uppercase", borderBottom: "1px solid rgba(0,0,0,0.2)", paddingBottom: "2px" }}>
-                          Waze App ↗
-                       </a>
-                    </Magnetic>
-                  </div>
+            <div style={{ marginBottom: "3rem", position: "relative", zIndex: 12 }}>
+              <span className="sub-label">[ {siteData.hero.sublabel} ]</span>
+            </div>
+
+            <h1
+              style={{
+                cursor: "default",
+                position: "relative",
+                width: "100%",
+                maxWidth: "100%",
+                margin: 0,
+                padding: 0,
+                transform: "translateZ(0)",
+                zIndex: 20,
+              }}
+              data-cursor-ignore="true"
+            >
+              {titleLines.map((line, i) => (
+                <div
+                  key={i}
+                  style={{
+                    overflow: "visible",
+                    display: "block",
+                    position: "relative",
+                    width: "100%",
+                    whiteSpace: "nowrap"
+                  }}
+                >
+                  <SplitText
+                    text={line}
+                    delay={1.5 + (i * 0.2)}
+                    interactive={true}
+                    className="title-line-inner"
+                  />
                 </div>
-                
-                <div className="sub-label">[ {siteData.hero.edition} ]</div>
+              ))}
+            </h1>
+
+            <div style={{ marginTop: "4rem", display: "flex", justifyContent: "space-between", alignItems: "flex-end", position: "relative", zIndex: 12 }}>
+              <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
+                <p className="hero-desc">
+                  {siteData.hero.description}
+                </p>
+
+                {/* Location Buttons - "Parte Inicial" Request */}
+                <div style={{ display: "flex", gap: "15px", opacity: 0.8 }}>
+                  <Magnetic>
+                    <a href="https://www.google.com/maps/search/?api=1&query=Rua+Blumenau,+797+Joinville" target="_blank" rel="noopener noreferrer" style={{ fontSize: "0.75rem", textTransform: "uppercase", borderBottom: "1px solid rgba(0,0,0,0.2)", paddingBottom: "2px" }}>
+                      Google Maps ↗
+                    </a>
+                  </Magnetic>
+                  <Magnetic>
+                    <a href="https://waze.com/ul?q=Rua+Blumenau,797,Joinville" target="_blank" rel="noopener noreferrer" style={{ fontSize: "0.75rem", textTransform: "uppercase", borderBottom: "1px solid rgba(0,0,0,0.2)", paddingBottom: "2px" }}>
+                      Waze App ↗
+                    </a>
+                  </Magnetic>
+                </div>
               </div>
+
+              <div className="sub-label">[ {siteData.hero.edition} ]</div>
+            </div>
           </div>
 
           {/* Content 2: Why Us (Hidden initially, Swap on scroll) */}
-          <div id="why-us" className="hero-content-2" style={{ 
-              position: "absolute", 
-              top: 0, 
-              left: 0, 
-              width: "100%", 
-              height: "100%", 
-              display: "flex", 
-              flexDirection: "column", 
-              justifyContent: "center", 
-              alignItems: "center", 
-              opacity: 0, 
-              zIndex: 30,
-              pointerEvents: "none",
-              textAlign: "center",
+          <div id="why-us" className="hero-content-2" style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            alignItems: "center",
+            opacity: 0,
+            zIndex: 30,
+            pointerEvents: "none",
+            textAlign: "center",
           }}>
-               <div style={{ marginBottom: "3rem" }}>
-                  <span className="sub-label">[ POR QUE SOMOS MUITO PROCURADOS ? ]</span>
-               </div>
-               <h2 style={{ 
-                  fontSize: "clamp(3rem, 7vw, 6rem)", 
-                  fontWeight: 400, 
-                  lineHeight: 1.1, 
-                  letterSpacing: "-0.02em",
-                  maxWidth: "1400px" 
-               }}>
-                  Transforme sua saúde <br />
-                  com tratamentos <br />
-                  integrados
-               </h2>
+            <div style={{ marginBottom: "3rem" }}>
+              <span className="sub-label">[ POR QUE SOMOS MUITO PROCURADOS ? ]</span>
+            </div>
+            <h2 style={{
+              fontSize: "clamp(3rem, 7vw, 6rem)",
+              fontWeight: 400,
+              lineHeight: 1.1,
+              letterSpacing: "-0.02em",
+              maxWidth: "1400px"
+            }}>
+              Transforme sua saúde <br />
+              com tratamentos <br />
+              integrados
+            </h2>
           </div>
 
         </div>
 
         {/* Hero Carousel - Background */}
         {siteData.hero.heroImages && siteData.hero.heroImages.length > 0 && (
-          <HeroCarousel 
-            images={siteData.hero.heroImages} 
-            settings={siteData.hero.carouselSettings || {}} 
+          <HeroCarousel
+            images={siteData.hero.heroImages}
+            settings={siteData.hero.carouselSettings || {}}
           />
         )}
 
@@ -401,14 +401,14 @@ export default function Home() {
             </button>
           </Magnetic>
         </div>
-        
+
         {siteData.projects.map((project: any, idx: number) => (
-          <div 
-            key={project.id} 
+          <div
+            key={project.id}
             className="project-item-wrapper"
           >
-            <Link 
-              href={`/project/${project.title.toLowerCase().replace(/ /g, "-")}`} 
+            <Link
+              href={`/project/${project.title.toLowerCase().replace(/ /g, "-")}`}
               className="project-item"
               data-cursor-text="VIEW"
             >
@@ -431,14 +431,14 @@ export default function Home() {
       {/* About Section */}
       <section className="about-section" style={{ marginTop: "20vh", marginBottom: "20vh" }}>
         <div className="sub-label" style={{ color: "rgba(248, 246, 242, 0.5)", marginBottom: "3rem" }}>[ {siteData.about.label} ]</div>
-        
+
         <TextMaskReveal phrase={siteData.about.phrase} />
 
         <div className="about-grid">
           <div className="about-description">
             <p data-lag={siteData.about.settings.lag}>{siteData.about.description}</p>
             <br />
-            <p data-lag={siteData.about.settings.lag + 0.1} style={{ fontSize: "1rem", opacity: 0.6 }}>{siteData.about.location}</p>
+
           </div>
         </div>
       </section>
@@ -447,15 +447,15 @@ export default function Home() {
 
       {/* FloatingCards - Ocultado (fotos já estão no GalleryCarousel) */}
       <div style={{ display: "none" }}>
-        <FloatingCards 
+        <FloatingCards
           items={siteData.visualArchive.slice(0, 6).map((item: any) => ({
             id: item.id,
             title: item.title,
             category: item.cat,
             image: item.img,
             description: item.description || `Explore ${item.title}`
-          }))} 
-          columns={3} 
+          }))}
+          columns={3}
         />
       </div>
 
@@ -465,7 +465,7 @@ export default function Home() {
       </div>
 
       {/* VerticalTimeline - Alternativa ao HorizontalScroll */}
-      <VerticalTimeline 
+      <VerticalTimeline
         items={siteData.projects.map((project: any, index: number) => ({
           id: project.id,
           title: project.title,
@@ -488,10 +488,10 @@ export default function Home() {
 
       {/* Final Footer Section */}
       <footer style={{ padding: "40px", backgroundColor: "var(--text-color)", color: "var(--bg-color)" }}>
-        <div style={{ 
-          borderTop: "1px solid rgba(248, 246, 242, 0.1)", 
-          paddingTop: "40px", 
-          display: "flex", 
+        <div style={{
+          borderTop: "1px solid rgba(248, 246, 242, 0.1)",
+          paddingTop: "40px",
+          display: "flex",
           flexDirection: "column",
           alignItems: "center",
           textAlign: "center",
