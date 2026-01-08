@@ -13,98 +13,96 @@ export default function ScrollIndicator() {
   const [isDark, setIsDark] = useState(false);
   const squareSize = 14;
 
+  // ---- Phrase cycling ----
+  const phrases = ["ROLE PARA BAIXO", "PRESSIONE ESPAÇO", "PRESS SPACE"];
+  const [phraseIdx, setPhraseIdx] = useState(0);
+  const phrase = phrases[phraseIdx];
+
+  // Update dimensions whenever phrase changes (text may have different width)
   useEffect(() => {
     const updateDimensions = () => {
       if (textRef.current) {
         setTextWidth(textRef.current.offsetWidth);
       }
     };
+    updateDimensions();
+    window.addEventListener("resize", updateDimensions);
+    return () => window.removeEventListener("resize", updateDimensions);
+  }, [phrase]);
 
+  // Theme detection (unchanged)
+  useEffect(() => {
     const checkDarkTheme = () => {
       setIsDark(document.body.classList.contains("dark-theme"));
     };
-
-    updateDimensions();
     checkDarkTheme();
-    
-    window.addEventListener("resize", updateDimensions);
-    
-    // Observar mudanças no tema
     const observer = new MutationObserver(checkDarkTheme);
-    observer.observe(document.body, {
-      attributes: true,
-      attributeFilter: ["class"]
-    });
-
-    return () => {
-      window.removeEventListener("resize", updateDimensions);
-      observer.disconnect();
-    };
+    observer.observe(document.body, { attributes: true, attributeFilter: ["class"] });
+    return () => observer.disconnect();
   }, []);
 
+  // Main animation – runs once per phrase, then switches phrase
   useEffect(() => {
     if (!squareRef.current || !maskRef.current || !textRef.current || textWidth === 0) return;
 
-    // O quadrado percorre APENAS do início ao fim do texto (do "[" ao "]")
-    // Começa antes do texto e termina depois do texto
     const startX = -squareSize;
     const endX = textWidth + squareSize;
     const totalDistance = endX - startX;
 
-    // Timeline para animações sincronizadas (movimento + rotação + pulsação)
+    // Reset square position before each run
+    gsap.set(squareRef.current, { x: startX });
+    // Fade in text (smooth) at start of each cycle
+    gsap.fromTo(
+      [textRef.current, maskRef.current],
+      { opacity: 0 },
+      { opacity: 1, duration: 0.3, ease: "power1.out" }
+    );
+
     const tl = gsap.timeline({
-      repeat: -1,
-      defaults: { ease: "none" }
+      onComplete: () => {
+        // Switch to next phrase when animation finishes
+        setPhraseIdx((i) => (i + 1) % phrases.length);
+      },
+      defaults: { ease: "none" },
     });
 
-    // Animação principal de movimento com curva cubic-bezier similar ao CSS original
-    // cubic-bezier(0.128, 1.000, 1.000, 1.000) ≈ power4.out no GSAP
+    // Movement with custom ease – slow start, fast end (power4.in)
     tl.to(squareRef.current, {
       x: totalDistance,
       duration: 1.8,
-      ease: "power4.out",
-      onUpdate: function() {
+      ease: "power4.in",
+      onUpdate: function () {
         if (maskRef.current && squareRef.current && textRef.current) {
-          // Posição atual do quadrado
           const squareX = gsap.getProperty(squareRef.current, "x") as number;
-          
-          // O texto dentro do quadrado precisa se mover na direção oposta
-          // para ficar alinhado com o texto base atrás
-          // Compensar: posição do texto base (0) - posição atual do quadrado
           maskRef.current.style.left = `${-squareX}px`;
         }
-      }
+      },
     });
 
-    // Animação de rotação 360° sincronizada com o movimento
+    // Rotation (continuous) – keep same duration
     const rotationAnim = gsap.to(squareRef.current, {
       rotation: 360,
       duration: 1.8,
       repeat: -1,
       ease: "linear",
-      transformOrigin: "center center"
+      transformOrigin: "center center",
     });
 
-    // Animação de pulsação sutil (escala)
+    // Pulse (scale) – subtle
     const pulseAnim = gsap.to(squareRef.current, {
       scale: 1.05,
       duration: 0.6,
       repeat: -1,
       yoyo: true,
-      ease: "power1.inOut"
+      ease: "power1.inOut",
     });
 
-    // Animação da linha decorativa
+    // Decorative line animation (once per cycle)
     if (lineRef.current) {
-      gsap.fromTo(lineRef.current,
+      gsap.fromTo(
+        lineRef.current,
         { scaleX: 0, transformOrigin: "left center" },
-        { 
-          scaleX: 1, 
-          duration: 1.5, 
-          delay: 1, 
-          ease: "power3.inOut",
-          transformOrigin: "left center"
-        }
+        { scaleX: 1, duration: 1.5, delay: 0.2, ease: "power3.inOut", transformOrigin: "left center" }
       );
     }
 
@@ -113,7 +111,7 @@ export default function ScrollIndicator() {
       rotationAnim.kill();
       pulseAnim.kill();
     };
-  }, [textWidth]);
+  }, [textWidth, phraseIdx]);
 
   return (
     <div
@@ -128,18 +126,12 @@ export default function ScrollIndicator() {
         display: "flex",
         alignItems: "center",
         gap: "20px",
-        pointerEvents: "none"
+        pointerEvents: "none",
       }}
     >
-      {/* Container do texto com efeito */}
-      <div
-        style={{
-          position: "relative",
-          display: "inline-block"
-        }}
-      >
-        {/* Texto base - muda de cor baseado no tema */}
-        <span 
+      {/* Text container */}
+      <div style={{ position: "relative", display: "inline-block" }}>
+        <span
           ref={textRef}
           className="sub-label"
           style={{
@@ -148,15 +140,14 @@ export default function ScrollIndicator() {
             display: "inline-block",
             whiteSpace: "nowrap",
             zIndex: 1,
-            transition: "color 0.3s ease"
+            transition: "color 0.3s ease",
           }}
         >
-          [ SCROLL TO EXPLORE ]
+          {phrase}
         </span>
       </div>
 
-      {/* Quadrado que caminha pelo texto com texto invertido DENTRO */}
-      {/* Seguindo a estrutura CSS original: o texto fica dentro do quadrado */}
+      {/* Moving square with inverted text */}
       <div
         ref={squareRef}
         style={{
@@ -170,10 +161,9 @@ export default function ScrollIndicator() {
           zIndex: 3,
           borderRadius: "2px",
           overflow: "hidden",
-          boxShadow: "0 4px 15px rgba(0, 0, 0, 0.2)"
+          boxShadow: "0 4px 15px rgba(0, 0, 0, 0.2)",
         }}
       >
-        {/* Texto invertido dentro do quadrado */}
         <span
           ref={maskRef}
           className="sub-label"
@@ -188,15 +178,15 @@ export default function ScrollIndicator() {
             mixBlendMode: "difference",
             pointerEvents: "none",
             textAlign: "center",
-            padding: "0 20px"
+            padding: "0 20px",
           }}
         >
-          [ SCROLL TO EXPLORE ]
+          {phrase}
         </span>
       </div>
 
-      {/* Linha decorativa */}
-      <div 
+      {/* Decorative line */}
+      <div
         ref={lineRef}
         className="scroll-line"
         style={{
@@ -204,10 +194,9 @@ export default function ScrollIndicator() {
           height: "1px",
           backgroundColor: isDark ? "rgba(255, 255, 255, 0.3)" : "rgba(0, 0, 0, 0.3)",
           transformOrigin: "left center",
-          transition: "background-color 0.3s ease"
+          transition: "background-color 0.3s ease",
         }}
       />
     </div>
   );
 }
-
