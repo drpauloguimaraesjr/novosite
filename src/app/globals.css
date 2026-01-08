@@ -158,10 +158,25 @@ h1 {
 .nav-container {
   position: fixed;
   top: 30px; left: 40px; right: 40px;
-  display: flex; justify-content: space-between; align-items: center;
+  display: flex; justify-content: space-between; align-items: flex-start;
   z-index: 1000;
 }
-.nav-links { display: flex; gap: 30px; }
+.nav-links-wrapper {
+  display: flex;
+  align-items: flex-start;
+  gap: 30px;
+}
+.nav-links { 
+  display: flex; 
+  gap: 30px; 
+  margin-top: 8px; /* Align with first line of highlight group */
+}
+.nav-highlight-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: flex-end;
+}
 .nav-link {
   text-decoration: none;
   color: inherit;
@@ -174,8 +189,10 @@ h1 {
 .nav-link-highlight {
   background: var(--text-color);
   color: var(--bg-color);
-  padding: 6px 15px;
+  padding: 8px 18px;
   border-radius: 20px;
+  display: inline-block;
+  white-space: nowrap;
 }
 
 /* Project Index (The Sanchez List) */

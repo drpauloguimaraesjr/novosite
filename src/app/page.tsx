@@ -320,37 +320,11 @@ export default function Home() {
               ))}
             </h1>
 
-            <div style={{ marginTop: "3rem", display: "flex", justifyContent: "space-between", alignItems: "flex-end", position: "relative", zIndex: 12 }}>
-              <div style={{ display: "flex", flexDirection: "column", gap: "2rem" }}>
+            <div style={{ marginTop: "4rem", display: "flex", justifyContent: "space-between", alignItems: "flex-end", position: "relative", zIndex: 12 }}>
+              <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
                 <p className="hero-desc">
                   {siteData.hero.description}
                 </p>
-
-                {/* Main CTAs: Marque uma consulta & Localização */}
-                <div style={{ display: "flex", flexDirection: "column", gap: "12px", alignItems: "flex-start" }}>
-                  <Magnetic>
-                    <a 
-                      href="https://wa.me/5547992547770" 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="nav-link nav-link-highlight"
-                      style={{ fontSize: "0.8rem", letterSpacing: "0.05em", fontWeight: 600 }}
-                    >
-                      <SplitText text="MARQUE UMA CONSULTA" interactive={true} />
-                    </a>
-                  </Magnetic>
-                  <Magnetic>
-                    <a 
-                      href="https://www.google.com/maps/search/?api=1&query=Rua+Blumenau,+797+Joinville" 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="nav-link nav-link-highlight"
-                      style={{ fontSize: "0.8rem", letterSpacing: "0.05em", fontWeight: 600 }}
-                    >
-                      <SplitText text="LOCALIZAÇÃO" interactive={true} />
-                    </a>
-                  </Magnetic>
-                </div>
               </div>
 
               <div className="sub-label">[ {siteData.hero.edition} ]</div>

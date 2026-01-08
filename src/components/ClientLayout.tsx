@@ -42,18 +42,40 @@ export default function ClientLayout({ children }: { children: ReactNode }) {
                 {siteData.navigation?.leftLabel} <LiveClock />
               </div>
             </Magnetic>
-            <nav className="nav-links">
-              {siteData.navigation?.links.map((link: any, i: number) => (
-                <Magnetic key={i}>
-                  <a 
-                    href={link.url} 
-                    className={`nav-link ${link.highlight ? 'nav-link-highlight' : ''}`}
-                    data-cursor-text="VIEW"
-                  >
-                    <SplitText text={link.label} interactive={true} />
-                  </a>
-                </Magnetic>
-              ))}
+            <nav className="nav-links-wrapper">
+              {/* Regular links */}
+              <div className="nav-links">
+                {siteData.navigation?.links
+                  .filter((link: any) => !link.highlight)
+                  .map((link: any, i: number) => (
+                    <Magnetic key={`std-${i}`}>
+                      <a 
+                        href={link.url} 
+                        className="nav-link"
+                        data-cursor-text="VIEW"
+                      >
+                        <SplitText text={link.label} interactive={true} />
+                      </a>
+                    </Magnetic>
+                  ))}
+              </div>
+
+              {/* Highlighted links (stacked) */}
+              <div className="nav-highlight-group">
+                {siteData.navigation?.links
+                  .filter((link: any) => link.highlight)
+                  .map((link: any, i: number) => (
+                    <Magnetic key={`hl-${i}`}>
+                      <a 
+                        href={link.url} 
+                        className="nav-link nav-link-highlight"
+                        data-cursor-text="VIEW"
+                      >
+                        <SplitText text={link.label} interactive={true} />
+                      </a>
+                    </Magnetic>
+                  ))}
+              </div>
             </nav>
           </header>
         </>
