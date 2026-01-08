@@ -52,6 +52,27 @@ export default function ContactSection() {
         </div>
 
         <div className="footer-column">
+          <span className="sub-label">[ LOCATION ]</span>
+          <div style={{ marginTop: "2rem" }}>
+            <p style={{ opacity: 0.6 }}>{contact.address.street}</p>
+            <p style={{ opacity: 0.6 }}>{contact.address.city}</p>
+            <div style={{ marginTop: "1rem" }}>
+              <Magnetic>
+                <a 
+                  href="https://www.google.com/maps/search/?api=1&query=Rua+Blumenau,+797+Joinville" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="nav-link nav-link-highlight"
+                  style={{ display: "inline-block", fontSize: "0.75rem" }}
+                >
+                  LOCALIZAÇÃO
+                </a>
+              </Magnetic>
+            </div>
+          </div>
+        </div>
+
+        <div className="footer-column">
           <span className="sub-label">[ SAY HELLO ]</span>
           <div style={{ marginTop: "2rem" }}>
             <Magnetic>

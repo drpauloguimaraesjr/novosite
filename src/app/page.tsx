@@ -150,26 +150,29 @@ export default function Home() {
 
 
       // Directional Reveal for project items (Left/Right)
-      const projectItems = gsap.utils.toArray(".project-item") as HTMLElement[];
-      if (projectItems.length > 0) {
-        projectItems.forEach((item, i) => {
+      const projectWrappers = gsap.utils.toArray(".project-item-wrapper") as HTMLElement[];
+      if (projectWrappers.length > 0) {
+        projectWrappers.forEach((wrapper, i) => {
           // Odd: Left (-100), Even: Right (100)
           const xStart = i % 2 === 0 ? -100 : 100;
 
-          gsap.fromTo(item,
+          gsap.fromTo(wrapper,
             {
               opacity: 0,
-              x: xStart
+              x: xStart,
+              visibility: "hidden"
             },
             {
               opacity: 1,
               x: 0,
+              visibility: "visible",
               duration: 1.2,
               ease: "power3.out",
               scrollTrigger: {
-                trigger: item,
+                trigger: wrapper,
                 start: "top 85%",
                 once: true,
+                onEnter: () => gsap.set(wrapper, { visibility: "visible" })
               }
             }
           );
@@ -317,22 +320,34 @@ export default function Home() {
               ))}
             </h1>
 
-            <div style={{ marginTop: "4rem", display: "flex", justifyContent: "space-between", alignItems: "flex-end", position: "relative", zIndex: 12 }}>
-              <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
+            <div style={{ marginTop: "3rem", display: "flex", justifyContent: "space-between", alignItems: "flex-end", position: "relative", zIndex: 12 }}>
+              <div style={{ display: "flex", flexDirection: "column", gap: "2rem" }}>
                 <p className="hero-desc">
                   {siteData.hero.description}
                 </p>
 
-                {/* Location Buttons - "Parte Inicial" Request */}
-                <div style={{ display: "flex", gap: "15px", opacity: 0.8 }}>
+                {/* Main CTAs: Marque uma consulta & Localização */}
+                <div style={{ display: "flex", flexDirection: "column", gap: "12px", alignItems: "flex-start" }}>
                   <Magnetic>
-                    <a href="https://www.google.com/maps/search/?api=1&query=Rua+Blumenau,+797+Joinville" target="_blank" rel="noopener noreferrer" style={{ fontSize: "0.75rem", textTransform: "uppercase", borderBottom: "1px solid rgba(0,0,0,0.2)", paddingBottom: "2px" }}>
-                      Google Maps ↗
+                    <a 
+                      href="https://wa.me/5547992547770" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="nav-link nav-link-highlight"
+                      style={{ fontSize: "0.8rem", letterSpacing: "0.05em", fontWeight: 600 }}
+                    >
+                      <SplitText text="MARQUE UMA CONSULTA" interactive={true} />
                     </a>
                   </Magnetic>
                   <Magnetic>
-                    <a href="https://waze.com/ul?q=Rua+Blumenau,797,Joinville" target="_blank" rel="noopener noreferrer" style={{ fontSize: "0.75rem", textTransform: "uppercase", borderBottom: "1px solid rgba(0,0,0,0.2)", paddingBottom: "2px" }}>
-                      Waze App ↗
+                    <a 
+                      href="https://www.google.com/maps/search/?api=1&query=Rua+Blumenau,+797+Joinville" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="nav-link nav-link-highlight"
+                      style={{ fontSize: "0.8rem", letterSpacing: "0.05em", fontWeight: 600 }}
+                    >
+                      <SplitText text="LOCALIZAÇÃO" interactive={true} />
                     </a>
                   </Magnetic>
                 </div>
@@ -391,7 +406,7 @@ export default function Home() {
       <ServicesShowcase />
 
       {/* Project Index Section */}
-      <section className="project-list" style={{ marginTop: "20vh", marginBottom: "20vh" }}>
+      <section id="projects" className="project-list" style={{ marginTop: "20vh", marginBottom: "20vh" }}>
         <div style={{ marginBottom: "6rem", display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
           <span className="sub-label">[ SELECTED SERVICES ]</span>
           <Magnetic>
@@ -427,6 +442,7 @@ export default function Home() {
           </div>
         ))}
       </section>
+
 
       {/* About Section */}
       <section className="about-section" style={{ marginTop: "20vh", marginBottom: "20vh" }}>
