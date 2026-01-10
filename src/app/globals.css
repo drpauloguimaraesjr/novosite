@@ -129,11 +129,11 @@ body.dark-theme {
 
 /* Typography - THE SANCHEZ SCALE (Refined) */
 h1 {
-  font-size: clamp(3rem, 10vw + 2rem, 12rem); /* Massive Scale */
+  font-size: clamp(3rem, 7.5vw + 2rem, 9.5rem); /* Adjusted for better legibility */
   font-weight: 500;
   text-transform: none;
-  line-height: 0.85;
-  letter-spacing: -0.06em;
+  line-height: 0.98; /* Increased to give room for accents like "~" */
+  letter-spacing: -0.04em; /* Relaxed for better character definition */
   margin-left: -0.05em;
   margin-bottom: 2rem;
   position: relative;
