@@ -38,8 +38,9 @@ export default function ClientLayout({ children }: { children: ReactNode }) {
           
           <header className="nav-container">
             <Magnetic>
-              <div className="sub-label" style={{ cursor: "pointer", display: "flex", alignItems: "center", gap: "10px" }}>
-                {siteData.navigation?.leftLabel} <LiveClock />
+              <div className="sub-label logo-label" style={{ cursor: "pointer", display: "flex", alignItems: "center", gap: "15px", whiteSpace: "nowrap" }}>
+                <span style={{ fontWeight: 800 }}>{siteData.navigation?.leftLabel}</span>
+                <span style={{ opacity: 0.6, fontSize: "0.7rem", fontWeight: 400 }}><LiveClock /></span>
               </div>
             </Magnetic>
             <nav className="nav-links-wrapper">

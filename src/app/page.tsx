@@ -27,6 +27,8 @@ export default function Home() {
   const siteData = useContent();
   const containerRef = useRef<HTMLDivElement>(null);
   const [mounted, setMounted] = useState(false);
+  const [activePreview, setActivePreview] = useState<string | null>(null);
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
 
   console.log('[Home] Component rendered, siteData:', !!siteData);
   console.log('[Home] Projects count:', siteData?.projects?.length || 0);
@@ -105,6 +107,16 @@ export default function Home() {
       window.removeEventListener("keydown", handleKeyPress);
     };
   }, [mounted]);
+
+  // Floating Preview Mouse Tracking
+  const handleProjectHover = (imageUrl: string | null) => {
+    setActivePreview(imageUrl);
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    // Smoother tracking - we can also use GSAP for this but state is simpler for now
+    setMousePos({ x: e.clientX, y: e.clientY });
+  };
 
   useEffect(() => {
     // Wait for data and mounting
@@ -380,7 +392,18 @@ export default function Home() {
       <ServicesShowcase />
 
       {/* Project Index Section */}
-      <section id="projects" className="project-list" style={{ marginTop: "20vh", marginBottom: "20vh" }}>
+      <section id="projects" className="project-list" onMouseMove={handleMouseMove} style={{ marginTop: "20vh", marginBottom: "20vh" }}>
+        {/* Floating Preview Element */}
+        <div 
+          className={`project-floating-preview ${activePreview ? 'active' : ''}`}
+          style={{ 
+            left: mousePos.x + 20, 
+            top: mousePos.y + 20 
+          }}
+        >
+          {activePreview && <img src={activePreview} alt="Preview" />}
+        </div>
+
         <div style={{ marginBottom: "6rem", display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
           <span className="sub-label">[ SELECTED SERVICES ]</span>
           <Magnetic>
@@ -395,6 +418,8 @@ export default function Home() {
           <div
             key={project.id}
             className="project-item-wrapper"
+            onMouseEnter={() => handleProjectHover(project.image)}
+            onMouseLeave={() => handleProjectHover(null)}
           >
             <Link
               href={`/project/${project.title.toLowerCase().replace(/ /g, "-")}`}

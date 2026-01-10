@@ -48,6 +48,16 @@ body.dark-theme {
   mix-blend-mode: multiply;
 }
 
+/* Ambient Frame (Eva Sanchez Reference) */
+.ambient-frame {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9998;
+  box-shadow: inset 0 0 100px rgba(0, 102, 255, 0.08); /* Soft blue inner glow */
+  opacity: 0.8;
+}
+
 /* Grid Overlay (Fixed to 12 columns like Eva Sanchez) */
 .grid-overlay {
   position: fixed;
@@ -119,14 +129,14 @@ body.dark-theme {
 
 /* Typography - THE SANCHEZ SCALE (Refined) */
 h1 {
-  font-size: clamp(3rem, 8vw + 2rem, 8rem); /* Mais responsivo: mínimo 3rem, máximo 8rem */
+  font-size: clamp(3rem, 10vw + 2rem, 12rem); /* Massive Scale */
   font-weight: 500;
   text-transform: none;
-  line-height: 0.95;
-  letter-spacing: -0.05em;
+  line-height: 0.85;
+  letter-spacing: -0.06em;
   margin-left: -0.05em;
   margin-bottom: 2rem;
-  position: relative; /* Garantir posicionamento estável */
+  position: relative;
   width: 100%;
 }
 
@@ -160,21 +170,22 @@ h1 {
   top: 30px; left: 40px; right: 40px;
   display: flex; justify-content: space-between; align-items: flex-start;
   z-index: 1000;
+  mix-blend-mode: difference; /* Match dynamic design */
 }
 .nav-links-wrapper {
   display: flex;
   align-items: flex-start;
-  gap: 30px;
+  gap: 40px;
 }
 .nav-links { 
   display: flex; 
   gap: 30px; 
-  margin-top: 8px; /* Align with first line of highlight group */
+  margin-top: 10px; /* Precise alignment with top action */
 }
 .nav-highlight-group {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
   align-items: flex-end;
 }
 .nav-link {
@@ -261,9 +272,32 @@ h1 {
   padding-bottom: 30px;
 }
 
-.project-item-wrapper:hover .project-description {
-  max-height: 200px;
+/* Floating Image Preview (Eva Sanchez Style) */
+.project-floating-preview {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 320px;
+  height: 220px;
+  pointer-events: none;
+  z-index: 10;
+  overflow: hidden;
+  border-radius: 4px;
+  opacity: 0;
+  transform: scale(0.8);
+  transition: opacity 0.4s var(--ease-expo), transform 0.4s var(--ease-expo);
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.2);
+}
+
+.project-floating-preview.active {
   opacity: 1;
+  transform: scale(1);
+}
+
+.project-floating-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .project-item-wrapper:hover .project-item {
