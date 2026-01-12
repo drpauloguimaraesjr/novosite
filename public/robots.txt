@@ -1,0 +1,11 @@
+# *
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /api/
+
+# Host
+Host: https://drpauloguimaraesjr.com.br
+
+# Sitemaps
+Sitemap: https://drpauloguimaraesjr.com.br/sitemap.xml
