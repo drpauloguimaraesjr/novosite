@@ -95,7 +95,11 @@ export default function Home() {
         }
 
         if (nextSection) {
-          nextSection.scrollIntoView({ behavior: "smooth", block: "start" });
+          gsap.to(window, {
+            scrollTo: { y: nextSection, autoKill: true },
+            duration: 1.5,
+            ease: "power4.inOut" // The "linear, fluid and artistic" feel
+          });
         }
       }
     };
@@ -127,25 +131,53 @@ export default function Home() {
         scrollTrigger: {
           trigger: ".hero-section",
           start: "top top",
-          end: "+=120%",
+          end: "+=150%", // Increased for a more fluid, relaxed transition
           pin: true,
-          scrub: 1,
+          scrub: 1.5,   // Smoother scrub for linear, artistic feel
         }
       });
 
+      // Slide 1 Out
       heroTl.to(".hero-content-1", {
         opacity: 0,
-        scale: 0.95,
+        scale: 0.92,
+        x: -40, // Directional slide out
         y: -30,
-        filter: "blur(10px)",
+        filter: "blur(15px)",
         pointerEvents: "none",
-        duration: 1
-      }, 0)
-        .fromTo(".hero-content-2",
-          { opacity: 0, scale: 1.05, y: 50, filter: "blur(10px)", pointerEvents: "none" },
-          { opacity: 1, scale: 1, y: 0, filter: "blur(0px)", pointerEvents: "all", duration: 1 },
-          0
-        );
+        duration: 1.5,
+        ease: "power2.inOut"
+      }, 0);
+
+      // Slide 2 In (Reveal)
+      heroTl.fromTo(".hero-content-2",
+        { 
+          opacity: 0, 
+          scale: 1.1, 
+          x: 60, // Directional slide in
+          y: 40, 
+          filter: "blur(20px)", 
+          pointerEvents: "none" 
+        },
+        { 
+          opacity: 1, 
+          scale: 1, 
+          x: 0, 
+          y: 0, 
+          filter: "blur(0px)", 
+          pointerEvents: "all", 
+          duration: 1.8,  // Slightly longer for that "fluid" feel
+          ease: "power3.out" 
+        },
+        0.2 // More overlap for a "connected" transition
+      );
+
+      // Hero Carousel Parallax (Subtle scale during text swap)
+      heroTl.to(".hero-carousel-container", {
+        scale: 1.05,
+        duration: 2,
+        ease: "none"
+      }, 0);
 
 
 
@@ -153,24 +185,27 @@ export default function Home() {
       const projectWrappers = gsap.utils.toArray(".project-item-wrapper") as HTMLElement[];
       if (projectWrappers.length > 0) {
         projectWrappers.forEach((wrapper, i) => {
-          // Odd: Left (-100), Even: Right (100)
-          const xStart = i % 2 === 0 ? -100 : 100;
+          const xStart = i % 2 === 0 ? -60 : 60; // Subtle slide
 
           gsap.fromTo(wrapper,
             {
               opacity: 0,
               x: xStart,
+              scale: 0.95,
+              filter: "blur(15px)",
               visibility: "hidden"
             },
             {
               opacity: 1,
               x: 0,
+              scale: 1,
+              filter: "blur(0px)",
               visibility: "visible",
-              duration: 1.2,
+              duration: 1.8, // Fluid duration
               ease: "power3.out",
               scrollTrigger: {
                 trigger: wrapper,
-                start: "top 85%",
+                start: "top 90%",
                 once: true,
                 onEnter: () => gsap.set(wrapper, { visibility: "visible" })
               }
@@ -357,9 +392,11 @@ export default function Home() {
               letterSpacing: "-0.02em",
               maxWidth: "1400px"
             }}>
-              Transforme sua saúde <br />
-              com tratamentos <br />
-              integrados
+              <SplitText 
+                text="Transforme sua saúde com tratamentos integrados" 
+                interactive={true}
+                className="title-line-inner"
+              />
             </h2>
           </div>
 
@@ -367,10 +404,12 @@ export default function Home() {
 
         {/* Hero Carousel - Background */}
         {siteData.hero.heroImages && siteData.hero.heroImages.length > 0 && (
-          <HeroCarousel
-            images={siteData.hero.heroImages}
-            settings={siteData.hero.carouselSettings || {}}
-          />
+          <div className="hero-carousel-container" style={{ position: "absolute", inset: 0, zIndex: 1 }}>
+            <HeroCarousel
+              images={siteData.hero.heroImages}
+              settings={siteData.hero.carouselSettings || {}}
+            />
+          </div>
         )}
 
         <ScrollIndicator />

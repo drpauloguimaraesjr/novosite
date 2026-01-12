@@ -180,27 +180,20 @@ export default function SplitText({ text, className, trigger, delay = 0, interac
             const dy = letterCenterY - mouseY;
             const dist = Math.hypot(dx, dy);
             
-            // Shadow Logic:
+            // Shadow and Blur Logic:
             // Shadow falls opposite to light (Cursor). 
-            // If Cursor is Left of Char (dx > 0), Shadow should be Right (positive x).
-            // Distance factor: 0.05 (Subtle)
             const shadowX = dx * 0.08;
             const shadowY = dy * 0.08;
-            // Blur increases with distance? Or decreases?
-            // "Sombra diminuisse" -> Maybe fade out or shrink?
-            // Let's keep it subtle: Blur proportional to distance but capped.
-            const blur = Math.min(dist * 0.04, 4);
-            const shadowColor = "rgba(0,0,0,0.15)"; // Very subtle shadow
-            const dynamicShadow = `${shadowX}px ${shadowY}px ${blur}px ${shadowColor}`;
+            
+            // Peripheral Blur: Characters further from cursor get more blurred (Eva style lens)
+            // Distance of 0 = sharp, distance of 300+ = blurred
+            const peripheralBlur = Math.min(dist * 0.02, 3); // Max 3px blur
+            const shadowColor = "rgba(0,0,0,0.15)";
+            const dynamicShadow = `${shadowX}px ${shadowY}px ${peripheralBlur}px ${shadowColor}`;
 
             if (letterElement === closestLetter) {
               const maxDistance = Math.max(rect.width, rect.height) * 1.2;
-              
-              // Força do efeito baseada na proximidade
               const power = Math.max(0, 1 - (dist / maxDistance));
-              
-              // Efeito de lente: zoom na letra mais próxima
-              // Reduzido drasticamente para evitar efeito "tremendo" ou exagerado (User Request: "muito sensivel")
               const scale = 1 + (power * 0.15); 
               
               const existingMoveX = (mouseX - letterCenterX) * power * 0.1;
@@ -211,18 +204,19 @@ export default function SplitText({ text, className, trigger, delay = 0, interac
                 x: existingMoveX,
                 y: existingMoveY,
                 textShadow: dynamicShadow,
+                filter: `blur(0px)`, // Sharpest point
                 opacity: 1, 
                 duration: 0.3,
                 ease: "power2.out",
                 overwrite: true
               });
             } else {
-              // Retorna ao estado normal (scale 1) mas com SOMBRA dinâmica
               gsap.to(letterElement, {
                 scale: 1,
                 x: 0,
                 y: 0,
                 textShadow: dynamicShadow,
+                filter: `blur(${peripheralBlur}px)`, // Blurred periphery
                 opacity: 1, 
                 duration: 0.4,
                 ease: "power2.out",

@@ -6,12 +6,13 @@ import { ScrollTrigger } from "@/lib/gsap/ScrollTrigger";
 import { SplitText } from "@/lib/gsap/SplitText";
 import { ScrollSmoother } from "@/lib/gsap/ScrollSmoother";
 import { DrawSVGPlugin } from "@/lib/gsap/DrawSVGPlugin";
+import { ScrollToPlugin } from "@/lib/gsap/ScrollToPlugin";
 
 export default function GSAPConfig() {
   useEffect(() => {
     if (typeof window !== "undefined") {
       // Registrando todos os plugins premium que agora temos acesso
-      gsap.registerPlugin(ScrollTrigger, SplitText, ScrollSmoother, DrawSVGPlugin);
+      gsap.registerPlugin(ScrollTrigger, SplitText, ScrollSmoother, DrawSVGPlugin, ScrollToPlugin);
       
       // Configurações globais opcionais
       gsap.defaults({ ease: "power2.out", duration: 0.8 });

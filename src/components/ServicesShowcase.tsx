@@ -6,6 +6,7 @@ import { ScrollTrigger } from "@/lib/gsap/ScrollTrigger";
 import Link from "next/link";
 import { useContent } from "@/hooks/useContent";
 import ProxyImage from "./ProxyImage";
+import SplitText from "./SplitText";
 
 interface Service {
   id: number;
@@ -116,8 +117,10 @@ export default function ServicesShowcase() {
       <div className="services-header">
         <span className="sub-label">[ Por que somos muito procurados? ]</span>
         <h2 className="services-title">
-          Transforme sua saúde<br />
-          com tratamentos integrados
+          <SplitText 
+            text="Transforme sua saúde com tratamentos integrados" 
+            interactive={true}
+          />
         </h2>
       </div>
 
