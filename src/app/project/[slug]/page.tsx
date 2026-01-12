@@ -63,7 +63,13 @@ export default function ProjectDetail({ params }: { params: { slug: string } }) 
   const project = projectMap[decodedSlug] || projectMap[params.slug];
   const projectName = project ? project.title : (params?.slug ? params.slug.split("-").map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(" ") : "Projeto");
 
+  // Debug log
+  useEffect(() => {
+    console.log("[ProjectDetail] Slug:", params.slug, "Decoded:", decodedSlug, "Project found:", !!project);
+  }, [params.slug, decodedSlug, project]);
+
   if (!mounted) return null;
+
 
   return (
     <div ref={containerRef} style={{ padding: "0 40px" }}>
