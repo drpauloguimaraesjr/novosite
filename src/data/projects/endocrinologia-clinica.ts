@@ -4,6 +4,7 @@ export const endocrinologia_clinica = {
   category: "Saúde Metabólica",
   year: "2025",
   services: ["Metabolismo", "Hormônios", "Performance"],
+  image: "/images/clinic/0Y7A0287.jpg",
   intro: "Endocrinologia Clínica: Uma Visão Integrada para a Saúde Metabólica",
   sections: [
     {

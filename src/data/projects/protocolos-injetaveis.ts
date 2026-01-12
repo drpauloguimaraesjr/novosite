@@ -4,6 +4,7 @@ export const protocolos_injetaveis = {
   category: "Performance e Saúde",
   year: "2025",
   services: ["Suplementação", "Biodisponibilidade", "Alta Performance"],
+  image: "/images/clinic/0Y7A0358.jpg",
   intro: "Uma nova era na suplementação personalizada: contornando as barreiras do sistema digestivo para entregar nutrientes essenciais com 100% de eficácia.",
   sections: [
     {

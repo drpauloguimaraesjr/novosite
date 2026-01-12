@@ -66,7 +66,7 @@ export default function ProjectDetail({ params }: { params: { slug: string } }) 
   return (
     <div ref={containerRef} style={{ padding: "0 40px" }}>
       {/* Project Hero */}
-      <section style={{ minHeight: "80vh", display: "flex", flexDirection: "column", justifyContent: "end", paddingBottom: "10vh" }}>
+      <section style={{ minHeight: "85vh", display: "flex", flexDirection: "column", justifyContent: "end", paddingBottom: "10vh" }}>
         <div className="sub-label" style={{ marginBottom: "2rem" }}>[ {project ? (project.category as string).toUpperCase() : "PROJECT"} / {project ? project.year : "2025"} ]</div>
         <h1 className="case-study-title" style={{ fontSize: "clamp(3rem, 6.5vw, 8rem)", maxWidth: "1500px" }}>
           {project ? project.fullTitle : projectName}
@@ -88,6 +88,17 @@ export default function ProjectDetail({ params }: { params: { slug: string } }) 
           </div>
         </div>
       </section>
+
+      {/* Main Project Image */}
+      {project && project.image && (
+        <div className="reveal-section" style={{ width: "100%", height: "80vh", overflow: "hidden", marginBottom: "15vh" }}>
+          <img 
+            src={project.image} 
+            alt={project.title} 
+            style={{ width: "100%", height: "100%", objectFit: "cover" }} 
+          />
+        </div>
+      )}
 
       {/* Structured Content for Projects */}
       {project && (
