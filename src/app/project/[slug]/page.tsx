@@ -7,6 +7,7 @@ import Magnetic from "@/components/Magnetic";
 import Link from "next/link";
 import { endocrinologia_clinica } from "@/data/projects/endocrinologia-clinica";
 import { protocolos_injetaveis } from "@/data/projects/protocolos-injetaveis";
+import { implantes_hormonais } from "@/data/projects/implantes-hormonais";
 
 export default function ProjectDetail({ params }: { params: { slug: string } }) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -55,7 +56,8 @@ export default function ProjectDetail({ params }: { params: { slug: string } }) 
     "endocrinologia-clinica": endocrinologia_clinica,
     "endocrinologia-clínica": endocrinologia_clinica,
     "protocolos-injetaveis": protocolos_injetaveis,
-    "protocolos-injetáveis": protocolos_injetaveis
+    "protocolos-injetáveis": protocolos_injetaveis,
+    "implantes-hormonais": implantes_hormonais
   };
 
   const project = projectMap[decodedSlug] || projectMap[params.slug];
