@@ -6,6 +6,7 @@ import ScrollTrigger from "gsap/ScrollTrigger";
 import Magnetic from "@/components/Magnetic";
 import Link from "next/link";
 import { endocrinologia_clinica } from "@/data/projects/endocrinologia-clinica";
+import { protocolos_injetaveis } from "@/data/projects/protocolos-injetaveis";
 
 export default function ProjectDetail({ params }: { params: { slug: string } }) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -48,8 +49,16 @@ export default function ProjectDetail({ params }: { params: { slug: string } }) 
   }, []);
 
   const decodedSlug = decodeURIComponent(params.slug);
-  const isClinica = decodedSlug === "endocrinologia-clinica" || decodedSlug === "endocrinologia-clínica" || params.slug === "endocrinologia-clinica";
-  const project = isClinica ? endocrinologia_clinica : null;
+  
+  // Mapping of projects
+  const projectMap: Record<string, any> = {
+    "endocrinologia-clinica": endocrinologia_clinica,
+    "endocrinologia-clínica": endocrinologia_clinica,
+    "protocolos-injetaveis": protocolos_injetaveis,
+    "protocolos-injetáveis": protocolos_injetaveis
+  };
+
+  const project = projectMap[decodedSlug] || projectMap[params.slug];
   const projectName = project ? project.title : (params?.slug ? params.slug.split("-").map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(" ") : "Projeto");
 
   if (!mounted) return null;
@@ -70,7 +79,7 @@ export default function ProjectDetail({ params }: { params: { slug: string } }) 
           </div>
           <div className="case-study-meta" style={{ gridColumn: "4 / span 3" }}>
             <span className="sub-label" style={{ display: "block", marginBottom: "1rem" }}>Focus</span>
-            <p>{project ? "Integrated Health / Metabolism" : "Digital Experience"}</p>
+            <p>{project ? "Integrated Health / Performance" : "Digital Experience"}</p>
           </div>
           <div className="case-study-meta" style={{ gridColumn: "9 / span 4" }}>
             <p style={{ fontSize: "1.4rem", lineHeight: "1.4", fontWeight: 400, opacity: 0.7 }}>
@@ -80,7 +89,7 @@ export default function ProjectDetail({ params }: { params: { slug: string } }) 
         </div>
       </section>
 
-      {/* Structured Content for Endocrinologia Clínica */}
+      {/* Structured Content for Projects */}
       {project && (
         <div className="project-detail-content" style={{ marginTop: "10vh" }}>
           {project.sections.map((section: any, idx: number) => {
