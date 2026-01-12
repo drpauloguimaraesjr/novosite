@@ -50,6 +50,8 @@ export default function ProjectDetail({ params }: { params: { slug: string } }) 
   }, []);
 
   const decodedSlug = decodeURIComponent(params.slug);
+  // Clean slug - remove any trailing special characters like **
+  const cleanSlug = decodedSlug.replace(/[*]+$/, '').replace(/[*]+$/, '');
   
   // Mapping of projects
   const projectMap: Record<string, any> = {
@@ -57,10 +59,11 @@ export default function ProjectDetail({ params }: { params: { slug: string } }) 
     "endocrinologia-clínica": endocrinologia_clinica,
     "protocolos-injetaveis": protocolos_injetaveis,
     "protocolos-injetáveis": protocolos_injetaveis,
-    "implantes-hormonais": implantes_hormonais
+    "implantes-hormonais": implantes_hormonais,
+    "implantes-hormonais**": implantes_hormonais
   };
 
-  const project = projectMap[decodedSlug] || projectMap[params.slug];
+  const project = projectMap[cleanSlug] || projectMap[decodedSlug] || projectMap[params.slug];
   const projectName = project ? project.title : (params?.slug ? params.slug.split("-").map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(" ") : "Projeto");
 
   // Debug log
