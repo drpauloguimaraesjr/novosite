@@ -63,7 +63,7 @@ export default function Preloader() {
       <div className="preloader-content" style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "2rem" }}>
         
         {/* Logo Animado Pequeno (Substituindo a barra de loading) */}
-        <AnimatedLogo size={60} speed={2} />
+        <AnimatedLogo size={240} speed={2} />
 
         <div style={{ position: "relative", overflow: "hidden", textAlign: "center" }}>
           <h2 style={{ fontSize: "0.9rem", letterSpacing: "0.2em", fontWeight: 500, margin: 0, color: "#000000" }}>
