@@ -272,33 +272,7 @@ h1 {
   padding-bottom: 30px;
 }
 
-/* Floating Image Preview (Eva Sanchez Style) */
-.project-floating-preview {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 320px;
-  height: 220px;
-  pointer-events: none;
-  z-index: 10;
-  overflow: hidden;
-  border-radius: 4px;
-  opacity: 0;
-  transform: scale(0.8);
-  transition: opacity 0.4s var(--ease-expo), transform 0.4s var(--ease-expo);
-  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.2);
-}
 
-.project-floating-preview.active {
-  opacity: 1;
-  transform: scale(1);
-}
-
-.project-floating-preview img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
 
 .project-item-wrapper:hover .project-item {
   padding-bottom: 20px;
