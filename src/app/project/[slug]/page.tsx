@@ -6,15 +6,20 @@ import gsap from "gsap";
 import ScrollTrigger from "gsap/ScrollTrigger";
 import Magnetic from "@/components/Magnetic";
 import Link from "next/link";
+import { useContent } from "@/hooks/useContent";
 import { endocrinologia_clinica } from "@/data/projects/endocrinologia-clinica";
 import { protocolos_injetaveis } from "@/data/projects/protocolos-injetaveis";
 import { implantes_hormonais } from "@/data/projects/implantes-hormonais";
+
 
 export default function ProjectDetail() {
   const params = useParams();
   const slug = params?.slug as string || "";
   const containerRef = useRef<HTMLDivElement>(null);
   const [mounted, setMounted] = useState(false);
+  
+  // Get site content from content.json (editable via admin)
+  const siteData = useContent();
 
   useEffect(() => {
     setMounted(true);
@@ -56,7 +61,7 @@ export default function ProjectDetail() {
   // Clean slug - remove any trailing special characters like **
   const cleanSlug = decodedSlug.replace(/[*]+$/, '').replace(/[*]+$/, '');
   
-  // Mapping of projects
+  // Mapping of projects (static content)
   const projectMap: Record<string, any> = {
     "endocrinologia-clinica": endocrinologia_clinica,
     "endocrinologia-clínica": endocrinologia_clinica,
@@ -69,12 +74,22 @@ export default function ProjectDetail() {
   const project = projectMap[cleanSlug] || projectMap[decodedSlug] || projectMap[slug];
   const projectName = project ? project.title : (slug ? slug.split("-").map((w: string) => w.charAt(0).toUpperCase() + w.slice(1)).join(" ") : "Projeto");
 
+  // Find matching project from content.json to get the admin-editable image
+  const contentProject = siteData?.projects?.find((p: any) => {
+    const projectSlug = p.title?.toLowerCase().replace(/ /g, "-");
+    return projectSlug === cleanSlug || projectSlug === decodedSlug;
+  });
+  
+  // Use image from content.json (admin-editable) if available, otherwise fallback to static data
+  const projectImage = contentProject?.image || project?.image;
+
   // Debug log
   useEffect(() => {
-    console.log("[ProjectDetail] Slug:", slug, "Decoded:", decodedSlug, "Project found:", !!project);
-  }, [slug, decodedSlug, project]);
+    console.log("[ProjectDetail] Slug:", slug, "Decoded:", decodedSlug, "Project found:", !!project, "Content image:", contentProject?.image);
+  }, [slug, decodedSlug, project, contentProject]);
 
   if (!mounted) return null;
+
 
 
   return (
@@ -104,11 +119,11 @@ export default function ProjectDetail() {
       </section>
 
       {/* Main Project Image */}
-      {project && project.image && (
+      {projectImage && (
         <div className="reveal-section" style={{ width: "100%", height: "80vh", overflow: "hidden", marginBottom: "15vh" }}>
           <img 
-            src={project.image} 
-            alt={project.title} 
+            src={projectImage} 
+            alt={project?.title || projectName} 
             style={{ width: "100%", height: "100%", objectFit: "cover" }} 
           />
         </div>
