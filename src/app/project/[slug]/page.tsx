@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useParams } from "next/navigation";
 import gsap from "gsap";
 import ScrollTrigger from "gsap/ScrollTrigger";
 import Magnetic from "@/components/Magnetic";
@@ -9,7 +10,9 @@ import { endocrinologia_clinica } from "@/data/projects/endocrinologia-clinica";
 import { protocolos_injetaveis } from "@/data/projects/protocolos-injetaveis";
 import { implantes_hormonais } from "@/data/projects/implantes-hormonais";
 
-export default function ProjectDetail({ params }: { params: { slug: string } }) {
+export default function ProjectDetail() {
+  const params = useParams();
+  const slug = params?.slug as string || "";
   const containerRef = useRef<HTMLDivElement>(null);
   const [mounted, setMounted] = useState(false);
 
@@ -49,7 +52,7 @@ export default function ProjectDetail({ params }: { params: { slug: string } }) 
     });
   }, []);
 
-  const decodedSlug = decodeURIComponent(params.slug);
+  const decodedSlug = decodeURIComponent(slug);
   // Clean slug - remove any trailing special characters like **
   const cleanSlug = decodedSlug.replace(/[*]+$/, '').replace(/[*]+$/, '');
   
@@ -63,13 +66,13 @@ export default function ProjectDetail({ params }: { params: { slug: string } }) 
     "implantes-hormonais**": implantes_hormonais
   };
 
-  const project = projectMap[cleanSlug] || projectMap[decodedSlug] || projectMap[params.slug];
-  const projectName = project ? project.title : (params?.slug ? params.slug.split("-").map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(" ") : "Projeto");
+  const project = projectMap[cleanSlug] || projectMap[decodedSlug] || projectMap[slug];
+  const projectName = project ? project.title : (slug ? slug.split("-").map((w: string) => w.charAt(0).toUpperCase() + w.slice(1)).join(" ") : "Projeto");
 
   // Debug log
   useEffect(() => {
-    console.log("[ProjectDetail] Slug:", params.slug, "Decoded:", decodedSlug, "Project found:", !!project);
-  }, [params.slug, decodedSlug, project]);
+    console.log("[ProjectDetail] Slug:", slug, "Decoded:", decodedSlug, "Project found:", !!project);
+  }, [slug, decodedSlug, project]);
 
   if (!mounted) return null;
 
