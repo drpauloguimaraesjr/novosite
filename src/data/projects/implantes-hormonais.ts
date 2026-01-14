@@ -18,12 +18,12 @@ export const implantes_hormonais = {
     },
     {
       type: "table",
-      title: "Tipos de Implantes e Níveis de Evidência",
-      headers: ["Tipo de Implante", "Hormônio(s)", "Indicação Principal", "Nível de Evidência"],
+      title: "Tipos de Implantes Hormonais",
+      headers: ["Tipo de Implante", "Hormônio(s)", "Indicação Principal"],
       rows: [
-        ["Contraceptivo", "Etonogestrel, Levonorgestrel", "Contracepção de longa duração", "Robusto (RCTs e Revisões Sistemáticas)"],
-        ["Terapia Hormonal", "Estradiol, Testosterona", "TRH na menopausa, Hipogonadismo masculino", "Sólido para Farmacocinética; Limitado para desfechos de longo prazo"],
-        ["Outros (em estudo)", "Gestrinona", "Endometriose, Miomas", "Emergente/Observacional"]
+        ["Contraceptivo", "Etonogestrel, Levonorgestrel", "Contracepção de longa duração"],
+        ["Terapia Hormonal", "Estradiol, Testosterona", "TRH na menopausa, Hipogonadismo masculino"],
+        ["Outros (em estudo)", "Gestrinona", "Endometriose, Miomas"]
       ]
     },
     {
