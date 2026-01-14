@@ -94,55 +94,69 @@ export default function ProjectDetail() {
 
   return (
     <div ref={containerRef} style={{ padding: "0 40px" }}>
-      {/* Project Hero with Background Effect */}
-      <section className="project-detail-hero" style={{ position: "relative", overflow: "visible" }}>
+      {/* Immersive Project Hero with Background Effect */}
+      <section className="project-detail-hero" style={{ 
+        minHeight: "100vh", 
+        display: "flex", 
+        flexDirection: "column", 
+        justifyContent: "center",
+        position: "relative",
+        padding: "0"
+      }}>
         {projectImage && (
           <div className="hero-bg-container" style={{ 
             position: "absolute", 
-            top: "-10vh", 
-            left: "-40px", 
-            right: "-40px", 
-            bottom: "0", 
-            zIndex: -1, 
+            inset: 0,
+            zIndex: 0, 
             pointerEvents: "none",
-            opacity: 0.3, 
-            maskImage: "linear-gradient(to bottom, black 30%, transparent 100%)",
-            WebkitMaskImage: "linear-gradient(to bottom, black 30%, transparent 100%)",
+            opacity: 0.4, 
           }}>
+            <div style={{
+              position: "absolute",
+              inset: 0,
+              background: "linear-gradient(to bottom, var(--bg-color) 0%, transparent 20%, transparent 80%, var(--bg-color) 100%)",
+              zIndex: 1
+            }} />
             <img 
               src={projectImage} 
               alt="" 
-              style={{ width: "100%", height: "100%", objectFit: "cover" }} 
+              style={{ 
+                width: "100%", 
+                height: "100%", 
+                objectFit: "cover",
+                filter: "grayscale(20%) blur(2px)", // Efeito de esmaecimento visual
+              }} 
             />
           </div>
         )}
 
-        <div className="sub-label" style={{ marginBottom: "2rem", position: "relative", zIndex: 10 }}>
-          [ {project ? (project.category as string).toUpperCase() : "PROJECT"} / {project ? project.year : "2025"} ]
-        </div>
-        <h1 className="case-study-title" style={{ 
-          fontSize: "clamp(3rem, 6.5vw, 8rem)", 
-          maxWidth: "1500px", 
-          position: "relative", 
-          zIndex: 10,
-          mixBlendMode: "difference", // Efeito visual extra para garantir leitura e estilo
-        }}>
-          {project ? project.fullTitle : projectName}
-        </h1>
-        
-        <div className="case-study-grid" style={{ marginTop: "4rem", position: "relative", zIndex: 10 }}>
-          <div className="case-study-meta" style={{ gridColumn: "1 / span 3" }}>
-            <span className="sub-label" style={{ display: "block", marginBottom: "1rem" }}>Services</span>
-            <p>{project ? project.services.join(" / ") : "Art Direction / Web Design"}</p>
+        <div style={{ position: "relative", zIndex: 10, width: "100%" }}>
+          <div className="sub-label" style={{ marginBottom: "2rem", opacity: 0.8 }}>
+            [ {project ? (project.category as string).toUpperCase() : "PROJECT"} / {project ? project.year : "2025"} ]
           </div>
-          <div className="case-study-meta" style={{ gridColumn: "4 / span 3" }}>
-            <span className="sub-label" style={{ display: "block", marginBottom: "1rem" }}>Focus</span>
-            <p>{project ? "Integrated Health / Performance" : "Digital Experience"}</p>
-          </div>
-          <div className="case-study-meta" style={{ gridColumn: "9 / span 4" }}>
-            <p style={{ fontSize: "1.4rem", lineHeight: "1.4", fontWeight: 400, opacity: 0.7 }}>
-              {project ? project.intro : "Uma imersão profunda na intersecção entre o design minimalista suíço e a interatividade digital de alta performance."}
-            </p>
+          <h1 className="case-study-title" style={{ 
+            fontSize: "clamp(3.5rem, 8vw, 10rem)", 
+            maxWidth: "1600px", 
+            lineHeight: 0.9,
+            marginBottom: "4rem"
+          }}>
+            {project ? project.fullTitle : projectName}
+          </h1>
+          
+          <div className="case-study-grid" style={{ marginTop: "4rem" }}>
+            <div className="case-study-meta" style={{ gridColumn: "1 / span 3" }}>
+              <span className="sub-label" style={{ display: "block", marginBottom: "1rem" }}>Services</span>
+              <p style={{ fontWeight: 500 }}>{project ? project.services.join(" / ") : "Art Direction / Web Design"}</p>
+            </div>
+            <div className="case-study-meta" style={{ gridColumn: "4 / span 3" }}>
+              <span className="sub-label" style={{ display: "block", marginBottom: "1rem" }}>Focus</span>
+              <p style={{ fontWeight: 500 }}>{project ? "Integrated Health / Performance" : "Digital Experience"}</p>
+            </div>
+            <div className="case-study-meta" style={{ gridColumn: "9 / span 4" }}>
+              <p style={{ fontSize: "1.3rem", lineHeight: "1.5", fontWeight: 400, opacity: 0.8 }}>
+                {project ? project.intro : "Uma imersão profunda na intersecção entre o design minimalista suíço e a interatividade digital de alta performance."}
+              </p>
+            </div>
           </div>
         </div>
       </section>
