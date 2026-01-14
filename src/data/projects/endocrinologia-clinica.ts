@@ -24,6 +24,14 @@ export const endocrinologia_clinica = {
       content: "A sarcopenia compromete não apenas a força e a função física, mas também a capacidade do organismo de regular a glicemia. Quando há perda de massa muscular, há uma redução proporcional na capacidade de captação de glicose mediada por insulina, levando a um estado de resistência insulínica sistêmica. Este ciclo vicioso pode evoluir para síndrome metabólica e, subsequentemente, para diabetes tipo 2 e doença hepática gordurosa."
     },
     {
+      type: "stats",
+      items: [
+        { value: "2X", label: "Risco de Síndrome Metabólica em Sarcopênicos" },
+        { value: "60%", label: "Captação de Glicose pelo Tecido Muscular" },
+        { value: "3X", label: "Gasto Calórico vs Tecido Adiposo" }
+      ]
+    },
+    {
       type: "content-block",
       title: "Emagrecimento de Qualidade: Preservar Músculos, Perder Gordura",
       paragraphs: [

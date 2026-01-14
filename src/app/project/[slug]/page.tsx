@@ -194,6 +194,19 @@ export default function ProjectDetail() {
               );
             }
 
+            if (section.type === "stats") {
+              return (
+                <div key={idx} className="reveal-section project-stats-grid">
+                  {section.items?.map((stat: any, sIdx: number) => (
+                    <div key={sIdx} className="project-stat-item">
+                      <div className="stat-value">{stat.value}</div>
+                      <div className="stat-label">{stat.label}</div>
+                    </div>
+                  ))}
+                </div>
+              );
+            }
+
             if (section.type === "case-studies") {
               return (
                 <div key={idx} className="reveal-section project-case-studies">
