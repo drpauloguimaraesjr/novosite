@@ -94,52 +94,19 @@ export default function ProjectDetail() {
 
   return (
     <div ref={containerRef} style={{ padding: "0 40px" }}>
-      {/* Immersive Project Hero with Background Effect */}
-      <section className="project-detail-hero" style={{ 
-        minHeight: "100vh", 
-        display: "flex", 
-        flexDirection: "column", 
-        justifyContent: "center",
-        position: "relative",
-        padding: "0"
-      }}>
+      {/* Immersive Project Hero */}
+      <section className="project-detail-hero">
         {projectImage && (
-          <div className="hero-bg-container" style={{ 
-            position: "absolute", 
-            inset: 0,
-            zIndex: 0, 
-            pointerEvents: "none",
-            opacity: 0.4, 
-          }}>
-            <div style={{
-              position: "absolute",
-              inset: 0,
-              background: "linear-gradient(to bottom, var(--bg-color) 0%, transparent 20%, transparent 80%, var(--bg-color) 100%)",
-              zIndex: 1
-            }} />
-            <img 
-              src={projectImage} 
-              alt="" 
-              style={{ 
-                width: "100%", 
-                height: "100%", 
-                objectFit: "cover",
-                filter: "grayscale(20%) blur(2px)", // Efeito de esmaecimento visual
-              }} 
-            />
+          <div className="hero-bg-container">
+            <img src={projectImage} alt="" />
           </div>
         )}
 
-        <div style={{ position: "relative", zIndex: 10, width: "100%" }}>
+        <div className="hero-content-wrapper">
           <div className="sub-label" style={{ marginBottom: "2rem", opacity: 0.8 }}>
             [ {project ? (project.category as string).toUpperCase() : "PROJECT"} / {project ? project.year : "2025"} ]
           </div>
-          <h1 className="case-study-title" style={{ 
-            fontSize: "clamp(3.5rem, 8vw, 10rem)", 
-            maxWidth: "1600px", 
-            lineHeight: 0.9,
-            marginBottom: "4rem"
-          }}>
+          <h1 className="case-study-title">
             {project ? project.fullTitle : projectName}
           </h1>
           
