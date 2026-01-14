@@ -94,14 +94,43 @@ export default function ProjectDetail() {
 
   return (
     <div ref={containerRef} style={{ padding: "0 40px" }}>
-      {/* Project Hero */}
-      <section style={{ minHeight: "85vh", display: "flex", flexDirection: "column", justifyContent: "end", paddingBottom: "10vh" }}>
-        <div className="sub-label" style={{ marginBottom: "2rem" }}>[ {project ? (project.category as string).toUpperCase() : "PROJECT"} / {project ? project.year : "2025"} ]</div>
-        <h1 className="case-study-title" style={{ fontSize: "clamp(3rem, 6.5vw, 8rem)", maxWidth: "1500px" }}>
+      {/* Project Hero with Background Effect */}
+      <section className="project-detail-hero" style={{ position: "relative", overflow: "visible" }}>
+        {projectImage && (
+          <div className="hero-bg-container" style={{ 
+            position: "absolute", 
+            top: "-10vh", 
+            left: "-40px", 
+            right: "-40px", 
+            bottom: "0", 
+            zIndex: -1, 
+            pointerEvents: "none",
+            opacity: 0.3, 
+            maskImage: "linear-gradient(to bottom, black 30%, transparent 100%)",
+            WebkitMaskImage: "linear-gradient(to bottom, black 30%, transparent 100%)",
+          }}>
+            <img 
+              src={projectImage} 
+              alt="" 
+              style={{ width: "100%", height: "100%", objectFit: "cover" }} 
+            />
+          </div>
+        )}
+
+        <div className="sub-label" style={{ marginBottom: "2rem", position: "relative", zIndex: 10 }}>
+          [ {project ? (project.category as string).toUpperCase() : "PROJECT"} / {project ? project.year : "2025"} ]
+        </div>
+        <h1 className="case-study-title" style={{ 
+          fontSize: "clamp(3rem, 6.5vw, 8rem)", 
+          maxWidth: "1500px", 
+          position: "relative", 
+          zIndex: 10,
+          mixBlendMode: "difference", // Efeito visual extra para garantir leitura e estilo
+        }}>
           {project ? project.fullTitle : projectName}
         </h1>
         
-        <div className="case-study-grid" style={{ marginTop: "4rem" }}>
+        <div className="case-study-grid" style={{ marginTop: "4rem", position: "relative", zIndex: 10 }}>
           <div className="case-study-meta" style={{ gridColumn: "1 / span 3" }}>
             <span className="sub-label" style={{ display: "block", marginBottom: "1rem" }}>Services</span>
             <p>{project ? project.services.join(" / ") : "Art Direction / Web Design"}</p>
@@ -117,17 +146,6 @@ export default function ProjectDetail() {
           </div>
         </div>
       </section>
-
-      {/* Main Project Image */}
-      {projectImage && (
-        <div className="reveal-section" style={{ width: "100%", height: "80vh", overflow: "hidden", marginBottom: "15vh" }}>
-          <img 
-            src={projectImage} 
-            alt={project?.title || projectName} 
-            style={{ width: "100%", height: "100%", objectFit: "cover" }} 
-          />
-        </div>
-      )}
 
       {/* Structured Content for Projects - Premium Design */}
       {project && (
