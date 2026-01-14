@@ -1631,3 +1631,555 @@ body:not(.dark-theme) .project-description {
   }
 }
 
+/* ============================================
+   PROJECT DETAIL PAGE - Premium Content Design
+   ============================================ */
+
+/* Hero Section Enhancements */
+.project-detail-hero {
+  min-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: end;
+  padding-bottom: 10vh;
+  position: relative;
+}
+
+.project-detail-hero::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 100%;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(0, 102, 255, 0.02) 50%,
+    transparent 100%
+  );
+  pointer-events: none;
+}
+
+/* Project Content Container */
+.project-detail-content {
+  margin-top: 10vh;
+  position: relative;
+}
+
+/* Content Block - Enhanced Typography */
+.project-content-block {
+  margin-bottom: 15vh;
+  max-width: 1200px;
+  position: relative;
+}
+
+.project-content-block h2 {
+  font-size: clamp(1.8rem, 4vw, 3rem);
+  font-weight: 500;
+  margin-bottom: 3rem;
+  letter-spacing: -0.03em;
+  line-height: 1.2;
+  position: relative;
+  display: inline-block;
+}
+
+.project-content-block h2::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 0;
+  width: 60px;
+  height: 3px;
+  background: linear-gradient(90deg, var(--accent-blue), transparent);
+  border-radius: 2px;
+}
+
+.project-content-block p {
+  font-size: 1.2rem;
+  line-height: 1.8;
+  opacity: 0.85;
+  font-weight: 400;
+  margin-bottom: 1.5rem;
+}
+
+/* List Items - Enhanced with Icons */
+.project-list-container {
+  margin-top: 4rem;
+  padding-left: 0;
+  border-left: none;
+}
+
+.project-list-item {
+  margin-bottom: 3rem;
+  padding: 2rem 2.5rem;
+  background: linear-gradient(135deg, rgba(0, 102, 255, 0.03) 0%, rgba(0, 102, 255, 0.01) 100%);
+  border-radius: 16px;
+  border: 1px solid rgba(0, 102, 255, 0.08);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.4s var(--ease-expo);
+}
+
+.project-list-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: var(--accent-blue);
+  transform: scaleY(0);
+  transform-origin: bottom;
+  transition: transform 0.4s var(--ease-expo);
+}
+
+.project-list-item:hover {
+  transform: translateX(8px);
+  border-color: rgba(0, 102, 255, 0.15);
+  box-shadow: 0 10px 40px rgba(0, 102, 255, 0.08);
+}
+
+.project-list-item:hover::before {
+  transform: scaleY(1);
+}
+
+.project-list-item .list-number {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--accent-blue);
+  text-transform: uppercase;
+  margin-bottom: 0.8rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.project-list-item .list-number::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  background: var(--accent-blue);
+  border-radius: 50%;
+}
+
+.project-list-item h4 {
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  letter-spacing: -0.01em;
+}
+
+.project-list-item p {
+  font-size: 1.05rem;
+  line-height: 1.7;
+  opacity: 0.75;
+  margin: 0;
+}
+
+/* Highlight Block - Glassmorphism Premium */
+.project-highlight-block {
+  margin-bottom: 15vh;
+  padding: 3.5rem 4rem;
+  position: relative;
+  max-width: 1100px;
+  border-radius: 24px;
+  background: linear-gradient(
+    135deg,
+    rgba(0, 102, 255, 0.08) 0%,
+    rgba(0, 102, 255, 0.03) 100%
+  );
+  border: 1px solid rgba(0, 102, 255, 0.12);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  overflow: hidden;
+}
+
+.project-highlight-block::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -50%;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle, rgba(0, 102, 255, 0.1) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.project-highlight-block::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: linear-gradient(90deg, var(--accent-blue), rgba(0, 102, 255, 0.3));
+}
+
+.project-highlight-block .highlight-label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  color: var(--accent-blue);
+  text-transform: uppercase;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.project-highlight-block .highlight-label::before {
+  content: '★';
+  font-size: 1rem;
+}
+
+.project-highlight-block .highlight-content {
+  font-size: 1.6rem;
+  line-height: 1.5;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  position: relative;
+  z-index: 1;
+}
+
+/* Table - Modern Data Grid */
+.project-table-container {
+  margin-bottom: 15vh;
+  overflow: hidden;
+  border-radius: 20px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: linear-gradient(180deg, rgba(255,255,255,0.8) 0%, rgba(248,246,242,1) 100%);
+}
+
+body.dark-theme .project-table-container {
+  background: linear-gradient(180deg, rgba(30,30,30,0.8) 0%, rgba(0,0,0,1) 100%);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.project-table-header {
+  padding: 2rem 2.5rem;
+  background: linear-gradient(90deg, rgba(0, 102, 255, 0.05) 0%, transparent 100%);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+body.dark-theme .project-table-header {
+  border-bottom-color: rgba(255, 255, 255, 0.05);
+}
+
+.project-table-header .table-title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  opacity: 0.6;
+}
+
+.project-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.project-table thead tr {
+  background: rgba(0, 0, 0, 0.02);
+}
+
+body.dark-theme .project-table thead tr {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.project-table th {
+  padding: 1.5rem 2rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-align: left;
+  opacity: 0.5;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+body.dark-theme .project-table th {
+  border-bottom-color: rgba(255, 255, 255, 0.05);
+}
+
+.project-table tbody tr {
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.project-table tbody tr::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 3px;
+  height: 100%;
+  background: var(--accent-blue);
+  transform: scaleY(0);
+  transition: transform 0.3s ease;
+}
+
+.project-table tbody tr:hover {
+  background: rgba(0, 102, 255, 0.03);
+}
+
+.project-table tbody tr:hover::before {
+  transform: scaleY(1);
+}
+
+.project-table td {
+  padding: 2rem 2rem;
+  font-size: 1.05rem;
+  line-height: 1.5;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.03);
+}
+
+body.dark-theme .project-table td {
+  border-bottom-color: rgba(255, 255, 255, 0.03);
+}
+
+.project-table td:first-child {
+  font-weight: 600;
+  color: var(--text-color);
+}
+
+.project-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* Case Studies - Timeline Cards */
+.project-case-studies {
+  margin-bottom: 15vh;
+}
+
+.project-case-studies .section-label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  opacity: 0.5;
+  margin-bottom: 4rem;
+}
+
+.project-case-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 500px), 1fr));
+  gap: 3rem;
+}
+
+.project-case-card {
+  padding: 3rem;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 20px;
+  background: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(248,246,242,0.5) 100%);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.5s var(--ease-expo);
+}
+
+body.dark-theme .project-case-card {
+  background: linear-gradient(135deg, rgba(30,30,30,0.9) 0%, rgba(0,0,0,0.5) 100%);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.project-case-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, rgba(0, 102, 255, 0.08) 0%, transparent 50%);
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+.project-case-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 60px rgba(0, 102, 255, 0.1);
+  border-color: rgba(0, 102, 255, 0.15);
+}
+
+.project-case-card:hover::before {
+  opacity: 1;
+}
+
+.project-case-card .case-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--accent-blue);
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.project-case-card .case-label::before {
+  content: '';
+  width: 20px;
+  height: 2px;
+  background: var(--accent-blue);
+}
+
+.project-case-card h3 {
+  font-size: 1.6rem;
+  font-weight: 600;
+  margin-bottom: 2rem;
+  letter-spacing: -0.02em;
+  line-height: 1.3;
+}
+
+.project-case-card .case-section {
+  margin-bottom: 1.5rem;
+  position: relative;
+  z-index: 1;
+}
+
+.project-case-card .case-section-label {
+  font-size: 0.85rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  opacity: 0.9;
+}
+
+.project-case-card .case-section-content {
+  font-size: 1rem;
+  line-height: 1.6;
+  opacity: 0.7;
+}
+
+.project-case-card .case-result {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+body.dark-theme .project-case-card .case-result {
+  border-top-color: rgba(255, 255, 255, 0.05);
+}
+
+.project-case-card .case-result .case-section-label {
+  color: var(--accent-blue);
+}
+
+.project-case-card .case-result .case-section-content {
+  opacity: 1;
+  font-weight: 500;
+}
+
+/* References Section - Minimalist Footer */
+.project-references {
+  margin-bottom: 15vh;
+  padding-top: 5rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+body.dark-theme .project-references {
+  border-top-color: rgba(255, 255, 255, 0.08);
+}
+
+.project-references .section-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  opacity: 0.4;
+  margin-bottom: 2.5rem;
+}
+
+.project-references-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 400px), 1fr));
+  gap: 1.5rem;
+}
+
+.project-reference-item {
+  font-size: 0.85rem;
+  line-height: 1.6;
+  opacity: 0.45;
+  padding-left: 1.5rem;
+  position: relative;
+  transition: opacity 0.3s ease;
+}
+
+.project-reference-item::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 8px;
+  width: 6px;
+  height: 6px;
+  background: var(--accent-blue);
+  border-radius: 50%;
+  opacity: 0.5;
+}
+
+.project-reference-item:hover {
+  opacity: 0.8;
+}
+
+/* Mobile Responsive for Project Detail */
+@media (max-width: 768px) {
+  .project-content-block {
+    margin-bottom: 10vh;
+  }
+  
+  .project-content-block h2 {
+    font-size: 1.5rem;
+  }
+  
+  .project-content-block p {
+    font-size: 1rem;
+  }
+  
+  .project-list-item {
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .project-list-item h4 {
+    font-size: 1.1rem;
+  }
+  
+  .project-highlight-block {
+    padding: 2rem;
+    border-radius: 16px;
+    margin-bottom: 10vh;
+  }
+  
+  .project-highlight-block .highlight-content {
+    font-size: 1.2rem;
+  }
+  
+  .project-table-container {
+    border-radius: 12px;
+    margin-bottom: 10vh;
+  }
+  
+  .project-table th,
+  .project-table td {
+    padding: 1rem;
+    font-size: 0.9rem;
+  }
+  
+  .project-case-grid {
+    gap: 1.5rem;
+  }
+  
+  .project-case-card {
+    padding: 2rem;
+    border-radius: 16px;
+  }
+  
+  .project-case-card h3 {
+    font-size: 1.3rem;
+  }
+  
+  .project-references-grid {
+    grid-template-columns: 1fr;
+  }
+}
+

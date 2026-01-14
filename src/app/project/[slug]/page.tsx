@@ -129,31 +129,26 @@ export default function ProjectDetail() {
         </div>
       )}
 
-      {/* Structured Content for Projects */}
+      {/* Structured Content for Projects - Premium Design */}
       {project && (
         <div className="project-detail-content" style={{ marginTop: "10vh" }}>
           {project.sections.map((section: any, idx: number) => {
             if (section.type === "content-block") {
               return (
-                <div key={idx} className="reveal-section" style={{ marginBottom: "12vh", maxWidth: "1200px" }}>
-                  <h2 style={{ fontSize: "clamp(1.5rem, 3vw, 2.5rem)", fontWeight: 500, marginBottom: "3rem", letterSpacing: "-0.02em" }}>
-                    {section.title}
-                  </h2>
-                  <div style={{ display: "flex", flexDirection: "column", gap: "2rem" }}>
+                <div key={idx} className="reveal-section project-content-block">
+                  <h2>{section.title}</h2>
+                  <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
                     {section.paragraphs?.map((p: string, pIdx: number) => (
-                      <p key={pIdx} style={{ fontSize: "1.25rem", lineHeight: "1.7", opacity: 0.8, fontWeight: 400 }}>
-                        {p}
-                      </p>
+                      <p key={pIdx}>{p}</p>
                     ))}
                   </div>
                   {section.list && (
-                    <div style={{ marginTop: "4rem", borderLeft: "1px dotted rgba(0,0,0,0.2)", paddingLeft: "3rem" }}>
+                    <div className="project-list-container">
                       {section.list.map((item: any, lIdx: number) => (
-                        <div key={lIdx} style={{ marginBottom: "2.5rem" }}>
-                          <span className="sub-label" style={{ color: "var(--accent-blue)", opacity: 1, display: "block", marginBottom: "1rem" }}>
-                            {lIdx + 1}. {item.label}
-                          </span>
-                          <p style={{ fontSize: "1.1rem", lineHeight: "1.6", opacity: 0.7 }}>{item.text}</p>
+                        <div key={lIdx} className="project-list-item">
+                          <span className="list-number">{item.label}</span>
+                          <h4>{item.label}</h4>
+                          <p>{item.text}</p>
                         </div>
                       ))}
                     </div>
@@ -164,69 +159,61 @@ export default function ProjectDetail() {
 
             if (section.type === "highlight-block") {
               return (
-                <div key={idx} className="reveal-section" style={{ 
-                  marginBottom: "12vh", 
-                  padding: "4rem", 
-                  backgroundColor: "rgba(0,102,255,0.03)", 
-                  borderLeft: "4px solid var(--accent-blue)",
-                  maxWidth: "1100px" 
-                }}>
-                  <span className="sub-label" style={{ display: "block", marginBottom: "2rem", color: "var(--accent-blue)", opacity: 1 }}>{section.title}</span>
-                  <p style={{ fontSize: "1.8rem", lineHeight: "1.4", fontWeight: 400, letterSpacing: "-0.01em" }}>{section.content}</p>
+                <div key={idx} className="reveal-section project-highlight-block">
+                  <span className="highlight-label">{section.title}</span>
+                  <p className="highlight-content">{section.content}</p>
                 </div>
               );
             }
 
             if (section.type === "table") {
               return (
-                <div key={idx} className="reveal-section" style={{ marginBottom: "12vh" }}>
-                  <div className="sub-label" style={{ marginBottom: "2rem" }}>[ {section.title?.toUpperCase()} ]</div>
-                  <div style={{ overflowX: "auto" }}>
-                    <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "left" }}>
-                      <thead>
-                        <tr style={{ borderBottom: "1px solid rgba(0,0,0,0.1)" }}>
-                          {section.headers?.map((h: string, hIdx: number) => (
-                            <th key={hIdx} style={{ padding: "1.5rem 1rem", fontSize: "0.8rem", textTransform: "uppercase", fontWeight: 600, opacity: 0.5 }}>{h}</th>
+                <div key={idx} className="reveal-section project-table-container">
+                  <div className="project-table-header">
+                    <span className="table-title">{section.title}</span>
+                  </div>
+                  <table className="project-table">
+                    <thead>
+                      <tr>
+                        {section.headers?.map((h: string, hIdx: number) => (
+                          <th key={hIdx}>{h}</th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {section.rows?.map((row: string[], rIdx: number) => (
+                        <tr key={rIdx}>
+                          {row.map((cell: string, cIdx: number) => (
+                            <td key={cIdx}>{cell}</td>
                           ))}
                         </tr>
-                      </thead>
-                      <tbody>
-                        {section.rows?.map((row: string[], rIdx: number) => (
-                          <tr key={rIdx} style={{ borderBottom: "1px solid rgba(0,0,0,0.05)" }}>
-                            {row.map((cell: string, cIdx: number) => (
-                              <td key={cIdx} style={{ padding: "2rem 1rem", fontSize: "1.1rem", fontWeight: cIdx === 0 ? 500 : 400 }}>{cell}</td>
-                            ))}
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
               );
             }
 
             if (section.type === "case-studies") {
               return (
-                <div key={idx} className="reveal-section" style={{ marginBottom: "12vh" }}>
-                  <div className="sub-label" style={{ marginBottom: "4rem" }}>[ {section.title?.toUpperCase()} ]</div>
-                  <div className="case-study-grid" style={{ gap: "4rem" }}>
+                <div key={idx} className="reveal-section project-case-studies">
+                  <div className="section-label">[ {section.title?.toUpperCase()} ]</div>
+                  <div className="project-case-grid">
                     {section.items?.map((item: any, sIdx: number) => (
-                      <div key={sIdx} style={{ gridColumn: sIdx === 0 ? "1 / span 6" : "7 / span 6", padding: "3rem", border: "1px solid rgba(0,0,0,0.05)", borderRadius: "8px" }}>
-                        <span className="sub-label" style={{ marginBottom: "1rem", display: "block" }}>{item.label}</span>
-                        <h3 style={{ fontSize: "1.8rem", marginBottom: "2rem" }}>{item.subtitle}</h3>
-                        <div style={{ fontSize: "1.05rem", lineHeight: "1.6", display: "flex", flexDirection: "column", gap: "1.5rem" }}>
-                          <div>
-                            <span style={{ fontWeight: 600, display: "block", marginBottom: "0.5rem" }}>Apresentação:</span>
-                            <span style={{ opacity: 0.7 }}>{item.presentation}</span>
-                          </div>
-                          <div>
-                            <span style={{ fontWeight: 600, display: "block", marginBottom: "0.5rem" }}>Conduta:</span>
-                            <span style={{ opacity: 0.7 }}>{item.approach}</span>
-                          </div>
-                          <div style={{ color: "var(--accent-blue)" }}>
-                            <span style={{ fontWeight: 600, display: "block", marginBottom: "0.5rem" }}>Resultado:</span>
-                            <span>{item.results}</span>
-                          </div>
+                      <div key={sIdx} className="project-case-card">
+                        <span className="case-label">{item.label}</span>
+                        <h3>{item.subtitle}</h3>
+                        <div className="case-section">
+                          <span className="case-section-label">Apresentação</span>
+                          <p className="case-section-content">{item.presentation}</p>
+                        </div>
+                        <div className="case-section">
+                          <span className="case-section-label">Conduta</span>
+                          <p className="case-section-content">{item.approach}</p>
+                        </div>
+                        <div className="case-section case-result">
+                          <span className="case-section-label">Resultado</span>
+                          <p className="case-section-content">{item.results}</p>
                         </div>
                       </div>
                     ))}
@@ -237,11 +224,11 @@ export default function ProjectDetail() {
 
             if (section.type === "references") {
               return (
-                <div key={idx} className="reveal-section" style={{ marginBottom: "12vh", borderTop: "1px solid rgba(0,0,0,0.1)", paddingTop: "4rem" }}>
-                  <div className="sub-label" style={{ marginBottom: "2rem" }}>[ REFERÊNCIAS BIBLIOGRÁFICAS ]</div>
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "2rem" }}>
+                <div key={idx} className="reveal-section project-references">
+                  <div className="section-label">[ REFERÊNCIAS BIBLIOGRÁFICAS ]</div>
+                  <div className="project-references-grid">
                     {section.items?.map((item: string, rIdx: number) => (
-                      <p key={rIdx} style={{ fontSize: "0.85rem", lineHeight: "1.5", opacity: 0.4 }}>{item}</p>
+                      <p key={rIdx} className="project-reference-item">{item}</p>
                     ))}
                   </div>
                 </div>
