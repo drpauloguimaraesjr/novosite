@@ -7,6 +7,7 @@ import ScrollTrigger from "gsap/ScrollTrigger";
 import Magnetic from "@/components/Magnetic";
 import Link from "next/link";
 import { useContent } from "@/hooks/useContent";
+import { useScrollAnimations } from "@/hooks/useScrollAnimations";
 import { endocrinologia_clinica } from "@/data/projects/endocrinologia-clinica";
 import { protocolos_injetaveis } from "@/data/projects/protocolos-injetaveis";
 import { implantes_hormonais } from "@/data/projects/implantes-hormonais";
@@ -21,18 +22,21 @@ export default function ProjectDetail() {
   // Get site content from content.json (editable via admin)
   const siteData = useContent();
 
+  // Use the advanced scroll animations hook
+  useScrollAnimations(containerRef);
+
   useEffect(() => {
     setMounted(true);
     gsap.registerPlugin(ScrollTrigger);
 
-    // Initial reveal
+    // Initial reveal animation for hero elements
     gsap.fromTo(
       ".case-study-title",
       { y: 150, opacity: 0 },
       { y: 0, opacity: 1, duration: 1.8, ease: "power4.out", delay: 0.3 }
     );
 
-    // Metadata reveal
+    // Metadata reveal with stagger
     gsap.from(".case-study-meta", {
       y: 30,
       opacity: 0,
@@ -42,19 +46,12 @@ export default function ProjectDetail() {
       delay: 0.8
     });
 
-    // Sections reveal
-    gsap.utils.toArray(".reveal-section").forEach((section: any) => {
-      gsap.from(section, {
-        y: 60,
-        opacity: 0,
-        duration: 1.5,
-        ease: "power3.out",
-        scrollTrigger: {
-          trigger: section,
-          start: "top 90%",
-        }
-      });
-    });
+    // Hero background fade in
+    gsap.fromTo(
+      ".hero-bg-container",
+      { opacity: 0, scale: 1.1 },
+      { opacity: 0.45, scale: 1, duration: 2, ease: "power2.out", delay: 0.5 }
+    );
   }, []);
 
   const decodedSlug = decodeURIComponent(slug);
