@@ -197,20 +197,37 @@ h1 {
   transition: opacity 0.3s ease, color 0.3s ease;
 }
 .nav-link:hover { opacity: 0.5; }
+
+/* Botão de destaque - sempre visível */
 .nav-link-highlight {
-  background: var(--text-color);
-  color: var(--bg-color);
-  padding: 8px 18px;
-  border-radius: 20px;
+  background: #000000;
+  color: #FFFFFF;
+  padding: 10px 22px;
+  border-radius: 25px;
   display: inline-block;
   white-space: nowrap;
   font-weight: 600;
-  border: 1px solid var(--text-color);
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  border: 2px solid #000000;
   transition: all 0.3s ease;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
 }
 .nav-link-highlight:hover {
+  background: #FFFFFF;
+  color: #000000;
+  border-color: #000000;
+}
+
+/* Tema escuro - inverter cores do botão */
+body.dark-theme .nav-link-highlight {
+  background: #FFFFFF;
+  color: #000000;
+  border-color: #FFFFFF;
+}
+body.dark-theme .nav-link-highlight:hover {
   background: transparent;
-  color: var(--text-color);
+  color: #FFFFFF;
 }
 
 /* Project Index (The Sanchez List) */
