@@ -174,13 +174,13 @@ h1 {
 }
 .nav-links-wrapper {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 40px;
 }
 .nav-links { 
   display: flex; 
+  align-items: center;
   gap: 30px; 
-  margin-top: 10px; /* Precise alignment with top action */
 }
 .nav-highlight-group {
   display: flex;
@@ -190,13 +190,19 @@ h1 {
 }
 .nav-link {
   text-decoration: none;
-  color: var(--text-color);
+  color: #000000 !important;
   font-size: 0.8rem;
-  font-weight: 500;
+  font-weight: 600;
   text-transform: uppercase;
-  transition: opacity 0.3s ease, color 0.3s ease;
+  letter-spacing: 0.02em;
+  transition: opacity 0.3s ease;
 }
 .nav-link:hover { opacity: 0.5; }
+
+/* Tema escuro - links brancos */
+body.dark-theme .nav-link {
+  color: #FFFFFF !important;
+}
 
 /* Botão de destaque - sempre visível */
 .nav-link-highlight {
