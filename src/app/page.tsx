@@ -418,43 +418,7 @@ export default function Home() {
       {/* Services Showcase - Principais Serviços */}
       <ServicesShowcase />
 
-      {/* Project Index Section */}
-      <section id="projects" className="project-list" style={{ marginTop: "20vh", marginBottom: "20vh" }}>
-        <div style={{ marginBottom: "6rem", display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
-          <span className="sub-label">[ SELECTED SERVICES ]</span>
-          <Magnetic>
-            <button className="bar-button" data-cursor-text="EXPLORE">
-              <div className="bar-line" />
-              <span className="bar-label">SEE ALL SERVICES</span>
-            </button>
-          </Magnetic>
-        </div>
-
-        {siteData.projects.map((project: any, idx: number) => (
-          <div
-            key={project.id}
-            className="project-item-wrapper"
-          >
-            <Link
-              href={`/project/${project.title.toLowerCase().replace(/ /g, "-")}`}
-              className="project-item"
-              data-cursor-text="VIEW"
-            >
-              <span className="id">[{String(idx + 1).padStart(3, '0')}]</span>
-              <div className="title">
-                {project.title}
-              </div>
-              <div className="category">{project.category}</div>
-            </Link>
-            {/* Descrição que expande no hover */}
-            {project.description && (
-              <div className="project-description">
-                <p>{project.description}</p>
-              </div>
-            )}
-          </div>
-        ))}
-      </section>
+      {/* Seção SELECTED SERVICES removida - usando apenas VerticalTimeline */}
 
 
       {/* About Section */}

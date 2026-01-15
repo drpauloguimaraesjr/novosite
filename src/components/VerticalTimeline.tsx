@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { motion, useScroll, useTransform } from "motion/react";
 import { useInView } from "framer-motion";
+import Link from "next/link";
 import ProxyImage from "./ProxyImage";
 
 interface TimelineItem {
@@ -107,6 +108,9 @@ function TimelineItemComponent({
     const itemRef = useRef<HTMLDivElement>(null);
     const itemInView = useInView(itemRef, { once: true, margin: "-50px" });
 
+    // Gerar o slug baseado no título
+    const projectSlug = item.title.toLowerCase().replace(/ /g, "-");
+
     return (
         <motion.div
             ref={itemRef}
@@ -129,8 +133,18 @@ function TimelineItemComponent({
                 opacity: 1
             }}
         >
-            {/* Conteúdo */}
-            <div style={{ flex: 1, maxWidth: "500px" }}>
+            {/* Conteúdo - Agora é um Link */}
+            <Link 
+                href={`/project/${projectSlug}`}
+                style={{ 
+                    flex: 1, 
+                    maxWidth: "500px", 
+                    textDecoration: "none", 
+                    color: "inherit",
+                    cursor: "pointer"
+                }}
+                data-cursor-text="VER"
+            >
                 {item.date && (
                     <span className="sub-label" style={{ opacity: 0.5, fontSize: "0.7rem" }}>
                         {item.date}
@@ -140,7 +154,8 @@ function TimelineItemComponent({
                     fontSize: "2.5rem", 
                     marginTop: "1rem",
                     marginBottom: "1rem",
-                    letterSpacing: "-0.03em"
+                    letterSpacing: "-0.03em",
+                    transition: "opacity 0.3s ease"
                 }}>
                     {item.title}
                 </h3>
@@ -158,7 +173,26 @@ function TimelineItemComponent({
                         </span>
                     </div>
                 )}
-            </div>
+                
+                {/* Botão de ação */}
+                <div style={{ 
+                    marginTop: "2rem", 
+                    display: "inline-flex", 
+                    alignItems: "center", 
+                    gap: "10px",
+                    padding: "10px 20px",
+                    border: "1px solid rgba(255,255,255,0.3)",
+                    borderRadius: "30px",
+                    fontSize: "0.75rem",
+                    fontWeight: 600,
+                    textTransform: "uppercase",
+                    letterSpacing: "0.05em",
+                    transition: "all 0.3s ease"
+                }}>
+                    <span>Saiba mais</span>
+                    <span style={{ fontSize: "1rem" }}>→</span>
+                </div>
+            </Link>
 
             {/* Ponto na linha */}
             <div style={{
@@ -173,29 +207,31 @@ function TimelineItemComponent({
                 zIndex: 10
             }} />
 
-            {/* Imagem (se houver) */}
+            {/* Imagem (se houver) - Também é link */}
             {item.image && (
-                <motion.div
-                    style={{
-                        flex: 1,
-                        maxWidth: "400px",
-                        aspectRatio: "4/3",
-                        borderRadius: "12px",
-                        overflow: "hidden"
-                    }}
-                    whileHover={{ scale: 1.05 }}
-                    transition={{ duration: 0.3 }}
-                >
-                    <ProxyImage
-                        src={item.image}
-                        alt={item.title}
+                <Link href={`/project/${projectSlug}`} style={{ textDecoration: "none" }}>
+                    <motion.div
                         style={{
-                            width: "100%",
-                            height: "100%",
-                            objectFit: "cover"
+                            flex: 1,
+                            maxWidth: "400px",
+                            aspectRatio: "4/3",
+                            borderRadius: "12px",
+                            overflow: "hidden"
                         }}
-                    />
-                </motion.div>
+                        whileHover={{ scale: 1.05 }}
+                        transition={{ duration: 0.3 }}
+                    >
+                        <ProxyImage
+                            src={item.image}
+                            alt={item.title}
+                            style={{
+                                width: "100%",
+                                height: "100%",
+                                objectFit: "cover"
+                            }}
+                        />
+                    </motion.div>
+                </Link>
             )}
         </motion.div>
     );
