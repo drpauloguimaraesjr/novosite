@@ -8,9 +8,11 @@ import Magnetic from "@/components/Magnetic";
 import Link from "next/link";
 import { useContent } from "@/hooks/useContent";
 import { useScrollAnimations } from "@/hooks/useScrollAnimations";
+import MistBackground from "@/components/MistBackground";
 import { endocrinologia_clinica } from "@/data/projects/endocrinologia-clinica";
 import { protocolos_injetaveis } from "@/data/projects/protocolos-injetaveis";
 import { implantes_hormonais } from "@/data/projects/implantes-hormonais";
+
 
 
 export default function ProjectDetail() {
@@ -90,7 +92,11 @@ export default function ProjectDetail() {
 
 
   return (
-    <div ref={containerRef} style={{ padding: "0 40px" }}>
+    <>
+      {/* Mist Background with scroll-controlled opacity (green tones) */}
+      <MistBackground scrollControlled={true} />
+      
+      <div ref={containerRef} style={{ padding: "0 40px" }}>
       {/* Immersive Project Hero */}
       <section className="project-detail-hero">
         {projectImage && (
@@ -286,5 +292,6 @@ export default function ProjectDetail() {
         </div>
       </footer>
     </div>
+    </>
   );
 }
