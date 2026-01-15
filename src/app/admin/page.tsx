@@ -1198,6 +1198,17 @@ export default function AdminPage() {
                         </div>
                       </div>
                       <div className={styles.formGroup} style={{ marginTop: "1rem" }}>
+                        <label>Perfil do Instagram</label>
+                        <select 
+                          value={item.profile || "@drpauloguimaraesjr"} 
+                          onChange={(e) => handleChange("socialReels", "profile", e.target.value, i)}
+                          style={{ width: "100%", padding: "8px", background: "#111", border: "1px solid #333", color: "#fff", fontSize: "0.75rem", borderRadius: "4px" }}
+                        >
+                          <option value="@drpauloguimaraesjr">@drpauloguimaraesjr</option>
+                          <option value="@institutodrpauloguimaraesjr">@institutodrpauloguimaraesjr</option>
+                        </select>
+                      </div>
+                      <div className={styles.formGroup} style={{ marginTop: "1rem" }}>
                         <label>Legenda (Aparece ao passar o mouse)</label>
                         <textarea 
                           value={item.caption} 
