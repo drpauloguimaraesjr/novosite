@@ -44,7 +44,7 @@ export function AnimatedLogo({
   return (
     <div
       className="relative flex items-center justify-center"
-      style={{ width: size, height: size, overflow: "hidden", marginLeft: 30 }}
+      style={{ width: size, height: size, overflow: "hidden", marginLeft: 60 }}
     >
       <Lottie
         lottieRef={lottieRef}
