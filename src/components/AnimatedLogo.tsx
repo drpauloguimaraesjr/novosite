@@ -2,7 +2,7 @@
 
 import Lottie, { LottieRefCurrentProps } from "lottie-react";
 import { useEffect, useState, useRef } from "react";
-import animationData from "@/data/dna-loading-optimized.json";
+import animationData from "@/data/dna-loading.json";
 
 interface AnimatedLogoProps {
   size?: number;
