@@ -206,11 +206,13 @@ body.dark-theme .nav-link {
 
 /* Botão de destaque - sempre visível */
 .nav-link-highlight {
-  background: #000000;
-  color: #FFFFFF;
+  background: #000000 !important;
+  color: #FFFFFF !important;
   padding: 10px 22px;
   border-radius: 25px;
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   white-space: nowrap;
   font-weight: 600;
   font-size: 0.75rem;
@@ -218,22 +220,34 @@ body.dark-theme .nav-link {
   border: 2px solid #000000;
   transition: all 0.3s ease;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+  text-decoration: none;
+  min-width: 180px;
+  text-align: center;
 }
 .nav-link-highlight:hover {
-  background: #FFFFFF;
-  color: #000000;
+  background: #FFFFFF !important;
+  color: #000000 !important;
   border-color: #000000;
+}
+/* Garantir que spans internos herdem a cor */
+.nav-link-highlight span,
+.nav-link-highlight div {
+  color: inherit !important;
 }
 
 /* Tema escuro - inverter cores do botão */
 body.dark-theme .nav-link-highlight {
-  background: #FFFFFF;
-  color: #000000;
+  background: #FFFFFF !important;
+  color: #000000 !important;
   border-color: #FFFFFF;
 }
 body.dark-theme .nav-link-highlight:hover {
-  background: transparent;
-  color: #FFFFFF;
+  background: transparent !important;
+  color: #FFFFFF !important;
+}
+body.dark-theme .nav-link-highlight span,
+body.dark-theme .nav-link-highlight div {
+  color: inherit !important;
 }
 
 /* Project Index (The Sanchez List) */
