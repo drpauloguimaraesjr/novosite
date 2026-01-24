@@ -199,8 +199,20 @@ h1 {
 }
 .nav-link:hover { opacity: 0.5; }
 
+/* Garantir que letras dentro de nav-link sejam pretas */
+.nav-link .letter,
+.nav-link span,
+.nav-link div {
+  color: #000000 !important;
+}
+
 /* Tema escuro - links brancos */
 body.dark-theme .nav-link {
+  color: #FFFFFF !important;
+}
+body.dark-theme .nav-link .letter,
+body.dark-theme .nav-link span,
+body.dark-theme .nav-link div {
   color: #FFFFFF !important;
 }
 
