@@ -39,34 +39,55 @@ export default function SplitText({ text, className, trigger, delay = 0, interac
 
       // Entrance Animation - Apenas fade e scale, sem rotação
       // IMPORTANTE: Garantir que após a animação, a opacidade sempre fique em 1
-      gsap.fromTo(
-        split.chars,
-        { 
-          opacity: 0,
-          scale: 0.8,
-          y: 20
-        },
-        {
-          opacity: 1,
-          scale: 1,
-          y: 0,
-          duration: 1,
-          stagger: 0.02,
-          ease: "power3.out",
-          delay: delay,
-          scrollTrigger: trigger ? {
-            trigger: textRef.current,
-            start: "top 95%",
-            onEnter: () => console.log('[SplitText] Animation triggered by scroll'),
-            once: true // Garantir que só rode uma vez e fique visível
-          } : null,
-          onComplete: () => {
-            console.log('[SplitText] Animation complete');
-            // Garantir que todas as letras tenham opacidade 1 após animação
-            gsap.set(split.chars, { opacity: 1, clearProps: "transform" });
+      // Se não há trigger, animar imediatamente. Se há trigger, esperar scroll.
+      if (trigger) {
+        gsap.fromTo(
+          split.chars,
+          { 
+            opacity: 0,
+            scale: 0.8,
+            y: 20
+          },
+          {
+            opacity: 1,
+            scale: 1,
+            y: 0,
+            duration: 1,
+            stagger: 0.02,
+            ease: "power3.out",
+            delay: delay,
+            scrollTrigger: {
+              trigger: textRef.current,
+              start: "top 95%",
+              onEnter: () => console.log('[SplitText] Animation triggered by scroll'),
+              once: true
+            },
+            onComplete: () => {
+              gsap.set(split.chars, { opacity: 1, clearProps: "transform" });
+            }
           }
-        }
-      );
+        );
+      } else {
+        // Sem trigger - animar imediatamente e garantir visibilidade
+        gsap.fromTo(
+          split.chars,
+          { 
+            opacity: 0,
+            scale: 0.9
+          },
+          {
+            opacity: 1,
+            scale: 1,
+            duration: 0.6,
+            stagger: 0.02,
+            ease: "power2.out",
+            delay: delay,
+            onComplete: () => {
+              gsap.set(split.chars, { opacity: 1, clearProps: "transform" });
+            }
+          }
+        );
+      }
 
       // Interactive Lens Effect - Estilo Eva Sanchez
       // Aplica efeito apenas na letra mais próxima do cursor DENTRO deste componente específico
