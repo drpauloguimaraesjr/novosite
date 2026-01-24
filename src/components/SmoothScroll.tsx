@@ -13,14 +13,15 @@ export default function SmoothScroll({ children }: { children: React.ReactNode }
     gsap.registerPlugin(ScrollTrigger);
 
     const lenis = new Lenis({
-      duration: 1.5, // Increased for a more "weighted" artistic feel
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), 
+      duration: 1.8, // Aumentado para scroll mais "pesado" e luxuoso (estilo Eva Sanchez)
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), // Expo out - suave no final
       orientation: "vertical",
       gestureOrientation: "vertical",
       smoothWheel: true,
-      wheelMultiplier: 1.1, // Slightly higher for better responsiveness
-      touchMultiplier: 2,
+      wheelMultiplier: 0.8, // Reduzido para scroll mais controlado e suave
+      touchMultiplier: 1.5, // Bom para mobile
       infinite: false,
+      lerp: 0.1, // Interpolação linear - quanto menor, mais suave
     });
 
     lenisRef.current = lenis;
