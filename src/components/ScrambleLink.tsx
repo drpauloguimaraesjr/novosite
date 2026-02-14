@@ -1,15 +1,17 @@
 "use client";
 
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef } from "react";
 
-const SCRAMBLE_CHARS = '!@#$%^&*()_+-=[]{}|;:,.<>?/~`0123456789';
-
-function useTextScramble(originalText: string) {
+// ============================================
+// EFEITO DE SCRAMBLE NOS LINKS
+// ============================================
+const useTextScramble = (originalText: string) => {
   const [displayText, setDisplayText] = useState(originalText);
   const [isHovering, setIsHovering] = useState(false);
   const frameRef = useRef<number>(0);
+  const chars = '!@#$%^&*()_+-=[]{}|;:,.<>?/~`0123456789';
 
-  const scramble = useCallback(() => {
+  const scramble = () => {
     let iteration = 0;
     const maxIterations = originalText.length * 3;
 
@@ -20,7 +22,7 @@ function useTextScramble(originalText: string) {
           .map((char, index) => {
             if (char === ' ') return ' ';
             if (index < iteration / 3) return originalText[index];
-            return SCRAMBLE_CHARS[Math.floor(Math.random() * SCRAMBLE_CHARS.length)];
+            return chars[Math.floor(Math.random() * chars.length)];
           })
           .join('')
       );
@@ -35,39 +37,42 @@ function useTextScramble(originalText: string) {
     };
 
     animate();
-  }, [originalText]);
+  };
 
-  const handleMouseEnter = useCallback(() => {
+  const handleMouseEnter = () => {
     if (!isHovering) {
       setIsHovering(true);
       scramble();
     }
-  }, [isHovering, scramble]);
+  };
 
-  const handleMouseLeave = useCallback(() => {
+  const handleMouseLeave = () => {
     setIsHovering(false);
     if (frameRef.current) cancelAnimationFrame(frameRef.current);
     setDisplayText(originalText);
-  }, [originalText]);
+  };
 
   return { displayText, handleMouseEnter, handleMouseLeave };
-}
+};
 
-interface ScrambleLinkProps {
-  href: string;
-  label: string;
+// ============================================
+// COMPONENTE SCRAMBLE LINK
+// ============================================
+export default function ScrambleLink({
+  text,
+  href = '#',
+  className = ''
+}: {
+  text: string;
+  href?: string;
   className?: string;
-  cursorText?: string;
-}
-
-export default function ScrambleLink({ href, label, className = "nav-link", cursorText = "VIEW" }: ScrambleLinkProps) {
-  const { displayText, handleMouseEnter, handleMouseLeave } = useTextScramble(label);
+}) {
+  const { displayText, handleMouseEnter, handleMouseLeave } = useTextScramble(text);
 
   return (
     <a
       href={href}
-      className={className}
-      data-cursor-text={cursorText}
+      className={`scramble-link ${className}`}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >

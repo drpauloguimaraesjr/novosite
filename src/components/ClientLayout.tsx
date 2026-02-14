@@ -49,8 +49,7 @@ export default function ClientLayout({ children }: { children: ReactNode }) {
                     <Magnetic key={`std-${i}`}>
                       <ScrambleLink
                         href={link.url}
-                        label={link.label}
-                        className="nav-link"
+                        text={link.label}
                       />
                     </Magnetic>
                   ))}
@@ -63,8 +62,8 @@ export default function ClientLayout({ children }: { children: ReactNode }) {
                     <Magnetic key={`hl-${i}`}>
                       <ScrambleLink
                         href={link.url}
-                        label={link.label}
-                        className="nav-link nav-link-highlight"
+                        text={link.label}
+                        className="scramble-link-highlight"
                       />
                     </Magnetic>
                   ))}
