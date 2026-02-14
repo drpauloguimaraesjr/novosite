@@ -101,7 +101,9 @@ export default function ProjectDetail() {
       <section className="project-detail-hero">
         {projectImage && (
           <div className="hero-bg-container">
-            <img src={projectImage} alt="" />
+             {/* Using standard img for now to avoid layout shift issues with absolute positioning if dimensions unknown, 
+                 but adding loading="eager" for LCP */}
+            <img src={projectImage} alt={projectName} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
           </div>
         )}
 
@@ -133,7 +135,7 @@ export default function ProjectDetail() {
 
       {/* Structured Content for Projects - Premium Design */}
       {project && (
-        <div className="project-detail-content" style={{ marginTop: "10vh" }}>
+        <div className="project-detail-content" style={{ marginTop: "10vh", maxWidth: "800px", margin: "10vh auto 0", padding: "0 20px" }}>
           {project.sections.map((section: any, idx: number) => {
             if (section.type === "content-block") {
               return (

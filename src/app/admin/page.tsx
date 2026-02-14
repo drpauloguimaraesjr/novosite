@@ -12,6 +12,134 @@ import { Reorder, motion, AnimatePresence } from "framer-motion";
 // Force dynamic rendering to avoid build-time Firebase errors
 export const dynamic = 'force-dynamic';
 
+// TextAnimationPreview - Real-time animated preview for admin panel
+function TextAnimationPreview({ settings }: { settings: any }) {
+  const [key, setKey] = React.useState(0);
+  const containerRef = React.useRef<HTMLDivElement>(null);
+  const textRef = React.useRef<HTMLSpanElement>(null);
+  const squareRef = React.useRef<HTMLDivElement>(null);
+  const [textWidth, setTextWidth] = React.useState(0);
+  
+  const squareSize = settings?.squareSize || 14;
+  const easingCurve = settings?.easingCurve || "power4.in";
+  const movementDuration = settings?.movementDuration || 1.8;
+  const rotationEnabled = settings?.rotation ?? true;
+  const rotationSpeed = settings?.rotationSpeed || 1.8;
+  const restartDelay = settings?.restartDelay || 3000;
+  const samplePhrase = (settings?.phrases?.[0]) || "ROLE PARA BAIXO";
+
+  // Measure text width
+  React.useEffect(() => {
+    if (textRef.current) {
+      setTextWidth(textRef.current.offsetWidth);
+    }
+  }, [samplePhrase]);
+
+  // Restart animation when settings change
+  React.useEffect(() => {
+    setKey(prev => prev + 1);
+  }, [squareSize, easingCurve, movementDuration, rotationEnabled, rotationSpeed, restartDelay, samplePhrase]);
+
+  // Animation logic using GSAP
+  React.useEffect(() => {
+    if (!squareRef.current || textWidth === 0) return;
+    
+    // Dynamic import GSAP to avoid SSR issues
+    import("gsap").then(({ default: gsap }) => {
+      const startX = -squareSize;
+      const endX = textWidth + squareSize;
+      const totalDistance = endX - startX;
+
+      gsap.set(squareRef.current, { x: startX });
+
+      const tl = gsap.timeline({
+        onComplete: () => {
+          // Restart after delay
+          setTimeout(() => {
+            setKey(prev => prev + 1);
+          }, restartDelay);
+        },
+      });
+
+      tl.to(squareRef.current, {
+        x: totalDistance,
+        duration: movementDuration,
+        ease: easingCurve,
+      });
+
+      if (rotationEnabled && squareRef.current) {
+        gsap.to(squareRef.current, {
+          rotation: 360,
+          duration: rotationSpeed,
+          repeat: -1,
+          ease: "linear",
+          transformOrigin: "center center",
+        });
+      }
+
+      return () => {
+        tl.kill();
+      };
+    });
+  }, [key, textWidth, squareSize, easingCurve, movementDuration, rotationEnabled, rotationSpeed, restartDelay]);
+
+  return (
+    <div 
+      ref={containerRef}
+      key={key}
+      style={{ 
+        position: "relative", 
+        display: "flex", 
+        alignItems: "center", 
+        gap: "20px",
+        padding: "10px 20px",
+      }}
+    >
+      <div style={{ position: "relative", display: "inline-block" }}>
+        <span
+          ref={textRef}
+          style={{
+            color: "rgba(0, 0, 0, 0.7)",
+            fontSize: "0.75rem",
+            fontWeight: 600,
+            letterSpacing: "0.15em",
+            textTransform: "uppercase",
+            whiteSpace: "nowrap",
+          }}
+        >
+          {samplePhrase}
+        </span>
+      </div>
+
+      <div
+        ref={squareRef}
+        style={{
+          position: "absolute",
+          top: "50%",
+          left: 20 - squareSize,
+          width: `${squareSize}px`,
+          height: `${squareSize}px`,
+          backgroundColor: "#0d0202",
+          transform: "translateY(-50%)",
+          borderRadius: "2px",
+          boxShadow: "0 4px 15px rgba(0, 0, 0, 0.2)",
+        }}
+      />
+
+      <div
+        style={{
+          width: "40px",
+          height: "1px",
+          backgroundColor: "rgba(0, 0, 0, 0.3)",
+        }}
+      />
+    </div>
+  );
+}
+
+// Add React import for the preview component
+import React from "react";
+
 interface ContentData {
   hero: any;
   navigation: {
@@ -26,6 +154,18 @@ interface ContentData {
   contact: any;
   categories?: string[];
   services?: any[];
+  textAnimation?: {
+    enabled: boolean;
+    easingCurve: string;
+    rotation: boolean;
+    rotationSpeed: number;
+    movementDuration: number;
+    restartDelay: number;
+    squareSize: number;
+    phrases: string[];
+    syncWithNav: boolean;
+    navAnimationEnabled: boolean;
+  };
 }
 
 export default function AdminPage() {
@@ -471,7 +611,7 @@ export default function AdminPage() {
           <button onClick={handleLogout} style={{ background: "none", border: "none", color: "rgba(255,255,255,0.4)", fontSize: "0.6rem", cursor: "pointer" }}>[ LOGOUT ]</button>
         </div>
         <div className={styles.nav}>
-          {["hero", "navigation", "about", "projects", "services", "visualArchive", "categories", "socialReels", "contact"].map((tab) => (
+          {["hero", "navigation", "about", "projects", "services", "visualArchive", "categories", "socialReels", "textAnimation", "contact"].map((tab) => (
             <button
               key={tab}
               className={`${styles.navLink} ${activeTab === tab ? styles.navLinkActive : ""}`}
@@ -1288,6 +1428,219 @@ export default function AdminPage() {
                      + ADICIONAR CATEGORIA
                    </button>
                  </div>
+              </div>
+            </div>
+          )}
+
+          {/* TEXT ANIMATION TAB */}
+          {activeTab === "textAnimation" && (
+            <div className={styles.sectionGrid}>
+              {/* Enable/Disable Toggle */}
+              <div className={styles.formGroup} style={{ gridColumn: "span 2" }}>
+                <label style={{ marginBottom: "1rem", display: "block" }}>ANIMAÇÃO ATIVADA</label>
+                <div style={{ display: "flex", alignItems: "center", gap: "15px" }}>
+                  <input 
+                    type="checkbox" 
+                    checked={(data as any).textAnimation?.enabled ?? true}
+                    onChange={(e) => {
+                      const newSettings = { ...((data as any).textAnimation || {}), enabled: e.target.checked };
+                      setData(prev => ({ ...prev, textAnimation: newSettings }));
+                    }}
+                    style={{ width: "20px", height: "20px", cursor: "pointer" }}
+                  />
+                  <span style={{ fontSize: "0.75rem", opacity: 0.7 }}>Habilitar animação do quadradinho</span>
+                </div>
+              </div>
+
+              {/* REAL-TIME PREVIEW */}
+              <div className={styles.formGroup} style={{ gridColumn: "span 2", marginTop: "2rem", borderTop: "1px solid #222", paddingTop: "2rem" }}>
+                <label style={{ marginBottom: "1rem", display: "block", fontSize: "0.9rem" }}>PREVIEW EM TEMPO REAL</label>
+                <div style={{ 
+                  background: "#f8f6f2", 
+                  padding: "40px", 
+                  borderRadius: "8px", 
+                  display: "flex", 
+                  alignItems: "center", 
+                  justifyContent: "center",
+                  minHeight: "100px"
+                }}>
+                  {/* Inline animated preview */}
+                  <TextAnimationPreview settings={(data as any).textAnimation} />
+                </div>
+              </div>
+
+              {/* Easing Curve */}
+              <div className={styles.formGroup}>
+                <label>Curva de Aceleração (Easing)</label>
+                <select 
+                  value={(data as any).textAnimation?.easingCurve || "power4.in"}
+                  onChange={(e) => {
+                    const newSettings = { ...((data as any).textAnimation || {}), easingCurve: e.target.value };
+                    setData(prev => ({ ...prev, textAnimation: newSettings }));
+                  }}
+                  style={{ width: "100%", padding: "10px", background: "#111", border: "1px solid #333", color: "#fff", borderRadius: "4px" }}
+                >
+                  <option value="linear">Linear (Constante)</option>
+                  <option value="power1.in">Power1.in (Suave acelerando)</option>
+                  <option value="power2.in">Power2.in (Médio acelerando)</option>
+                  <option value="power3.in">Power3.in (Forte acelerando)</option>
+                  <option value="power4.in">Power4.in (Muito forte acelerando)</option>
+                  <option value="power1.out">Power1.out (Suave desacelerando)</option>
+                  <option value="power2.out">Power2.out (Médio desacelerando)</option>
+                  <option value="power3.out">Power3.out (Forte desacelerando)</option>
+                  <option value="power4.out">Power4.out (Muito forte desacelerando)</option>
+                  <option value="power1.inOut">Power1.inOut (Suave ambos)</option>
+                  <option value="power2.inOut">Power2.inOut (Médio ambos)</option>
+                  <option value="elastic.out(1, 0.3)">Elastic (Elástico)</option>
+                  <option value="bounce.out">Bounce (Quique)</option>
+                </select>
+              </div>
+
+              {/* Movement Duration */}
+              <div className={styles.formGroup}>
+                <label>Duração do Movimento: {(data as any).textAnimation?.movementDuration || 1.8}s</label>
+                <input 
+                  type="range" 
+                  min="0.5" 
+                  max="5" 
+                  step="0.1"
+                  value={(data as any).textAnimation?.movementDuration || 1.8}
+                  onChange={(e) => {
+                    const newSettings = { ...((data as any).textAnimation || {}), movementDuration: parseFloat(e.target.value) };
+                    setData(prev => ({ ...prev, textAnimation: newSettings }));
+                  }}
+                  style={{ width: "100%", cursor: "pointer" }}
+                />
+              </div>
+
+              {/* Rotation Toggle */}
+              <div className={styles.formGroup}>
+                <label style={{ marginBottom: "1rem", display: "block" }}>ROTAÇÃO DO QUADRADO</label>
+                <div style={{ display: "flex", alignItems: "center", gap: "15px" }}>
+                  <input 
+                    type="checkbox" 
+                    checked={(data as any).textAnimation?.rotation ?? true}
+                    onChange={(e) => {
+                      const newSettings = { ...((data as any).textAnimation || {}), rotation: e.target.checked };
+                      setData(prev => ({ ...prev, textAnimation: newSettings }));
+                    }}
+                    style={{ width: "20px", height: "20px", cursor: "pointer" }}
+                  />
+                  <span style={{ fontSize: "0.75rem", opacity: 0.7 }}>Girar o quadradinho durante a animação</span>
+                </div>
+              </div>
+
+              {/* Rotation Speed */}
+              <div className={styles.formGroup}>
+                <label>Velocidade de Rotação: {(data as any).textAnimation?.rotationSpeed || 1.8}s</label>
+                <input 
+                  type="range" 
+                  min="0.5" 
+                  max="5" 
+                  step="0.1"
+                  value={(data as any).textAnimation?.rotationSpeed || 1.8}
+                  onChange={(e) => {
+                    const newSettings = { ...((data as any).textAnimation || {}), rotationSpeed: parseFloat(e.target.value) };
+                    setData(prev => ({ ...prev, textAnimation: newSettings }));
+                  }}
+                  style={{ width: "100%", cursor: "pointer" }}
+                />
+              </div>
+
+              {/* Restart Delay */}
+              <div className={styles.formGroup}>
+                <label>Tempo para Reiniciar: {((data as any).textAnimation?.restartDelay || 3000) / 1000}s</label>
+                <input 
+                  type="range" 
+                  min="0" 
+                  max="10000" 
+                  step="500"
+                  value={(data as any).textAnimation?.restartDelay || 3000}
+                  onChange={(e) => {
+                    const newSettings = { ...((data as any).textAnimation || {}), restartDelay: parseInt(e.target.value) };
+                    setData(prev => ({ ...prev, textAnimation: newSettings }));
+                  }}
+                  style={{ width: "100%", cursor: "pointer" }}
+                />
+              </div>
+
+              {/* Square Size */}
+              <div className={styles.formGroup}>
+                <label>Tamanho do Quadrado: {(data as any).textAnimation?.squareSize || 14}px</label>
+                <input 
+                  type="range" 
+                  min="8" 
+                  max="30" 
+                  step="1"
+                  value={(data as any).textAnimation?.squareSize || 14}
+                  onChange={(e) => {
+                    const newSettings = { ...((data as any).textAnimation || {}), squareSize: parseInt(e.target.value) };
+                    setData(prev => ({ ...prev, textAnimation: newSettings }));
+                  }}
+                  style={{ width: "100%", cursor: "pointer" }}
+                />
+              </div>
+
+              {/* Sync with Nav Toggle */}
+              <div className={styles.formGroup} style={{ gridColumn: "span 2", marginTop: "2rem", borderTop: "1px solid #222", paddingTop: "2rem" }}>
+                <label style={{ marginBottom: "1rem", display: "block", fontSize: "0.9rem" }}>SINCRONIZAÇÃO COM NAVEGAÇÃO</label>
+                <div style={{ display: "flex", alignItems: "center", gap: "15px" }}>
+                  <input 
+                    type="checkbox" 
+                    checked={(data as any).textAnimation?.navAnimationEnabled ?? true}
+                    onChange={(e) => {
+                      const newSettings = { ...((data as any).textAnimation || {}), navAnimationEnabled: e.target.checked };
+                      setData(prev => ({ ...prev, textAnimation: newSettings }));
+                    }}
+                    style={{ width: "20px", height: "20px", cursor: "pointer" }}
+                  />
+                  <span style={{ fontSize: "0.75rem", opacity: 0.7 }}>Ativar animação nos links do menu (SOBRE, SERVIÇOS, etc.)</span>
+                </div>
+                <p style={{ fontSize: "0.7rem", opacity: 0.5, marginTop: "0.5rem" }}>
+                  Quando habilitado, a animação do quadradinho também passará pelos links de navegação simultaneamente, começando em cada um e terminando juntos.
+                </p>
+              </div>
+
+              {/* Phrases */}
+              <div className={styles.formGroup} style={{ gridColumn: "span 2", marginTop: "2rem", borderTop: "1px solid #222", paddingTop: "2rem" }}>
+                <label style={{ marginBottom: "1rem", display: "block", fontSize: "0.9rem" }}>FRASES (cicla entre elas)</label>
+                {((data as any).textAnimation?.phrases || ["ROLE PARA BAIXO", "PRESSIONE ESPAÇO", "PRESS SPACE"]).map((phrase: string, idx: number) => (
+                  <div key={idx} style={{ display: "flex", gap: "10px", marginBottom: "10px" }}>
+                    <input 
+                      value={phrase}
+                      onChange={(e) => {
+                        const currentPhrases = [...((data as any).textAnimation?.phrases || ["ROLE PARA BAIXO", "PRESSIONE ESPAÇO", "PRESS SPACE"])];
+                        currentPhrases[idx] = e.target.value;
+                        const newSettings = { ...((data as any).textAnimation || {}), phrases: currentPhrases };
+                        setData(prev => ({ ...prev, textAnimation: newSettings }));
+                      }}
+                      style={{ flex: 1 }}
+                    />
+                    <button 
+                      onClick={() => {
+                        const currentPhrases = [...((data as any).textAnimation?.phrases || ["ROLE PARA BAIXO", "PRESSIONE ESPAÇO", "PRESS SPACE"])];
+                        currentPhrases.splice(idx, 1);
+                        const newSettings = { ...((data as any).textAnimation || {}), phrases: currentPhrases };
+                        setData(prev => ({ ...prev, textAnimation: newSettings }));
+                      }}
+                      style={{ background: "#ff4444", border: "none", color: "#fff", padding: "0 15px", borderRadius: "4px", fontSize: "0.7rem", cursor: "pointer" }}
+                    >
+                      [ X ]
+                    </button>
+                  </div>
+                ))}
+                <button 
+                  onClick={() => {
+                    const currentPhrases = [...((data as any).textAnimation?.phrases || ["ROLE PARA BAIXO", "PRESSIONE ESPAÇO", "PRESS SPACE"])];
+                    currentPhrases.push("NOVA FRASE");
+                    const newSettings = { ...((data as any).textAnimation || {}), phrases: currentPhrases };
+                    setData(prev => ({ ...prev, textAnimation: newSettings }));
+                  }}
+                  className={styles.saveButton}
+                  style={{ background: "#333", marginTop: "1rem", width: "auto", padding: "10px 20px", fontSize: "0.6rem" }}
+                >
+                  + ADICIONAR FRASE
+                </button>
               </div>
             </div>
           )}

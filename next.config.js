@@ -1,11 +1,22 @@
+/** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  output: 'standalone', // Necessário para Docker
-  
-  // Configuração de imagens para funcionar em container
+
   images: {
-    unoptimized: true, // Evita problemas com otimização de imagens no container
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'firebasestorage.googleapis.com',
+      },
+      {
+        protocol: 'https',
+        hostname: '*.googleusercontent.com',
+      },
+    ],
   },
+
+  // Vercel automatically handles compression, but ensure compatibility
+  poweredByHeader: false,
 };
 
 module.exports = nextConfig;

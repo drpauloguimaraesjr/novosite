@@ -485,5 +485,17 @@
       "thumbnail": "/images/clinic/preparacao-cirurgica.jpg",
       "slug": "preparacao-cirurgica"
     }
-  ]
+  ],
+  "textAnimation": {
+    "enabled": true,
+    "easingCurve": "power4.in",
+    "rotation": true,
+    "rotationSpeed": 1.8,
+    "movementDuration": 1.8,
+    "restartDelay": 3000,
+    "squareSize": 14,
+    "phrases": ["ROLE PARA BAIXO", "PRESSIONE ESPAÇO", "PRESS SPACE"],
+    "syncWithNav": true,
+    "navAnimationEnabled": true
+  }
 }

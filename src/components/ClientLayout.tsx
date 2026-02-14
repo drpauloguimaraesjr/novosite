@@ -9,16 +9,13 @@ import Preloader from "@/components/Preloader";
 import LiveClock from "@/components/LiveClock";
 import PageTransition from "@/components/PageTransition";
 import GSAPConfig from "@/components/GSAPConfig";
-import SplitText from "@/components/SplitText";
+import ScrambleLink from "@/components/ScrambleLink";
 import { useContent } from "@/hooks/useContent";
 
 export default function ClientLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const isAdmin = pathname?.startsWith("/admin");
   const siteData = useContent();
-  
-  console.log('[ClientLayout] Component rendered, pathname:', pathname, 'isAdmin:', isAdmin);
-  console.log('[ClientLayout] Site data loaded:', !!siteData, 'navigation links:', siteData?.navigation?.links?.length || 0);
 
   return (
     <>
@@ -29,6 +26,7 @@ export default function ClientLayout({ children }: { children: ReactNode }) {
         <>
           <Preloader />
           <CustomCursor />
+          
           <div className="ambient-frame" />
           <div className="grid-overlay">
             {[...Array(12)].map((_, i) => (
@@ -44,36 +42,30 @@ export default function ClientLayout({ children }: { children: ReactNode }) {
               </div>
             </Magnetic>
             <nav className="nav-links-wrapper">
-              {/* Regular links */}
               <div className="nav-links">
                 {siteData.navigation?.links
                   .filter((link: any) => !link.highlight)
                   .map((link: any, i: number) => (
                     <Magnetic key={`std-${i}`}>
-                      <a 
-                        href={link.url} 
+                      <ScrambleLink
+                        href={link.url}
+                        label={link.label}
                         className="nav-link"
-                        data-cursor-text="VIEW"
-                      >
-                        <SplitText text={link.label} interactive={true} />
-                      </a>
+                      />
                     </Magnetic>
                   ))}
               </div>
 
-              {/* Highlighted links (stacked) */}
               <div className="nav-highlight-group">
                 {siteData.navigation?.links
                   .filter((link: any) => link.highlight)
                   .map((link: any, i: number) => (
                     <Magnetic key={`hl-${i}`}>
-                      <a 
-                        href={link.url} 
+                      <ScrambleLink
+                        href={link.url}
+                        label={link.label}
                         className="nav-link nav-link-highlight"
-                        data-cursor-text="VIEW"
-                      >
-                        <SplitText text={link.label} interactive={true} />
-                      </a>
+                      />
                     </Magnetic>
                   ))}
               </div>
@@ -94,3 +86,4 @@ export default function ClientLayout({ children }: { children: ReactNode }) {
     </>
   );
 }
+

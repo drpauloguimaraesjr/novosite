@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "@/lib/gsap/ScrollTrigger";
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import Magnetic from "@/components/Magnetic";
 import HorizontalScroll from "@/components/HorizontalScroll";
 import InteractiveGrid from "@/components/InteractiveGrid";
@@ -17,11 +18,15 @@ import TypingAnimation from "@/components/TypingAnimation";
 import FloatingCards from "@/components/FloatingCards";
 import VerticalTimeline from "@/components/VerticalTimeline";
 import Playground from "@/components/Playground";
-import ScrollIndicator from "@/components/ScrollIndicator";
+import ScrollToExplore from "@/components/ScrollToExplore";
 import ServicesShowcase from "@/components/ServicesShowcase";
 import HeroCarousel from "@/components/HeroCarousel";
+import ProjectCounter from "@/components/ProjectCounter";
+import { Section3D } from "@/components/DepthTransition";
 
 import { useContent } from "@/hooks/useContent";
+
+
 
 export default function Home() {
   const siteData = useContent();
@@ -126,56 +131,33 @@ export default function Home() {
         ease: "power4.inOut"
       });
 
-      // Hero Pinning and Text Swap sequence
+      // Hero Pinning — clean parallax fade-out
       const heroTl = gsap.timeline({
         scrollTrigger: {
           trigger: ".hero-section",
           start: "top top",
-          end: "+=150%", // Increased for a more fluid, relaxed transition
+          end: "+=80%",
           pin: true,
-          scrub: 1.5,   // Smoother scrub for linear, artistic feel
+          scrub: 0.8,
         }
       });
 
-      // Slide 1 Out
+      // Hero content fades and slides up as user scrolls
       heroTl.to(".hero-content-1", {
         opacity: 0,
-        scale: 0.92,
-        x: -40, // Directional slide out
-        y: -30,
-        filter: "blur(15px)",
+        y: -60,
+        scale: 0.95,
+        filter: "blur(4px)",
         pointerEvents: "none",
-        duration: 1.5,
-        ease: "power2.inOut"
+        duration: 1,
+        ease: "power2.in"
       }, 0);
 
-      // Slide 2 In (Reveal)
-      heroTl.fromTo(".hero-content-2",
-        { 
-          opacity: 0, 
-          scale: 1.1, 
-          x: 60, // Directional slide in
-          y: 40, 
-          filter: "blur(20px)", 
-          pointerEvents: "none" 
-        },
-        { 
-          opacity: 1, 
-          scale: 1, 
-          x: 0, 
-          y: 0, 
-          filter: "blur(0px)", 
-          pointerEvents: "all", 
-          duration: 1.8,  // Slightly longer for that "fluid" feel
-          ease: "power3.out" 
-        },
-        0.2 // More overlap for a "connected" transition
-      );
-
-      // Hero Carousel Parallax (Subtle scale during text swap)
+      // Hero Carousel — subtle parallax scale
       heroTl.to(".hero-carousel-container", {
-        scale: 1.05,
-        duration: 2,
+        scale: 1.08,
+        opacity: 0.3,
+        duration: 1,
         ease: "none"
       }, 0);
 
@@ -362,43 +344,14 @@ export default function Home() {
                 </p>
               </div>
 
-              <div className="sub-label">[ {siteData.hero.edition} ]</div>
+              <ProjectCounter 
+                totalProjects={siteData.projects?.length || 6} 
+                label={siteData.hero.edition || "INSTITUTO MÉDICO 2025"} 
+              />
             </div>
           </div>
 
-          {/* Content 2: Why Us (Hidden initially, Swap on scroll) */}
-          <div id="why-us" className="hero-content-2" style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: "100%",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-            alignItems: "center",
-            opacity: 0,
-            zIndex: 30,
-            pointerEvents: "none",
-            textAlign: "center",
-          }}>
-            <div style={{ marginBottom: "3rem" }}>
-              <span className="sub-label">[ POR QUE SOMOS MUITO PROCURADOS ? ]</span>
-            </div>
-            <h2 style={{
-              fontSize: "clamp(3rem, 7vw, 6rem)",
-              fontWeight: 400,
-              lineHeight: 1.1,
-              letterSpacing: "-0.02em",
-              maxWidth: "1400px"
-            }}>
-              <SplitText 
-                text="Transforme sua saúde com tratamentos integrados" 
-                interactive={true}
-                className="title-line-inner"
-              />
-            </h2>
-          </div>
+
 
         </div>
 
@@ -412,7 +365,7 @@ export default function Home() {
           </div>
         )}
 
-        <ScrollIndicator />
+        <ScrollToExplore />
       </section>
 
       {/* Services Showcase - Principais Serviços */}
@@ -425,7 +378,14 @@ export default function Home() {
       <section className="about-section" style={{ marginTop: "20vh", marginBottom: "20vh" }}>
         <div className="sub-label" style={{ color: "rgba(248, 246, 242, 0.5)", marginBottom: "3rem" }}>[ {siteData.about.label} ]</div>
 
-        <TextMaskReveal phrase={siteData.about.phrase} />
+        {/* Render phrase as children of TextMaskReveal */}
+        {siteData.about.phrase && siteData.about.phrase.map((line: string, i: number) => (
+          <TextMaskReveal key={i} delay={0.2 + i * 0.1}>
+            <p style={{ fontSize: "clamp(1.5rem, 4vw, 2.5rem)", lineHeight: 1.4, margin: "0.5rem 0" }}>
+              {line}
+            </p>
+          </TextMaskReveal>
+        ))}
 
         <div className="about-grid">
           <div className="about-description">
@@ -473,11 +433,16 @@ export default function Home() {
 
 
 
-      {/* Process Timeline Animation */}
-      <ProcessTimeline />
+      {/* Process Timeline Animation - with depth transition */}
+      <Section3D transitionType="zoom">
+        <ProcessTimeline />
+      </Section3D>
 
       <SocialReel />
-      <ContactSection />
+      
+      <Section3D transitionType="slide">
+        <ContactSection />
+      </Section3D>
 
       {/* Final Footer Section */}
       <footer style={{ padding: "40px", backgroundColor: "var(--text-color)", color: "var(--bg-color)" }}>

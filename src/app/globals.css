@@ -168,9 +168,10 @@ h1 {
 .nav-container {
   position: fixed;
   top: 30px; left: 40px; right: 40px;
-  display: flex; justify-content: space-between; align-items: flex-start;
+  display: flex; justify-content: space-between; align-items: center; /* Center vertically */
   z-index: 1000;
   mix-blend-mode: difference; /* Match dynamic design */
+  color: #FFFFFF; /* Ensure all text is white for difference mode */
 }
 .nav-links-wrapper {
   display: flex;
@@ -184,13 +185,13 @@ h1 {
 }
 .nav-highlight-group {
   display: flex;
-  flex-direction: column;
-  gap: 12px;
-  align-items: flex-end;
+  flex-direction: row; /* Align in a row, not column */
+  gap: 20px;
+  align-items: center;
 }
 .nav-link {
   text-decoration: none;
-  color: #000000 !important;
+  color: #FFFFFF !important; /* White for difference mode = Black on light bg */
   font-size: 0.8rem;
   font-weight: 600;
   text-transform: uppercase;
@@ -199,11 +200,11 @@ h1 {
 }
 .nav-link:hover { opacity: 0.5; }
 
-/* Garantir que letras dentro de nav-link sejam pretas */
+/* Garantir que letras dentro de nav-link sejam brancas para o blend mode */
 .nav-link .letter,
 .nav-link span,
 .nav-link div {
-  color: #000000 !important;
+  color: #FFFFFF !important;
 }
 
 /* Tema escuro - links brancos */
@@ -246,6 +247,19 @@ body.dark-theme .nav-link div {
 .nav-link-highlight div {
   color: inherit !important;
 }
+/* IMPORTANTE: Letras dentro do botão highlight devem ser BRANCAS (override do .nav-link .letter) */
+.nav-link-highlight .letter,
+.nav-link.nav-link-highlight .letter,
+.nav-link.nav-link-highlight span,
+.nav-link.nav-link-highlight div {
+  color: #FFFFFF !important;
+}
+.nav-link-highlight:hover .letter,
+.nav-link.nav-link-highlight:hover .letter,
+.nav-link.nav-link-highlight:hover span,
+.nav-link.nav-link-highlight:hover div {
+  color: #000000 !important;
+}
 
 /* Tema escuro - inverter cores do botão */
 body.dark-theme .nav-link-highlight {
@@ -260,6 +274,19 @@ body.dark-theme .nav-link-highlight:hover {
 body.dark-theme .nav-link-highlight span,
 body.dark-theme .nav-link-highlight div {
   color: inherit !important;
+}
+/* Tema escuro: Letras dentro do botão highlight devem ser PRETAS (fundo branco) */
+body.dark-theme .nav-link-highlight .letter,
+body.dark-theme .nav-link.nav-link-highlight .letter,
+body.dark-theme .nav-link.nav-link-highlight span,
+body.dark-theme .nav-link.nav-link-highlight div {
+  color: #000000 !important;
+}
+body.dark-theme .nav-link-highlight:hover .letter,
+body.dark-theme .nav-link.nav-link-highlight:hover .letter,
+body.dark-theme .nav-link.nav-link-highlight:hover span,
+body.dark-theme .nav-link.nav-link-highlight:hover div {
+  color: #FFFFFF !important;
 }
 
 /* Project Index (The Sanchez List) */
