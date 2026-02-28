@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import ClientLayout from "@/components/ClientLayout";
-import { SpeedInsights } from "@vercel/speed-insights/next";
 
 export const metadata: Metadata = {
   title: "DR. PAULO GUIMARÃES JR. | Instituto Médico",
@@ -31,7 +30,6 @@ export default function RootLayout({
         <ClientLayout>
           {children}
         </ClientLayout>
-        <SpeedInsights />
       </body>
     </html>
   );
