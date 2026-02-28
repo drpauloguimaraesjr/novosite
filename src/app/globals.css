@@ -973,21 +973,30 @@ body:not(.dark-theme) .project-description {
   
   /* Navigation Mobile */
   .nav-container {
-    top: 15px;
-    left: 15px;
-    right: 15px;
-    flex-wrap: wrap;
-    gap: 10px;
+    top: 10px;
+    left: 10px;
+    right: 10px;
+    flex-wrap: nowrap;
+    gap: 8px;
+    justify-content: space-between;
   }
   
   .nav-links {
     display: none;
   }
   
-  .nav-link-highlight {
-    font-size: 0.6rem;
-    padding: 6px 10px;
-    white-space: nowrap;
+  .nav-links-wrapper {
+    gap: 0;
+  }
+  
+  .scramble-link-highlight {
+    font-size: 0.5rem !important;
+    padding: 8px 12px !important;
+    letter-spacing: 0.05em !important;
+  }
+  
+  .nav-highlight-group {
+    gap: 8px;
   }
   
   /* Hero Section Mobile */

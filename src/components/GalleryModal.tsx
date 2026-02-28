@@ -31,11 +31,11 @@ function MainImage({ image }: { image: GalleryImage }) {
             const viewport = { width: window.innerWidth, height: window.innerHeight };
             const container = containerRef.current?.getBoundingClientRect();
             const img = imgRef.current?.getBoundingClientRect();
-            
+
             console.log('[MainImage DEBUG] Viewport:', viewport);
             console.log('[MainImage DEBUG] Container:', container ? { width: container.width, height: container.height } : 'NOT FOUND');
             console.log('[MainImage DEBUG] Image:', img ? { width: img.width, height: img.height } : 'NOT FOUND');
-            
+
             // Check if image has zero dimensions
             if (img && (img.width === 0 || img.height === 0)) {
                 console.error('[MainImage DEBUG] ⚠️ IMAGE HAS ZERO DIMENSIONS!');
@@ -59,7 +59,7 @@ function MainImage({ image }: { image: GalleryImage }) {
     }, [image]);
 
     console.log('[MainImage] Rendering image:', image?.title, 'src:', image?.img);
-    
+
     if (!image || !image.img) {
         console.warn('[MainImage] Image not found or missing src:', image);
         return (
@@ -85,7 +85,7 @@ function MainImage({ image }: { image: GalleryImage }) {
                         target.src = `/api/image?url=${encodeURIComponent(image.img)}`;
                     }
                 }}
-                style={{ 
+                style={{
                     maxWidth: '100%',
                     maxHeight: 'calc(100vh - 200px)',
                     width: 'auto',
@@ -211,7 +211,7 @@ function SidebarPhotoItemWrapper({ image, index, isSelected, onPhotoClick }: { i
 function SidebarCarousel({ images, onPageChange, initialPage, currentSelectedPage, carouselKey }: { images: GalleryImage[]; onPageChange: (page: number) => void; initialPage: number; currentSelectedPage: number; carouselKey: number }) {
     // Garantir que initialPage está dentro do range válido
     const validInitialPage = Math.max(0, Math.min(initialPage, images.length - 1));
-    
+
     return (
         <Carousel
             key={`carousel-${carouselKey}-${validInitialPage}`}
@@ -241,7 +241,7 @@ export default function GalleryModal({ images, initialIndex, isOpen, onClose }: 
     const [carouselKey, setCarouselKey] = useState(0);
 
     console.log('[GalleryModal] Component rendered, isOpen:', isOpen, 'images:', images?.length || 0, 'initialIndex:', initialIndex);
-    
+
     // Log quando currentPage muda
     useEffect(() => {
         console.log('[GalleryModal] currentPage changed to:', currentPage, 'image:', images[currentPage]);
@@ -291,11 +291,11 @@ export default function GalleryModal({ images, initialIndex, isOpen, onClose }: 
         console.log('[GalleryModal] Not rendering - isOpen:', isOpen, 'images.length:', images.length);
         return null;
     }
-    
+
     // Garantir que currentPage está dentro do range válido
     const validCurrentPage = Math.max(0, Math.min(currentPage, images.length - 1));
     const currentImage = images[validCurrentPage];
-    
+
     console.log('[GalleryModal] Rendering modal, currentPage:', currentPage, 'validCurrentPage:', validCurrentPage, 'current image:', currentImage);
 
     return (
@@ -342,8 +342,8 @@ export default function GalleryModal({ images, initialIndex, isOpen, onClose }: 
 
                             {/* Carrossel Vertical à Direita */}
                             <div className="gallery-sidebar">
-                                <SidebarCarousel 
-                                    images={images} 
+                                <SidebarCarousel
+                                    images={images}
                                     onPageChange={setCurrentPage}
                                     initialPage={initialIndex}
                                     currentSelectedPage={currentPage}
@@ -625,18 +625,44 @@ function Stylesheet() {
 
             @media (max-width: 1024px) {
                 .gallery-modal-content {
-                    grid-template-columns: 1fr;
-                    gap: 30px;
+                    flex-direction: column !important;
+                    gap: 15px;
+                    height: auto !important;
+                    min-height: auto !important;
+                    max-height: 95vh;
+                    overflow-y: auto;
+                }
+
+                .gallery-main-image {
+                    flex: none;
+                    width: 100%;
+                    height: auto;
+                    min-height: 300px;
+                    max-height: 60vh;
                 }
 
                 .gallery-sidebar {
-                    height: 300px;
+                    width: 100%;
+                    height: 150px;
+                    flex-shrink: 0;
+                }
+
+                .sidebar-carousel {
+                    height: 100%;
+                }
+
+                .sidebar-photo-wrapper {
+                    min-width: 120px;
+                }
+
+                .sidebar-photo {
+                    height: 120px !important;
                 }
 
                 .navigation {
-                    right: 20px;
+                    right: 10px;
                     top: auto;
-                    bottom: -80px;
+                    bottom: -50px;
                     transform: none;
                     flex-direction: row;
                 }
@@ -648,35 +674,89 @@ function Stylesheet() {
 
             @media (max-width: 768px) {
                 .gallery-modal {
-                    padding: 20px;
+                    padding: 10px;
+                    align-items: flex-start;
+                    padding-top: 50px;
                 }
 
                 .gallery-modal-content {
-                    height: 85vh;
+                    flex-direction: column !important;
+                    height: auto !important;
+                    min-height: auto !important;
+                    max-height: 90vh;
+                    gap: 10px;
+                    overflow-y: auto;
+                    -webkit-overflow-scrolling: touch;
                 }
 
                 .gallery-modal-close {
-                    top: 20px;
-                    right: 20px;
-                    width: 40px;
-                    height: 40px;
+                    top: 10px;
+                    right: 10px;
+                    width: 36px;
+                    height: 36px;
+                    z-index: 10001;
+                }
+
+                .gallery-main-image {
+                    flex: none;
+                    width: 100%;
+                    height: auto;
+                    min-height: 200px;
+                    max-height: 50vh;
+                    padding: 10px;
+                    border-radius: 12px;
                 }
 
                 .main-photo {
-                    max-height: 60%;
+                    max-width: 100% !important;
+                    max-height: 45vh !important;
+                    width: auto !important;
+                    height: auto !important;
+                    min-width: 100px !important;
+                    min-height: 100px !important;
+                    border-radius: 8px;
+                }
+
+                .main-image-info {
+                    position: relative !important;
+                    background: transparent !important;
+                    padding: 0.75rem 0 !important;
                 }
 
                 .main-image-info h3 {
-                    font-size: 1.5rem !important;
+                    font-size: 1.1rem !important;
+                    margin-top: 0.5rem !important;
+                }
+
+                .gallery-sidebar {
+                    width: 100%;
+                    height: 120px;
+                    flex-shrink: 0;
                 }
 
                 .sidebar-photo {
-                    height: 200px;
+                    height: 100px !important;
+                }
+
+                .sidebar-photo-wrapper {
+                    min-width: 100px;
                 }
 
                 .navigation {
-                    right: 10px;
-                    bottom: -60px;
+                    position: relative !important;
+                    right: auto !important;
+                    bottom: auto !important;
+                    top: auto !important;
+                    transform: none !important;
+                    flex-direction: row;
+                    justify-content: center;
+                    width: 100%;
+                    padding: 8px;
+                    margin-top: 5px;
+                }
+
+                .dots {
+                    flex-direction: row;
                 }
             }
         `}</style>

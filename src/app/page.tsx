@@ -337,16 +337,16 @@ export default function Home() {
               ))}
             </h1>
 
-            <div style={{ marginTop: "4rem", display: "flex", justifyContent: "space-between", alignItems: "flex-end", position: "relative", zIndex: 12 }}>
-              <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
+            <div className="hero-bottom-row" style={{ marginTop: "4rem", display: "flex", justifyContent: "space-between", alignItems: "flex-end", position: "relative", zIndex: 12, flexWrap: "wrap", gap: "1.5rem" }}>
+              <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem", flex: "1 1 250px" }}>
                 <p className="hero-desc">
                   {siteData.hero.description}
                 </p>
               </div>
 
-              <ProjectCounter 
-                totalProjects={siteData.projects?.length || 6} 
-                label={siteData.hero.edition || "INSTITUTO MÉDICO 2025"} 
+              <ProjectCounter
+                totalProjects={siteData.projects?.length || 6}
+                label={siteData.hero.edition || "INSTITUTO MÉDICO 2025"}
               />
             </div>
           </div>
@@ -439,7 +439,7 @@ export default function Home() {
       </Section3D>
 
       <SocialReel />
-      
+
       <Section3D transitionType="slide">
         <ContactSection />
       </Section3D>
