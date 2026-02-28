@@ -702,25 +702,35 @@ function Stylesheet() {
                     width: 100%;
                     height: auto;
                     min-height: 200px;
-                    max-height: 50vh;
+                    max-height: none;
                     padding: 10px;
                     border-radius: 12px;
+                    overflow: visible;
+                }
+
+                .main-image-container {
+                    flex-direction: column !important;
+                    align-items: center !important;
+                    justify-content: flex-start !important;
+                    gap: 0;
                 }
 
                 .main-photo {
                     max-width: 100% !important;
-                    max-height: 45vh !important;
-                    width: auto !important;
+                    max-height: 40vh !important;
+                    width: 100% !important;
                     height: auto !important;
                     min-width: 100px !important;
                     min-height: 100px !important;
                     border-radius: 8px;
+                    object-fit: cover !important;
                 }
 
                 .main-image-info {
                     position: relative !important;
                     background: transparent !important;
-                    padding: 0.75rem 0 !important;
+                    padding: 0.75rem 0.5rem !important;
+                    width: 100%;
                 }
 
                 .main-image-info h3 {
