@@ -15,6 +15,8 @@ import { useContent } from "@/hooks/useContent";
 export default function ClientLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const isAdmin = pathname?.startsWith("/admin");
+  const isHome = pathname === "/";
+  const isMinimal = isAdmin || isHome;
   const siteData = useContent();
 
   return (
@@ -22,7 +24,7 @@ export default function ClientLayout({ children }: { children: ReactNode }) {
       <GSAPConfig />
       <div className="noise-overlay" />
       
-      {!isAdmin && (
+      {!isMinimal && (
         <>
           <Preloader />
           <CustomCursor />
@@ -73,7 +75,7 @@ export default function ClientLayout({ children }: { children: ReactNode }) {
         </>
       )}
 
-      {isAdmin ? (
+      {isMinimal ? (
         <main>{children}</main>
       ) : (
         <SmoothScroll>
